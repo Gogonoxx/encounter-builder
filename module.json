@@ -1,0 +1,39 @@
+{
+  "id": "encounter-builder",
+  "title": "PF2E Encounter Builder",
+  "description": "AI-powered encounter generator for Pathfinder 2E. Creates tactically interesting encounters with proper monster roles, terrain, hazards, and narrative elements.",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Gogonoxx"
+    }
+  ],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13.347",
+    "maximum": "13"
+  },
+  "relationships": {
+    "systems": [{
+      "id": "pf2e",
+      "type": "system",
+      "compatibility": {}
+    }]
+  },
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/encounter-builder.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "url": "https://github.com/Gogonoxx/encounter-builder",
+  "manifest": "https://github.com/Gogonoxx/encounter-builder/releases/latest/download/module.json",
+  "download": "https://github.com/Gogonoxx/encounter-builder/releases/latest/download/encounter-builder.zip"
+}

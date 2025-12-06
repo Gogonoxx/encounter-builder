@@ -1,0 +1,275 @@
+/* ============================================================================
+   PF2E Encounter Builder - Styles
+   ============================================================================ */
+
+/* ----------------------------------------------------------------------------
+   Input Modal
+   ---------------------------------------------------------------------------- */
+
+.encounter-builder-input {
+  padding: 0.5rem;
+}
+
+.encounter-builder-input .form-group {
+  margin-bottom: 1rem;
+}
+
+.encounter-builder-input .form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.encounter-builder-input input[type="number"],
+.encounter-builder-input select,
+.encounter-builder-input textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border-light-tertiary);
+  border-radius: 4px;
+  background: var(--color-bg-input);
+}
+
+.encounter-builder-input .difficulty-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.encounter-builder-input .radio-label,
+.encounter-builder-input .checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+}
+
+.encounter-builder-input .trait-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.5rem;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border-light-tertiary);
+  border-radius: 4px;
+  background: var(--color-bg-input);
+}
+
+.encounter-builder-input .form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border-light-tertiary);
+}
+
+.encounter-builder-input .generate-btn {
+  background: var(--color-primary-base);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.encounter-builder-input .generate-btn:hover {
+  background: var(--color-primary-dark);
+}
+
+.encounter-builder-input .cancel-btn {
+  background: transparent;
+  border: 1px solid var(--color-border-light-tertiary);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------------------
+   Output Modal
+   ---------------------------------------------------------------------------- */
+
+.encounter-builder-output {
+  padding: 0.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.encounter-header {
+  text-align: center;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--color-border-highlight);
+  margin-bottom: 1rem;
+}
+
+.encounter-header h2 {
+  margin: 0 0 0.5rem 0;
+  color: var(--color-primary-base);
+}
+
+.encounter-meta {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.encounter-meta .difficulty {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.difficulty-moderate {
+  background: #4a7c59;
+  color: white;
+}
+
+.difficulty-severe {
+  background: #c9760c;
+  color: white;
+}
+
+.difficulty-extreme {
+  background: #8b0000;
+  color: white;
+}
+
+.encounter-meta .xp-budget {
+  color: var(--color-text-dark-secondary);
+}
+
+.encounter-section {
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+}
+
+.encounter-section h3 {
+  margin: 0 0 0.5rem 0;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--color-border-light-tertiary);
+  color: var(--color-text-dark-primary);
+}
+
+.encounter-section h3 i {
+  margin-right: 0.5rem;
+  color: var(--color-primary-base);
+}
+
+/* Monster Table */
+.monster-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.monster-table th,
+.monster-table td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-light-tertiary);
+}
+
+.monster-table th {
+  background: var(--color-bg-option);
+  font-weight: bold;
+}
+
+/* Terrain List */
+.terrain-list {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.terrain-list li {
+  margin-bottom: 0.5rem;
+}
+
+.terrain-list li em {
+  color: var(--color-text-dark-secondary);
+}
+
+/* Hazard Block */
+.hazard-block {
+  background: var(--color-bg-option);
+  padding: 1rem;
+  border-radius: 4px;
+  border-left: 4px solid #c9760c;
+}
+
+.hazard-block h4 {
+  margin: 0 0 0.5rem 0;
+  color: #c9760c;
+}
+
+/* Tactics Block */
+.tactics-block,
+.roleplaying-block,
+.narrative-block {
+  background: var(--color-bg-input);
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.tactics-block p,
+.roleplaying-block p,
+.narrative-block p {
+  margin: 0 0 0.5rem 0;
+}
+
+.tactics-block p:last-child,
+.roleplaying-block p:last-child,
+.narrative-block p:last-child {
+  margin-bottom: 0;
+}
+
+/* Win Conditions */
+.win-conditions {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.win-conditions li {
+  margin-bottom: 0.25rem;
+}
+
+/* Footer */
+.encounter-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border-light-tertiary);
+}
+
+.encounter-footer button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.encounter-footer .regenerate-btn {
+  background: transparent;
+  border: 1px solid var(--color-border-light-tertiary);
+}
+
+.encounter-footer .save-btn {
+  background: var(--color-primary-base);
+  color: white;
+  border: none;
+}
+
+.encounter-footer .save-btn:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Scrollable content area */
+.encounter-output .window-content {
+  overflow-y: auto;
+}

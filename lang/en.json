@@ -1,0 +1,33 @@
+{
+  "ENCOUNTER_BUILDER": {
+    "Title": "Encounter Builder",
+    "Generate": "Generate Encounter",
+    "Regenerate": "Regenerate",
+    "SaveJournal": "Save as Journal",
+    "Cancel": "Cancel",
+
+    "PartyLevel": "Party Level",
+    "PartySize": "Number of Players",
+    "Difficulty": "Difficulty",
+    "Terrain": "Terrain",
+    "IncludeTraits": "Include Creature Types",
+    "ExcludeTraits": "Exclude Creature Types",
+    "NarrativeHook": "Narrative Hook",
+
+    "DifficultyModerate": "Moderate (80 XP)",
+    "DifficultySevere": "Severe (120 XP)",
+    "DifficultyExtreme": "Extreme (160 XP)",
+
+    "Monsters": "Monsters",
+    "TerrainSection": "Terrain",
+    "Hazard": "Hazard",
+    "Tactics": "Tactics & Roleplaying",
+    "Narrative": "Narrative",
+    "WinConditions": "Win Conditions",
+
+    "Generating": "Generating encounter...",
+    "GenerateFailed": "Failed to generate encounter",
+    "JournalCreated": "Created journal",
+    "ServerError": "Server error"
+  }
+}

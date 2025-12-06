@@ -1,0 +1,76 @@
+<div class="encounter-builder-input">
+  <div class="form-group">
+    <label for="partyLevel">Party Level</label>
+    <input type="number" name="partyLevel" id="partyLevel" value="{{partyLevel}}" min="1" max="25" />
+  </div>
+
+  <div class="form-group">
+    <label for="partySize">Number of Players</label>
+    <input type="number" name="partySize" id="partySize" value="{{partySize}}" min="1" max="8" />
+  </div>
+
+  <div class="form-group">
+    <label>Difficulty</label>
+    <div class="difficulty-options">
+      <label class="radio-label">
+        <input type="radio" name="difficulty" value="moderate" {{#if (eq difficulty "moderate")}}checked{{/if}} />
+        Moderate (80 XP)
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="difficulty" value="severe" {{#if (eq difficulty "severe")}}checked{{/if}} />
+        Severe (120 XP)
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="difficulty" value="extreme" {{#if (eq difficulty "extreme")}}checked{{/if}} />
+        Extreme (160 XP)
+      </label>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="terrain">Terrain</label>
+    <select name="terrain" id="terrain">
+      {{#each terrainOptions}}
+        <option value="{{this.value}}">{{this.label}}</option>
+      {{/each}}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Include Creature Types (optional)</label>
+    <div class="trait-checkboxes">
+      {{#each creatureTraits}}
+        <label class="checkbox-label">
+          <input type="checkbox" name="includeTraits" value="{{this}}" />
+          {{this}}
+        </label>
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Exclude Creature Types (optional)</label>
+    <div class="trait-checkboxes">
+      {{#each creatureTraits}}
+        <label class="checkbox-label">
+          <input type="checkbox" name="excludeTraits" value="{{this}}" />
+          {{this}}
+        </label>
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="narrativeHook">Narrative Hook (optional)</label>
+    <textarea name="narrativeHook" id="narrativeHook" rows="3" placeholder="E.g., The players are searching for a missing merchant in the swamp..."></textarea>
+  </div>
+
+  <div class="form-buttons">
+    <button type="button" class="cancel-btn" data-action="close">
+      <i class="fas fa-times"></i> Cancel
+    </button>
+    <button type="submit" class="generate-btn">
+      <i class="fas fa-dice-d20"></i> Generate Encounter
+    </button>
+  </div>
+</div>

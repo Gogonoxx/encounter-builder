@@ -1,0 +1,53 @@
+<div class="encounter-builder-output">
+  <header class="encounter-header">
+    <h2>{{encounter.name}}</h2>
+    <div class="encounter-meta">
+      <span class="difficulty difficulty-{{encounter.difficulty}}">
+        {{encounter.difficulty}}
+      </span>
+      <span class="xp-budget">
+        {{encounter.xpBudget.total}} XP
+        (Monsters: {{encounter.xpBudget.monsters}}, Hazard: {{encounter.xpBudget.hazard}})
+      </span>
+    </div>
+  </header>
+
+  <section class="encounter-section monsters-section">
+    <h3><i class="fas fa-skull"></i> Monsters</h3>
+    {{{monstersHtml}}}
+  </section>
+
+  <section class="encounter-section terrain-section">
+    <h3><i class="fas fa-mountain"></i> Terrain</h3>
+    {{{terrainHtml}}}
+  </section>
+
+  <section class="encounter-section hazard-section">
+    <h3><i class="fas fa-exclamation-triangle"></i> Hazard</h3>
+    {{{hazardHtml}}}
+  </section>
+
+  <section class="encounter-section tactics-section">
+    <h3><i class="fas fa-chess"></i> Tactics & Roleplaying</h3>
+    {{{tacticsHtml}}}
+  </section>
+
+  <section class="encounter-section narrative-section">
+    <h3><i class="fas fa-book-open"></i> Narrative</h3>
+    {{{narrativeHtml}}}
+  </section>
+
+  <section class="encounter-section win-conditions-section">
+    <h3><i class="fas fa-trophy"></i> Win Conditions</h3>
+    {{{winConditionsHtml}}}
+  </section>
+
+  <footer class="encounter-footer">
+    <button type="button" data-action="regenerate" class="regenerate-btn">
+      <i class="fas fa-redo"></i> Regenerate
+    </button>
+    <button type="button" data-action="saveJournal" class="save-btn">
+      <i class="fas fa-save"></i> Save as Journal
+    </button>
+  </footer>
+</div>
