@@ -112,10 +112,12 @@ function openEncounterBuilder() {
 }
 
 // ============================================================================
-// Input Application (ApplicationV2)
+// Input Application (ApplicationV2 + HandlebarsApplicationMixin)
 // ============================================================================
 
-class EncounterInputApp extends foundry.applications.api.ApplicationV2 {
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
+class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
     id: 'encounter-builder-input',
     classes: ['encounter-builder'],
@@ -231,10 +233,10 @@ class EncounterInputApp extends foundry.applications.api.ApplicationV2 {
 }
 
 // ============================================================================
-// Output Application (ApplicationV2)
+// Output Application (ApplicationV2 + HandlebarsApplicationMixin)
 // ============================================================================
 
-class EncounterOutputApp extends foundry.applications.api.ApplicationV2 {
+class EncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
   constructor(encounter) {
     super();
     this.encounter = encounter;
