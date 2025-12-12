@@ -5,31 +5,30 @@
       <span class="difficulty difficulty-{{encounter.difficulty}}">
         {{encounter.difficulty}}
       </span>
+      {{{situationHtml}}}
       <span class="xp-budget">
         {{encounter.xpBudget.total}} XP
         (Monsters: {{encounter.xpBudget.monsters}}, Hazard: {{encounter.xpBudget.hazard}})
       </span>
     </div>
+    {{#if encounter.xpBudget.breakdown}}
+    <div class="xp-breakdown">{{encounter.xpBudget.breakdown}}</div>
+    {{/if}}
   </header>
 
-  <section class="encounter-section monsters-section">
-    <h3><i class="fas fa-skull"></i> Monsters</h3>
-    {{{monstersHtml}}}
+  <section class="encounter-section anchor-section">
+    <h3><i class="fas fa-flag"></i> Narrative Anchor</h3>
+    {{{anchorHtml}}}
   </section>
 
-  <section class="encounter-section terrain-section">
-    <h3><i class="fas fa-mountain"></i> Terrain</h3>
-    {{{terrainHtml}}}
+  <section class="encounter-section scene-description-section">
+    <h3><i class="fas fa-scroll"></i> Szene (Vorlesetext)</h3>
+    {{{sceneDescriptionHtml}}}
   </section>
 
-  <section class="encounter-section hazard-section">
-    <h3><i class="fas fa-exclamation-triangle"></i> Hazard</h3>
-    {{{hazardHtml}}}
-  </section>
-
-  <section class="encounter-section tactics-section">
-    <h3><i class="fas fa-chess"></i> Tactics & Roleplaying</h3>
-    {{{tacticsHtml}}}
+  <section class="encounter-section player-hook-section">
+    <h3><i class="fas fa-user-tag"></i> Spieler-Hook</h3>
+    {{{playerHookHtml}}}
   </section>
 
   <section class="encounter-section narrative-section">
@@ -40,6 +39,21 @@
   <section class="encounter-section win-conditions-section">
     <h3><i class="fas fa-trophy"></i> Win Conditions</h3>
     {{{winConditionsHtml}}}
+  </section>
+
+  <section class="encounter-section monsters-section">
+    <h3><i class="fas fa-skull"></i> Monsters</h3>
+    {{{monstersHtml}}}
+  </section>
+
+  <section class="encounter-section battlefield-section">
+    <h3><i class="fas fa-map"></i> Battlefield</h3>
+    {{{battlefieldHtml}}}
+  </section>
+
+  <section class="encounter-section hazard-section">
+    <h3><i class="fas fa-exclamation-triangle"></i> Hazard</h3>
+    {{{hazardHtml}}}
   </section>
 
   <footer class="encounter-footer">

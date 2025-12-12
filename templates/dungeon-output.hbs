@@ -1,0 +1,87 @@
+<div class="dungeon-builder-output">
+  {{!-- Title & Meta --}}
+  <div class="dungeon-header">
+    {{{titleHtml}}}
+  </div>
+
+  {{!-- Dungeon Map (Node Graph) --}}
+  <section class="dungeon-section map-section">
+    <h2><i class="fas fa-map"></i> Karte</h2>
+    <div class="dungeon-map-container">
+      <svg class="dungeon-map" id="dungeon-node-map"></svg>
+      <div class="map-legend">
+        <span class="legend-item"><span class="legend-node entry"></span> Eingang</span>
+        <span class="legend-item"><span class="legend-node combat"></span> Kampf</span>
+        <span class="legend-item"><span class="legend-node lore"></span> Lore</span>
+        <span class="legend-item"><span class="legend-node transition"></span> Übergang</span>
+        <span class="legend-item"><span class="legend-node puzzle"></span> Rätsel</span>
+        <span class="legend-item"><span class="legend-node treasure"></span> Schatz</span>
+        <span class="legend-item"><span class="legend-node boss"></span> Boss</span>
+      </div>
+    </div>
+  </section>
+
+  {{!-- Concept --}}
+  {{#if conceptHtml}}
+  <section class="dungeon-section concept-section">
+    <h2><i class="fas fa-lightbulb"></i> Konzept</h2>
+    {{{conceptHtml}}}
+  </section>
+  {{/if}}
+
+  {{!-- Zones --}}
+  {{#if zonesHtml}}
+  <section class="dungeon-section zones-section">
+    <h2><i class="fas fa-layer-group"></i> Zonen</h2>
+    {{{zonesHtml}}}
+  </section>
+  {{/if}}
+
+  {{!-- Rooms --}}
+  <section class="dungeon-section rooms-section">
+    <h2><i class="fas fa-door-open"></i> Räume</h2>
+    {{{roomsHtml}}}
+  </section>
+
+  {{!-- Secrets --}}
+  {{#if secretsHtml}}
+  <section class="dungeon-section secrets-section">
+    <h2><i class="fas fa-search"></i> Geheimnisse</h2>
+    {{{secretsHtml}}}
+  </section>
+  {{/if}}
+
+  {{!-- Lore --}}
+  {{#if loreHtml}}
+  <section class="dungeon-section lore-section">
+    <h2><i class="fas fa-scroll"></i> Lore</h2>
+    {{{loreHtml}}}
+  </section>
+  {{/if}}
+
+  {{!-- Boss Room --}}
+  {{#if bossHtml}}
+  <section class="dungeon-section boss-section">
+    <h2><i class="fas fa-crown"></i> Boss-Raum</h2>
+    {{{bossHtml}}}
+  </section>
+  {{/if}}
+
+  {{!-- Summary --}}
+  {{#if summaryHtml}}
+  <section class="dungeon-section summary-section">
+    <h2><i class="fas fa-clipboard-list"></i> Zusammenfassung</h2>
+    {{{summaryHtml}}}
+  </section>
+  {{/if}}
+
+  {{!-- Action Buttons --}}
+  <footer class="dungeon-footer">
+    <button type="button" class="save-journal-btn" data-action="saveJournal">
+      <i class="fas fa-book"></i> Als Journal speichern
+    </button>
+    <button type="button" class="regenerate-btn" data-action="regenerate">
+      <i class="fas fa-redo"></i> Neu generieren
+    </button>
+  </footer>
+</div>

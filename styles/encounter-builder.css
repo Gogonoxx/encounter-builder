@@ -1,6 +1,49 @@
 /* ============================================================================
-   PF2E Encounter Builder - Styles
+   PF2E Encounter Builder - Pathfinder 2E Theme
+   Colors: Browns (#5c0000, #3a2318, #5e3929), Red (#5c0000), Tan (#c9b18a)
    ============================================================================ */
+
+:root {
+  --pf2e-red: #5c0000;
+  --pf2e-brown-dark: #3a2318;
+  --pf2e-brown-medium: #5e3929;
+  --pf2e-brown-light: #7a4c3a;
+  --pf2e-tan: #c9b18a;
+  --pf2e-tan-light: #e8dcc4;
+  --pf2e-tan-dark: #a89672;
+  --pf2e-gold: #c4a000;
+  --pf2e-text: #1c1612;
+  --pf2e-text-light: #f5f0e6;
+}
+
+/* ----------------------------------------------------------------------------
+   Window Styling
+   ---------------------------------------------------------------------------- */
+
+.encounter-builder.application {
+  background: linear-gradient(135deg, var(--pf2e-brown-dark) 0%, var(--pf2e-brown-medium) 100%);
+  border: 3px solid var(--pf2e-red);
+  border-radius: 8px;
+}
+
+.encounter-builder .window-header {
+  background: var(--pf2e-red);
+  border-bottom: 2px solid var(--pf2e-tan-dark);
+  color: var(--pf2e-tan-light);
+}
+
+.encounter-builder .window-header .window-title {
+  color: var(--pf2e-tan-light);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.encounter-builder .window-content {
+  background: linear-gradient(180deg, var(--pf2e-tan-light) 0%, var(--pf2e-tan) 100%);
+  color: var(--pf2e-text);
+  padding: 1rem;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+}
 
 /* ----------------------------------------------------------------------------
    Input Modal
@@ -14,77 +57,180 @@
   margin-bottom: 1rem;
 }
 
-.encounter-builder-input .form-group label {
+.encounter-builder-input .form-group > label {
   display: block;
   font-weight: bold;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--pf2e-brown-dark);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
+/* Input Fields - Fixed visibility */
 .encounter-builder-input input[type="number"],
 .encounter-builder-input select,
 .encounter-builder-input textarea {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid var(--color-border-light-tertiary);
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--pf2e-brown-medium);
   border-radius: 4px;
-  background: var(--color-bg-input);
+  background: #fff;
+  color: var(--pf2e-text);
+  font-size: 1rem;
+  font-family: inherit;
 }
 
+/* Select dropdown - prevent text truncation */
+.encounter-builder-input select {
+  text-overflow: ellipsis;
+  padding-right: 2rem; /* Space for dropdown arrow */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 12px;
+}
+
+.encounter-builder-input select option {
+  padding: 0.5rem;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.encounter-builder-input input[type="number"]:focus,
+.encounter-builder-input select:focus,
+.encounter-builder-input textarea:focus {
+  outline: none;
+  border-color: var(--pf2e-red);
+  box-shadow: 0 0 4px rgba(92, 0, 0, 0.3);
+}
+
+.encounter-builder-input input[type="number"]::placeholder,
+.encounter-builder-input textarea::placeholder {
+  color: #999;
+}
+
+/* Difficulty Radio Buttons */
 .encounter-builder-input .difficulty-options {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.encounter-builder-input .radio-label,
-.encounter-builder-input .checkbox-label {
-  display: inline-flex;
+.encounter-builder-input .radio-label {
+  display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.4rem;
   cursor: pointer;
+  padding: 0.5rem 1rem;
+  background: var(--pf2e-tan);
+  border: 2px solid var(--pf2e-brown-medium);
+  border-radius: 4px;
+  transition: all 0.2s;
 }
 
+.encounter-builder-input .radio-label:hover {
+  background: var(--pf2e-tan-dark);
+}
+
+.encounter-builder-input .radio-label:has(input:checked) {
+  background: var(--pf2e-red);
+  color: var(--pf2e-tan-light);
+  border-color: var(--pf2e-red);
+}
+
+.encounter-builder-input .radio-label input[type="radio"] {
+  accent-color: var(--pf2e-red);
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Trait Checkboxes */
 .encounter-builder-input .trait-checkboxes {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.5rem;
+  gap: 0.4rem;
   max-height: 150px;
   overflow-y: auto;
   padding: 0.5rem;
-  border: 1px solid var(--color-border-light-tertiary);
+  border: 2px solid var(--pf2e-brown-medium);
   border-radius: 4px;
-  background: var(--color-bg-input);
+  background: #fff;
 }
 
+.encounter-builder-input .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+.encounter-builder-input .checkbox-label:hover {
+  background: var(--pf2e-tan);
+}
+
+.encounter-builder-input .checkbox-label input[type="checkbox"] {
+  accent-color: var(--pf2e-red);
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Textarea */
+.encounter-builder-input textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+/* Form Buttons */
 .encounter-builder-input .form-buttons {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--color-border-light-tertiary);
+  border-top: 2px solid var(--pf2e-brown-medium);
 }
 
 .encounter-builder-input .generate-btn {
-  background: var(--color-primary-base);
-  color: white;
+  background: var(--pf2e-red);
+  color: var(--pf2e-tan-light);
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s;
 }
 
 .encounter-builder-input .generate-btn:hover {
-  background: var(--color-primary-dark);
+  background: #7a0000;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
 }
 
 .encounter-builder-input .cancel-btn {
-  background: transparent;
-  border: 1px solid var(--color-border-light-tertiary);
-  padding: 0.5rem 1rem;
+  background: var(--pf2e-tan);
+  color: var(--pf2e-brown-dark);
+  border: 2px solid var(--pf2e-brown-medium);
+  padding: 0.6rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.encounter-builder-input .cancel-btn:hover {
+  background: var(--pf2e-tan-dark);
 }
 
 /* ----------------------------------------------------------------------------
@@ -93,21 +239,27 @@
 
 .encounter-builder-output {
   padding: 0.5rem;
-  height: 100%;
+  min-height: 600px;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .encounter-header {
   text-align: center;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--color-border-highlight);
+  padding: 1rem;
   margin-bottom: 1rem;
+  background: var(--pf2e-red);
+  border-radius: 4px;
+  color: var(--pf2e-tan-light);
 }
 
 .encounter-header h2 {
   margin: 0 0 0.5rem 0;
-  color: var(--color-primary-base);
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 
 .encounter-meta {
@@ -122,95 +274,210 @@
   border-radius: 4px;
   font-weight: bold;
   text-transform: uppercase;
-}
-
-.difficulty-moderate {
-  background: #4a7c59;
-  color: white;
-}
-
-.difficulty-severe {
-  background: #c9760c;
-  color: white;
-}
-
-.difficulty-extreme {
-  background: #8b0000;
-  color: white;
+  background: var(--pf2e-brown-dark);
 }
 
 .encounter-meta .xp-budget {
-  color: var(--color-text-dark-secondary);
+  color: var(--pf2e-tan);
+}
+
+.encounter-header .xp-breakdown {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--pf2e-tan);
+  opacity: 0.9;
+}
+
+/* Front Reference Block */
+.front-block {
+  background: var(--pf2e-tan-light);
+  border-left: 4px solid var(--pf2e-red);
+  padding: 0.75rem;
+}
+
+.front-block p {
+  margin: 0 0 0.5rem 0;
+}
+
+.front-block p:last-child {
+  margin-bottom: 0;
+}
+
+/* Monster Behavior */
+.monster-behavior {
+  background: var(--pf2e-tan-light);
+  padding: 0.5rem 1rem !important;
+  font-style: italic;
+  color: var(--pf2e-brown-dark);
+  border-top: none !important;
+}
+
+/* Monster Personality */
+.monster-personality {
+  background: rgba(92, 0, 0, 0.05);
+  padding: 0.4rem 1rem !important;
+  font-size: 0.9rem;
+  color: var(--pf2e-brown-medium);
+  border-top: none !important;
+}
+
+/* Monster Dialog */
+.monster-dialog {
+  background: rgba(139, 69, 19, 0.08);
+  padding: 0.4rem 1rem !important;
+  font-size: 0.95rem;
+  color: var(--pf2e-brown-dark);
+  border-top: none !important;
+  border-bottom: 2px solid var(--pf2e-tan-dark);
+}
+
+/* Battlefield */
+.battlefield-description {
+  margin-bottom: 0.75rem;
+  color: var(--pf2e-brown-dark);
+  font-style: italic;
+}
+
+.creative-use {
+  color: var(--pf2e-red);
+  font-size: 0.9rem;
+  display: inline-block;
+  margin-top: 0.25rem;
 }
 
 .encounter-section {
-  margin-bottom: 1.5rem;
-  flex-shrink: 0;
+  margin-bottom: 1.25rem;
+  background: #fff;
+  border: 2px solid var(--pf2e-brown-medium);
+  border-radius: 4px;
+}
+
+/* Section content - scrollable when long */
+.encounter-section > *:not(h3):not(.monster-table-wrapper) {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Monster table gets more space */
+.encounter-section .monster-table-wrapper {
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .encounter-section h3 {
-  margin: 0 0 0.5rem 0;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid var(--color-border-light-tertiary);
-  color: var(--color-text-dark-primary);
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--pf2e-brown-medium);
+  color: var(--pf2e-tan-light);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .encounter-section h3 i {
   margin-right: 0.5rem;
-  color: var(--color-primary-base);
+}
+
+.encounter-section > *:not(h3) {
+  padding: 0.75rem;
 }
 
 /* Monster Table */
 .monster-table {
   width: 100%;
   border-collapse: collapse;
+  margin: 0;
 }
 
 .monster-table th,
 .monster-table td {
   padding: 0.5rem;
   text-align: left;
-  border-bottom: 1px solid var(--color-border-light-tertiary);
+  border-bottom: 1px solid var(--pf2e-tan);
 }
 
 .monster-table th {
-  background: var(--color-bg-option);
+  background: var(--pf2e-tan);
   font-weight: bold;
+  color: var(--pf2e-brown-dark);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.monster-table tr:last-child td {
+  border-bottom: none;
+}
+
+.monster-table tr:hover td {
+  background: var(--pf2e-tan-light);
 }
 
 /* Terrain List */
 .terrain-list {
   margin: 0;
   padding-left: 1.5rem;
+  list-style: square;
 }
 
 .terrain-list li {
   margin-bottom: 0.5rem;
+  color: var(--pf2e-text);
 }
 
 .terrain-list li em {
-  color: var(--color-text-dark-secondary);
+  color: var(--pf2e-brown-medium);
 }
 
 /* Hazard Block */
 .hazard-block {
-  background: var(--color-bg-option);
-  padding: 1rem;
-  border-radius: 4px;
-  border-left: 4px solid #c9760c;
+  background: var(--pf2e-tan-light);
+  border-left: 4px solid var(--pf2e-red);
 }
 
 .hazard-block h4 {
   margin: 0 0 0.5rem 0;
-  color: #c9760c;
+  color: var(--pf2e-red);
+}
+
+.complex-badge {
+  background: var(--pf2e-red);
+  color: var(--pf2e-tan-light);
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+
+.hazard-routine {
+  background: rgba(92, 0, 0, 0.08);
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.routine-list {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.5rem;
+}
+
+.routine-list li {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.routine-list li:last-child {
+  margin-bottom: 0;
 }
 
 /* Tactics Block */
 .tactics-block,
 .roleplaying-block,
 .narrative-block {
-  background: var(--color-bg-input);
-  padding: 0.75rem;
+  background: var(--pf2e-tan-light);
+  padding: 0.75rem !important;
   border-radius: 4px;
   margin-bottom: 0.5rem;
 }
@@ -231,45 +498,2017 @@
 .win-conditions {
   margin: 0;
   padding-left: 1.5rem;
+  list-style: none;
 }
 
 .win-conditions li {
   margin-bottom: 0.25rem;
+  position: relative;
+}
+
+.win-conditions li::before {
+  content: "✓";
+  color: var(--pf2e-red);
+  font-weight: bold;
+  position: absolute;
+  left: -1.25rem;
 }
 
 /* Footer */
 .encounter-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: 0.75rem;
   margin-top: auto;
   padding-top: 1rem;
-  border-top: 1px solid var(--color-border-light-tertiary);
+  border-top: 2px solid var(--pf2e-brown-medium);
 }
 
-.encounter-footer button {
+.encounter-footer .regenerate-btn {
+  background: var(--pf2e-tan);
+  color: var(--pf2e-brown-dark);
+  border: 2px solid var(--pf2e-brown-medium);
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
+  transition: all 0.2s;
 }
 
-.encounter-footer .regenerate-btn {
-  background: transparent;
-  border: 1px solid var(--color-border-light-tertiary);
+.encounter-footer .regenerate-btn:hover {
+  background: var(--pf2e-tan-dark);
 }
 
 .encounter-footer .save-btn {
-  background: var(--color-primary-base);
-  color: white;
+  background: var(--pf2e-red);
+  color: var(--pf2e-tan-light);
   border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
 }
 
 .encounter-footer .save-btn:hover {
-  background: var(--color-primary-dark);
+  background: #7a0000;
 }
 
-/* Scrollable content area */
-.encounter-output .window-content {
+/* Scrollbar Styling */
+.encounter-builder ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.encounter-builder ::-webkit-scrollbar-track {
+  background: var(--pf2e-tan);
+  border-radius: 4px;
+}
+
+.encounter-builder ::-webkit-scrollbar-thumb {
+  background: var(--pf2e-brown-medium);
+  border-radius: 4px;
+}
+
+.encounter-builder ::-webkit-scrollbar-thumb:hover {
+  background: var(--pf2e-brown-dark);
+}
+
+/* ----------------------------------------------------------------------------
+   NEW: Situation Badge & Player Hook
+   ---------------------------------------------------------------------------- */
+
+.situation-block {
+  display: inline-block;
+}
+
+.situation-badge {
+  background: var(--pf2e-brown-dark);
+  color: var(--pf2e-tan-light);
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.player-hook-section {
+  border-left: 4px solid var(--pf2e-gold);
+}
+
+.player-hook-block {
+  background: rgba(255, 215, 0, 0.1);
+  padding: 0.75rem;
+  border-radius: 4px;
+}
+
+.player-hook-block p {
+  margin: 0.3rem 0;
+}
+
+/* ----------------------------------------------------------------------------
+   NEW: Monster Personality
+   ---------------------------------------------------------------------------- */
+
+.monster-personality {
+  background: rgba(139, 69, 19, 0.15);
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* ----------------------------------------------------------------------------
+   NEW: Story Progression
+   ---------------------------------------------------------------------------- */
+
+.story-progression {
+  background: var(--pf2e-tan-dark);
+  padding: 0.75rem;
+  border-radius: 4px;
+  border-left: 4px solid var(--pf2e-gold);
+  margin-top: 0.5rem;
+}
+
+/* ----------------------------------------------------------------------------
+   NEW: Win Conditions (Detailed)
+   ---------------------------------------------------------------------------- */
+
+.win-conditions-block {
+  padding: 0;
+}
+
+.primary-win-condition {
+  background: rgba(92, 0, 0, 0.1);
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.primary-win-condition p {
+  margin: 0.25rem 0;
+}
+
+.win-method {
+  color: var(--pf2e-brown-medium);
+  font-size: 0.9rem;
+}
+
+.win-alternatives {
+  margin-bottom: 1rem;
+}
+
+.win-alternatives h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: var(--pf2e-brown-dark);
+}
+
+.win-alternative {
+  background: rgba(139, 69, 19, 0.08);
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  border-left: 3px solid var(--pf2e-gold);
+}
+
+.win-alternative p {
+  margin: 0.2rem 0;
+}
+
+.alt-name {
+  font-size: 1rem;
+  color: var(--pf2e-brown-dark);
+}
+
+.alt-approach {
+  color: var(--pf2e-brown-medium);
+  font-size: 0.9rem;
+}
+
+.alt-requirements {
+  font-size: 0.9rem;
+}
+
+.alt-outcome {
+  font-size: 0.9rem;
+  color: var(--pf2e-brown-dark);
+}
+
+.win-timer {
+  background: rgba(196, 160, 0, 0.15);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  border-left: 3px solid var(--pf2e-gold);
+}
+
+.win-timer p {
+  margin: 0;
+}
+
+.win-timer h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--pf2e-gold-dark);
+  font-size: 0.9rem;
+}
+
+.timer-list {
+  margin: 0;
+  padding-left: 1rem;
+  list-style: none;
+}
+
+.timer-entry {
+  position: relative;
+  padding: 0.3rem 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--pf2e-gold);
+  margin-bottom: 0.5rem;
+}
+
+.timer-entry::before {
+  content: '⏱️';
+  position: absolute;
+  left: -0.8rem;
+  top: 0.2rem;
+  font-size: 0.8rem;
+}
+
+.mechanical-impact {
+  display: block;
+  color: var(--pf2e-red);
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}
+
+/* Escape Options (NEW) */
+.escape-options {
+  background: rgba(100, 140, 180, 0.15);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  border-left: 3px solid #648cb4;
+  margin-top: 0.75rem;
+}
+
+.escape-options h4 {
+  margin: 0 0 0.5rem 0;
+  color: #3d6a9a;
+  font-size: 0.9rem;
+}
+
+.escape-monsters,
+.escape-players {
+  padding: 0.3rem 0.5rem;
+  margin-bottom: 0.5rem;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.escape-monsters p,
+.escape-players p {
+  margin: 0.2rem 0;
+  font-size: 0.85rem;
+}
+
+/* Alternative Type Badge */
+.alt-type {
+  font-size: 0.7rem;
+  color: #666;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  margin-left: 0.3rem;
+  text-transform: uppercase;
+}
+
+/* ----------------------------------------------------------------------------
+   NEW: Scene Description (Vorlesetext)
+   ---------------------------------------------------------------------------- */
+
+.scene-description-section {
+  border-left: 4px solid var(--pf2e-brown-dark);
+  background: linear-gradient(135deg, #fefae0 0%, #f5ebe0 100%);
+}
+
+.scene-description-section h3 {
+  background: var(--pf2e-brown-dark);
+}
+
+.scene-description-block {
+  padding: 0;
+}
+
+.read-aloud {
+  margin: 0;
+  padding: 1rem;
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--pf2e-brown-dark);
+  background: rgba(255, 248, 220, 0.5);
+  border-radius: 4px;
+  border: 1px dashed var(--pf2e-tan-dark);
+  position: relative;
+}
+
+.read-aloud::before {
+  content: open-quote;
+  font-size: 2.5rem;
+  color: var(--pf2e-brown-medium);
+  position: absolute;
+  top: 0.25rem;
+  left: 0.5rem;
+  opacity: 0.4;
+  font-family: Georgia, serif;
+}
+
+.scene-placeholder {
+  color: #999;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* ----------------------------------------------------------------------------
+   INFLUENCE ENCOUNTER STYLES
+   ---------------------------------------------------------------------------- */
+
+.influence-encounter-output {
+  padding: 0.5rem;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Influence Header */
+.influence-header {
+  text-align: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--pf2e-red);
+  border-radius: 4px;
+  color: var(--pf2e-tan-light);
+}
+
+.influence-header .npc-name {
+  margin: 0;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.influence-header .npc-level {
+  font-size: 1rem;
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+/* Influence Sections */
+.influence-section {
+  margin-bottom: 1rem;
+  background: #fff;
+  border: 2px solid var(--pf2e-brown-medium);
+  border-radius: 4px;
+}
+
+.influence-section h2 {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--pf2e-brown-medium);
+  color: var(--pf2e-tan-light);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.influence-section h2 i {
+  margin-right: 0.5rem;
+}
+
+.influence-section > *:not(h2) {
+  padding: 0.75rem;
+}
+
+.influence-section .section-hint {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--pf2e-tan-light);
+  font-size: 0.85rem;
+  color: var(--pf2e-brown-medium);
+  font-style: italic;
+  border-bottom: 1px solid var(--pf2e-tan);
+}
+
+/* Goal Section */
+.goal-section .influence-goal {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Discovery & Skills Tables */
+.discovery-table,
+.influence-skills-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.discovery-table th,
+.discovery-table td,
+.influence-skills-table th,
+.influence-skills-table td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--pf2e-tan);
+}
+
+.discovery-table th,
+.influence-skills-table th {
+  background: var(--pf2e-tan);
+  font-weight: bold;
+  color: var(--pf2e-brown-dark);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.discovery-table tr:last-child td,
+.influence-skills-table tr:last-child td {
+  border-bottom: none;
+}
+
+.influence-skills-table tr.weakness-note {
+  background: rgba(40, 167, 69, 0.1);
+}
+
+.influence-skills-table tr.weakness-note td:last-child {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.influence-skills-table tr.resistance-note {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.influence-skills-table tr.resistance-note td:last-child {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+/* Thresholds */
+.thresholds-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.thresholds-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--pf2e-tan);
+}
+
+.thresholds-list li:last-child {
+  border-bottom: none;
+}
+
+.thresholds-list li strong {
+  color: var(--pf2e-red);
+}
+
+/* Two Column Layout for Resistances/Weaknesses */
+.influence-two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Resistances */
+.resistances-section {
+  border-left: 4px solid #dc3545;
+}
+
+.resistances-section h2 {
+  background: #dc3545;
+}
+
+.resistances-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resistances-list li {
+  padding: 0.3rem 0;
+  color: #dc3545;
+}
+
+.resistances-list li strong {
+  color: var(--pf2e-text);
+}
+
+/* Weaknesses */
+.weaknesses-section {
+  border-left: 4px solid #28a745;
+}
+
+.weaknesses-section h2 {
+  background: #28a745;
+}
+
+.weaknesses-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.weaknesses-list li {
+  padding: 0.3rem 0;
+  color: #28a745;
+}
+
+.weaknesses-list li strong {
+  color: var(--pf2e-text);
+}
+
+/* Penalties Section */
+.penalties-section {
+  border-left: 4px solid #fd7e14;
+}
+
+.penalties-section h2 {
+  background: #fd7e14;
+  color: #fff;
+}
+
+.penalties-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.penalties-list li {
+  padding: 0.4rem 0;
+  color: #fd7e14;
+  border-bottom: 1px dashed rgba(253, 126, 20, 0.3);
+}
+
+.penalties-list li:last-child {
+  border-bottom: none;
+}
+
+.penalties-list li strong {
+  color: var(--pf2e-text);
+}
+
+/* Rounds Section */
+.rounds-section {
+  background: var(--pf2e-tan-light);
+}
+
+.rounds-section p {
+  margin: 0;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+/* Failure Section */
+.failure-section {
+  border-left: 4px solid #ffc107;
+}
+
+.failure-section h2 {
+  background: #ffc107;
+  color: var(--pf2e-text);
+}
+
+.failure-text {
+  margin: 0;
+  color: #856404;
+}
+
+/* Influence Footer */
+.influence-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 2px solid var(--pf2e-brown-medium);
+}
+
+.influence-footer .regenerate-btn {
+  background: var(--pf2e-tan);
+  color: var(--pf2e-brown-dark);
+  border: 2px solid var(--pf2e-brown-medium);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.influence-footer .regenerate-btn:hover {
+  background: var(--pf2e-tan-dark);
+}
+
+.influence-footer .save-btn {
+  background: var(--pf2e-red);
+  color: var(--pf2e-tan-light);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.influence-footer .save-btn:hover {
+  background: #7a0000;
+}
+
+/* Input Modal - Required Field Marker */
+.encounter-builder-input .required {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+/* Input Modal - Text Input for NPC Name */
+.encounter-builder-input input[type="text"] {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--pf2e-brown-medium);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--pf2e-text);
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.encounter-builder-input input[type="text"]:focus {
+  outline: none;
+  border-color: var(--pf2e-red);
+  box-shadow: 0 0 4px rgba(92, 0, 0, 0.3);
+}
+
+.encounter-builder-input input[type="text"]::placeholder {
+  color: #999;
+}
+
+/* Empty state for lists */
+.influence-section .empty {
+  color: #999;
+  font-style: italic;
+  margin: 0;
+}
+
+/* ============================================================================
+   RESEARCH OUTPUT STYLES
+   ============================================================================ */
+
+/* Research-specific color palette - mystical purple/violet theme */
+:root {
+  --research-purple-dark: #4a1c6b;
+  --research-purple-medium: #6b3fa0;
+  --research-purple-light: #9b6dc6;
+  --research-violet-light: #e8d4f8;
+  --research-gold: #d4af37;
+}
+
+.research-encounter-output {
+  padding: 0.5rem;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Research Header */
+.research-header {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--research-purple-dark), var(--research-purple-medium));
+  border-radius: 4px;
+  color: white;
+}
+
+.research-header .research-title {
+  margin: 0;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.research-header .research-front {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.research-header .research-front i {
+  margin-right: 0.5rem;
+}
+
+/* Research Section Base */
+.research-section {
+  margin-bottom: 1rem;
+  background: #fff;
+  border: 2px solid var(--research-purple-medium);
+  border-radius: 4px;
+}
+
+.research-section h2 {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--research-purple-medium);
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.research-section h2 i {
+  margin-right: 0.5rem;
+}
+
+.research-section > *:not(h2) {
+  padding: 0.75rem;
+}
+
+.research-section .section-hint {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--research-violet-light);
+  font-size: 0.85rem;
+  color: var(--research-purple-dark);
+  font-style: italic;
+}
+
+/* Location and Atmosphere Sections */
+.research-location,
+.research-atmosphere {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.research-atmosphere {
+  font-style: italic;
+  color: #555;
+}
+
+/* RP Mechanics Section */
+.mechanics-section .rp-rules {
+  padding: 0.75rem;
+}
+
+.mechanics-section .rp-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--research-purple-light);
+}
+
+.mechanics-section .rp-total,
+.mechanics-section .round-length {
+  font-size: 0.95rem;
+}
+
+.rp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.rp-table td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.rp-table td:first-child {
+  width: 60%;
+}
+
+.rp-table td:last-child {
+  text-align: center;
+  font-weight: bold;
+}
+
+.rp-table .success {
+  color: #2e7d32;
+}
+
+.rp-table .failure {
+  color: #c62828;
+}
+
+/* Fantastische Quellen Section */
+.sources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.source-card {
+  background: var(--research-violet-light);
+  border: 1px solid var(--research-purple-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.source-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: var(--research-purple-light);
+  color: white;
+}
+
+.source-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.source-max-rp {
+  background: var(--research-gold);
+  color: #000;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.source-description {
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+.source-skills {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  background: #fff;
+}
+
+.source-skills thead {
+  background: var(--research-purple-medium);
+  color: white;
+}
+
+.source-skills th,
+.source-skills td {
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--research-violet-light);
+}
+
+.source-skills th {
+  font-weight: 600;
+}
+
+/* Thresholds Section */
+.thresholds-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.thresholds-table th,
+.thresholds-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.thresholds-table thead {
+  background: var(--research-purple-medium);
+  color: white;
+}
+
+.thresholds-table .rp-value {
+  font-weight: bold;
+  width: 50px;
+}
+
+.thresholds-table .xp-value {
+  font-weight: bold;
+  width: 80px;
+}
+
+.thresholds-table .xp-minor .xp-value {
+  color: #666;
+}
+
+.thresholds-table .xp-major .xp-value {
+  color: var(--research-purple-medium);
+}
+
+.thresholds-table .xp-legendary {
+  background: linear-gradient(90deg, rgba(212,175,55,0.2), transparent);
+}
+
+.thresholds-table .xp-legendary .xp-value {
+  color: var(--research-gold);
+  font-weight: bold;
+}
+
+.thresholds-table .secret-text {
+  font-size: 0.9rem;
+}
+
+/* Complications Section */
+.complications-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+}
+
+.complications-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--research-purple-light);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.complications-list li:last-child {
+  border-bottom: none;
+}
+
+.complication-trigger {
+  color: var(--research-purple-dark);
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.complication-event {
+  color: #333;
+  font-size: 0.95rem;
+  padding-left: 0.5rem;
+}
+
+/* Research Footer */
+.research-footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 1rem;
+  margin-top: auto;
+  background: #f5f5f5;
+  border-top: 1px solid #ddd;
+}
+
+.research-footer button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.research-footer .regenerate-btn {
+  background: var(--research-purple-light);
+  color: white;
+}
+
+.research-footer .regenerate-btn:hover {
+  background: var(--research-purple-medium);
+}
+
+.research-footer .save-btn {
+  background: var(--research-purple-dark);
+  color: white;
+}
+
+.research-footer .save-btn:hover {
+  background: #3a1555;
+}
+
+/* Research Section Empty State */
+.research-section .empty {
+  color: #999;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Research Approach Badges */
+.approach-badge {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.approach-badge.approach-easy {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.approach-badge.approach-standard {
+  background: #e2e3e5;
+  color: #383d41;
+  border: 1px solid #d6d8db;
+}
+
+.approach-badge.approach-hard {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Row highlighting based on approach */
+.source-skills tr.approach-easy {
+  background: rgba(212, 237, 218, 0.3);
+}
+
+.source-skills tr.approach-hard {
+  background: rgba(248, 215, 218, 0.3);
+}
+
+.source-skills .skill-approach {
+  text-align: center;
+  width: 80px;
+}
+
+/* ============================================================================
+   CHASE OUTPUT STYLES
+   ============================================================================ */
+
+/* Chase-specific color palette - movement/action green theme */
+:root {
+  --chase-green-dark: #1a5c38;
+  --chase-green-medium: #2d8c53;
+  --chase-green-light: #4aba7a;
+  --chase-mint-light: #d4f5e3;
+  --chase-gold: #d4af37;
+  --chase-red: #c94c4c;
+}
+
+.chase-builder-output {
+  padding: 0.5rem;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Chase Header */
+.chase-header {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--chase-green-dark), var(--chase-green-medium));
+  border-radius: 4px;
+  color: white;
+}
+
+.chase-header .chase-title {
+  margin: 0;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.chase-header .chase-meta {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.chase-type-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.chase-length {
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+/* Chase Sections */
+.chase-section {
+  margin-bottom: 1rem;
+  background: #fff;
+  border: 2px solid var(--chase-green-medium);
+  border-radius: 4px;
+}
+
+.chase-section h2 {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--chase-green-medium);
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.chase-section h2 i {
+  margin-right: 0.5rem;
+}
+
+.chase-section > *:not(h2) {
+  padding: 0.75rem;
+}
+
+/* Scenario Section */
+.chase-scenario {
+  margin: 0;
+  line-height: 1.6;
+  font-style: italic;
+  color: #333;
+}
+
+/* Start Position */
+.chase-start-position {
+  margin: 0;
+  padding: 0.75rem;
+  background: var(--chase-mint-light);
+  border-left: 4px solid var(--chase-green-dark);
+  font-size: 1rem;
+}
+
+/* Chase Points Rules */
+.chase-rules-summary {
+  background: var(--chase-mint-light);
+  border-radius: 4px;
+  padding: 0.75rem;
+}
+
+.chase-rules-summary h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--chase-green-dark);
+  font-size: 0.95rem;
+}
+
+.cp-rules-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.cp-rules-table td {
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.cp-rules-table td:first-child {
+  width: 70%;
+}
+
+.cp-rules-table .cp-value {
+  text-align: center;
+  font-weight: bold;
+  color: var(--chase-green-dark);
+}
+
+.cp-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Obstacles Grid */
+.obstacles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.obstacle-card {
+  background: var(--chase-mint-light);
+  border: 1px solid var(--chase-green-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.obstacle-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--chase-green-light);
+  color: white;
+}
+
+.obstacle-number {
+  background: var(--chase-green-dark);
+  color: white;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.obstacle-name {
+  margin: 0;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.obstacle-cp {
+  background: var(--chase-gold);
+  color: #000;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.obstacle-description {
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #333;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.obstacle-options {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  background: #fff;
+}
+
+.obstacle-options thead {
+  background: var(--chase-green-medium);
+  color: white;
+}
+
+.obstacle-options th,
+.obstacle-options td {
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--chase-mint-light);
+}
+
+.obstacle-options th {
+  font-weight: 600;
+}
+
+.obstacle-options .skill-name {
+  font-weight: bold;
+  color: var(--chase-green-dark);
+}
+
+.obstacle-options .skill-dc {
+  font-weight: bold;
+  text-align: center;
+}
+
+.obstacle-options .skill-method {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* End Conditions */
+.end-conditions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.end-condition {
+  border-radius: 4px;
+  padding: 0.75rem;
+}
+
+.end-condition h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.end-condition p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.end-condition.success {
+  background: var(--chase-mint-light);
+  border-left: 4px solid var(--chase-green-dark);
+}
+
+.end-condition.success h4 {
+  color: var(--chase-green-dark);
+}
+
+.end-condition.failure {
+  background: #fde8e8;
+  border-left: 4px solid var(--chase-red);
+}
+
+.end-condition.failure h4 {
+  color: var(--chase-red);
+}
+
+/* Complication */
+.chase-complication {
+  background: #fff8e1;
+  border-left: 4px solid var(--chase-gold);
+  padding: 0.75rem;
+  border-radius: 0 4px 4px 0;
+}
+
+.chase-complication h4 {
+  margin: 0 0 0.5rem 0;
+  color: #b8860b;
+  font-size: 0.95rem;
+}
+
+.chase-complication p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Chase Footer */
+.chase-footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 1rem;
+  margin-top: auto;
+  background: #f5f5f5;
+  border-top: 1px solid #ddd;
+}
+
+.chase-footer button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.chase-footer .regenerate-btn {
+  background: var(--chase-green-light);
+  color: white;
+}
+
+.chase-footer .regenerate-btn:hover {
+  background: var(--chase-green-medium);
+}
+
+.chase-footer .save-journal-btn {
+  background: var(--chase-green-dark);
+  color: white;
+}
+
+.chase-footer .save-journal-btn:hover {
+  background: #134529;
+}
+
+/* ============================================================================
+   DUNGEON OUTPUT STYLES
+   ============================================================================ */
+
+/* Dungeon-specific color palette - stone/dungeon theme */
+:root {
+  --dungeon-stone-dark: #2c3e50;
+  --dungeon-stone-medium: #34495e;
+  --dungeon-stone-light: #5d6d7e;
+  --dungeon-sand-light: #f5f0e6;
+  --dungeon-gold: #d4af37;
+  --dungeon-torch: #e67e22;
+  --dungeon-boss-red: #8b0000;
+}
+
+.dungeon-builder-output {
+  padding: 0.5rem;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dungeon Header */
+.dungeon-header {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--dungeon-stone-dark), var(--dungeon-stone-medium));
+  border-radius: 4px;
+  color: white;
+}
+
+.dungeon-header .dungeon-title {
+  margin: 0;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.dungeon-header .dungeon-meta {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.dungeon-theme-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.dungeon-room-count {
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+/* Dungeon Sections */
+.dungeon-section {
+  margin-bottom: 1rem;
+  background: #fff;
+  border: 2px solid var(--dungeon-stone-medium);
+  border-radius: 4px;
+}
+
+.dungeon-section h2 {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--dungeon-stone-medium);
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.dungeon-section h2 i {
+  margin-right: 0.5rem;
+}
+
+.dungeon-section > *:not(h2) {
+  padding: 0.75rem;
+}
+
+/* Concept Section */
+.dungeon-concept {
+  margin: 0;
+  line-height: 1.6;
+  font-size: 1.05rem;
+  color: #333;
+}
+
+/* Zones Grid */
+.zones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.zone-card {
+  background: var(--dungeon-sand-light);
+  border: 1px solid var(--dungeon-stone-light);
+  border-radius: 4px;
+  padding: 0.75rem;
+}
+
+.zone-name {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: var(--dungeon-stone-dark);
+}
+
+.zone-purpose {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.zone-atmosphere {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Rooms List */
+.rooms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.room-card {
+  background: var(--dungeon-sand-light);
+  border: 1px solid var(--dungeon-stone-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.room-card.boss-room {
+  border: 2px solid var(--dungeon-boss-red);
+  background: linear-gradient(135deg, #fff5f5 0%, var(--dungeon-sand-light) 100%);
+}
+
+.room-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--dungeon-stone-light);
+  color: white;
+}
+
+.room-card.boss-room .room-header {
+  background: var(--dungeon-boss-red);
+}
+
+.room-number {
+  background: var(--dungeon-stone-dark);
+  color: white;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.room-card.boss-room .room-number {
+  background: #5c0000;
+}
+
+.room-name {
+  margin: 0;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.boss-badge {
+  background: var(--dungeon-gold);
+  color: #000;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.room-description {
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #333;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.room-connections {
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--dungeon-stone-dark);
+  background: rgba(0,0,0,0.03);
+}
+
+.room-connections i {
+  color: var(--dungeon-torch);
+  margin-right: 0.25rem;
+}
+
+.room-terrain {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.room-terrain ul {
+  margin: 0.25rem 0 0 1.25rem;
+  padding: 0;
+}
+
+.room-terrain li {
+  margin-bottom: 0.25rem;
+}
+
+/* Combat Prompt Container */
+.combat-prompt-container {
+  background: #f8f9fa;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  padding: 0.75rem;
+}
+
+.combat-prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.combat-prompt-header strong {
+  color: var(--pf2e-red);
+  font-size: 0.9rem;
+}
+
+.combat-prompt-header i.fa-swords {
+  margin-right: 0.25rem;
+}
+
+.copy-prompt-btn {
+  background: var(--dungeon-stone-medium);
+  color: white;
+  border: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s;
+}
+
+.copy-prompt-btn:hover {
+  background: var(--dungeon-stone-dark);
+}
+
+.combat-prompt {
+  margin: 0;
+  padding: 0.75rem;
+  background: #fff;
+  border: 1px solid var(--dungeon-stone-light);
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 150px;
   overflow-y: auto;
+  color: #333;
+}
+
+/* Room Secret */
+.room-secret {
+  background: rgba(212, 175, 55, 0.15);
+  border-left: 3px solid var(--dungeon-gold);
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.room-secret strong {
+  color: #b8860b;
+}
+
+.room-secret p {
+  margin: 0.25rem 0 0 0;
+}
+
+/* Secrets List */
+.secrets-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem;
+}
+
+.secret-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--dungeon-stone-light);
+}
+
+.secret-item:last-child {
+  border-bottom: none;
+}
+
+.secret-dc {
+  background: var(--dungeon-gold);
+  color: #000;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.secret-description {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Lore List */
+.lore-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem;
+}
+
+.lore-item {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  border-bottom: 1px dashed var(--dungeon-stone-light);
+  position: relative;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.lore-item:last-child {
+  border-bottom: none;
+}
+
+.lore-item::before {
+  content: '📜';
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+}
+
+/* Boss Section */
+.boss-section {
+  border-left: 4px solid var(--dungeon-boss-red);
+  background: rgba(139, 0, 0, 0.05);
+}
+
+.boss-section .boss-name {
+  margin: 0 0 0.5rem 0;
+  color: var(--dungeon-boss-red);
+  font-size: 1.1rem;
+}
+
+.boss-section .boss-name i {
+  color: var(--dungeon-gold);
+  margin-right: 0.5rem;
+}
+
+.boss-section .boss-description {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Summary */
+.dungeon-summary {
+  margin: 0;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #333;
+  font-style: italic;
+  background: var(--dungeon-sand-light);
+  border-radius: 4px;
+}
+
+/* Dungeon Footer */
+.dungeon-footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 1rem;
+  margin-top: auto;
+  background: #f5f5f5;
+  border-top: 1px solid #ddd;
+}
+
+.dungeon-footer button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.dungeon-footer .regenerate-btn {
+  background: var(--dungeon-stone-light);
+  color: white;
+}
+
+.dungeon-footer .regenerate-btn:hover {
+  background: var(--dungeon-stone-medium);
+}
+
+.dungeon-footer .save-journal-btn {
+  background: var(--dungeon-stone-dark);
+  color: white;
+}
+
+.dungeon-footer .save-journal-btn:hover {
+  background: #1a252f;
+}
+
+/* ============================================================================
+   DUNGEON NODE MAP
+   ============================================================================ */
+
+.map-section {
+  background: #fff;
+}
+
+.dungeon-map-container {
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 4px;
+}
+
+.dungeon-map {
+  width: 100%;
+  display: block;
+  background: #fff;
+  border: 1px solid var(--dungeon-stone-light);
+  border-radius: 4px;
+}
+
+.map-node {
+  transition: transform 0.2s ease;
+}
+
+.map-node:hover circle {
+  stroke-width: 4;
+  filter: brightness(1.1);
+}
+
+/* Map Legend */
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  background: rgba(0,0,0,0.03);
+  border-radius: 4px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.legend-node {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #2c3e50;
+}
+
+.legend-node.entry { background: #4a90d9; }
+.legend-node.combat { background: #d9534f; }
+.legend-node.lore { background: #9b59b6; }
+.legend-node.transition { background: #95a5a6; }
+.legend-node.puzzle { background: #f39c12; }
+.legend-node.treasure { background: #f1c40f; }
+.legend-node.boss { background: #8b0000; }
+
+/* ============================================================================
+   ROOM TYPE BADGES & STYLING
+   ============================================================================ */
+
+.room-type-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.room-type-badge.room-entry {
+  background: #4a90d9;
+  color: white;
+}
+
+.room-type-badge.room-combat {
+  background: #d9534f;
+  color: white;
+}
+
+.room-type-badge.room-lore {
+  background: #9b59b6;
+  color: white;
+}
+
+.room-type-badge.room-transition {
+  background: #95a5a6;
+  color: white;
+}
+
+.room-type-badge.room-puzzle {
+  background: #f39c12;
+  color: white;
+}
+
+.room-type-badge.room-trap {
+  background: #e74c3c;
+  color: white;
+}
+
+.room-type-badge.room-rest {
+  background: #27ae60;
+  color: white;
+}
+
+.room-type-badge.room-treasure {
+  background: #f1c40f;
+  color: #333;
+}
+
+.room-type-badge.room-boss {
+  background: var(--dungeon-gold);
+  color: #000;
+}
+
+/* Room card type-specific borders */
+.room-card.room-lore {
+  border-left: 4px solid #9b59b6;
+}
+
+.room-card.room-transition {
+  border-left: 4px solid #95a5a6;
+  background: linear-gradient(135deg, #fafafa 0%, var(--dungeon-sand-light) 100%);
+}
+
+.room-card.room-puzzle {
+  border-left: 4px solid #f39c12;
+}
+
+.room-card.room-rest {
+  border-left: 4px solid #27ae60;
+  background: linear-gradient(135deg, #f0fff0 0%, var(--dungeon-sand-light) 100%);
+}
+
+.room-card.room-treasure {
+  border-left: 4px solid #f1c40f;
+  background: linear-gradient(135deg, #fffef0 0%, var(--dungeon-sand-light) 100%);
+}
+
+/* Lore Content Styling */
+.room-lore-content {
+  background: rgba(155, 89, 182, 0.1);
+  border-left: 3px solid #9b59b6;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.room-lore-content strong {
+  color: #9b59b6;
+}
+
+.room-lore-content p {
+  margin: 0.25rem 0 0 0;
+  line-height: 1.4;
+}
+
+/* Transition Note Styling */
+.room-transition-note {
+  background: rgba(149, 165, 166, 0.1);
+  border-left: 3px solid #95a5a6;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.room-transition-note i {
+  margin-right: 0.25rem;
+}
+
+/* Room Card Highlight (when clicked in map) */
+.room-card.highlight {
+  animation: roomHighlight 2s ease-out;
+}
+
+@keyframes roomHighlight {
+  0% {
+    box-shadow: 0 0 0 3px var(--dungeon-gold);
+    transform: scale(1.01);
+  }
+  100% {
+    box-shadow: none;
+    transform: scale(1);
+  }
 }

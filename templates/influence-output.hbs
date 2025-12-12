@@ -1,0 +1,77 @@
+<div class="influence-encounter-output">
+  <!-- NPC Header -->
+  <header class="influence-header">
+    {{{npcHtml}}}
+  </header>
+
+  <!-- Goal Section -->
+  <section class="influence-section goal-section">
+    <h2><i class="fas fa-bullseye"></i> Ziel</h2>
+    {{{goalHtml}}}
+  </section>
+
+  <!-- Discovery Section -->
+  <section class="influence-section discovery-section">
+    <h2><i class="fas fa-search"></i> Discovery</h2>
+    <p class="section-hint">Spieler können diese Skills nutzen, um Informationen über den NPC zu sammeln.</p>
+    {{{discoveryHtml}}}
+  </section>
+
+  <!-- Influence Skills Section -->
+  <section class="influence-section skills-section">
+    <h2><i class="fas fa-comments"></i> Influence Skills</h2>
+    <p class="section-hint">Sortiert nach DC (niedrigster zuerst). Pro Runde kann ein Spieler EINEN Skill nutzen.</p>
+    {{{influenceSkillsHtml}}}
+  </section>
+
+  <!-- Thresholds Section -->
+  <section class="influence-section thresholds-section">
+    <h2><i class="fas fa-chart-line"></i> Thresholds</h2>
+    <p class="section-hint">Influence Points sammeln: Critical Success = +2, Success = +1, Critical Failure = -1</p>
+    {{{thresholdsHtml}}}
+  </section>
+
+  <!-- Resistances & Weaknesses -->
+  <div class="influence-two-column">
+    <section class="influence-section resistances-section">
+      <h2><i class="fas fa-shield-alt"></i> Resistances</h2>
+      <p class="section-hint">Was NICHT funktioniert</p>
+      {{{resistancesHtml}}}
+    </section>
+
+    <section class="influence-section weaknesses-section">
+      <h2><i class="fas fa-heart"></i> Weaknesses</h2>
+      <p class="section-hint">Was GUT funktioniert</p>
+      {{{weaknessesHtml}}}
+    </section>
+  </div>
+
+  <!-- Penalties Section -->
+  <section class="influence-section penalties-section">
+    <h2><i class="fas fa-bomb"></i> Penalties</h2>
+    <p class="section-hint">Verbotene Themen/Aktionen - kosten Runden!</p>
+    {{{penaltiesHtml}}}
+  </section>
+
+  <!-- Rounds Section -->
+  <section class="influence-section rounds-section">
+    <h2><i class="fas fa-hourglass-half"></i> Zeitrahmen</h2>
+    {{{roundsHtml}}}
+  </section>
+
+  <!-- Failure Section -->
+  <section class="influence-section failure-section">
+    <h2><i class="fas fa-exclamation-triangle"></i> Bei Misserfolg</h2>
+    {{{failureHtml}}}
+  </section>
+
+  <!-- Action Buttons -->
+  <footer class="influence-footer">
+    <button type="button" class="regenerate-btn" data-action="regenerate">
+      <i class="fas fa-sync-alt"></i> Neu generieren
+    </button>
+    <button type="button" class="save-btn" data-action="saveJournal">
+      <i class="fas fa-book"></i> Als Journal speichern
+    </button>
+  </footer>
+</div>

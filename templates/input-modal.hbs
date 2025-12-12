@@ -1,15 +1,161 @@
 <div class="encounter-builder-input">
   <div class="form-group">
+    <label>Encounter Type</label>
+    <div class="difficulty-options">
+      <label class="radio-label">
+        <input type="radio" name="encounterType" value="combat" checked />
+        ⚔️ Combat
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="encounterType" value="influence" />
+        🗣️ Influence
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="encounterType" value="research" />
+        📚 Research
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="encounterType" value="chase" />
+        🏃 Chase
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="encounterType" value="infiltration" />
+        🎭 Infiltration
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="encounterType" value="dungeon" />
+        🏰 Dungeon
+      </label>
+    </div>
+  </div>
+
+  <!-- Party Level - needed for both Combat AND Influence (for DC calculation) -->
+  <div class="form-group">
     <label for="partyLevel">Party Level</label>
     <input type="number" name="partyLevel" id="partyLevel" value="{{partyLevel}}" min="1" max="25" />
   </div>
 
-  <div class="form-group">
+  <!-- Influence-specific field (shown only when influence is selected) -->
+  <div class="form-group influence-only" style="display: none;">
+    <label for="influencePrompt">NPC & Ziel <span class="required">*</span></label>
+    <textarea name="influencePrompt" id="influencePrompt" rows="5" placeholder="Beschreibe den NPC und was die Spieler erreichen wollen.
+
+Beispiel:
+Händler Marcus Wellford - die Spieler wollen einen besseren Preis für magische Gegenstände aushandeln. Marcus war früher selbst Abenteurer und respektiert Kampferfahrung."></textarea>
+  </div>
+
+  <!-- Research-specific field (shown only when research is selected) -->
+  <div class="form-group research-only" style="display: none;">
+    <label for="researchPrompt">Ort & Kontext <span class="required">*</span></label>
+    <textarea name="researchPrompt" id="researchPrompt" rows="5" placeholder="Beschreibe den Forschungsort und welche Geheimnisse hier verborgen sind.
+
+Beispiel:
+Die Ruinen von Nyssilion - ein vergessener Tempel der 13. Ordnung. Die Spieler suchen Hinweise auf Kaelor Dämmerstahls Vergangenheit. Hier wurde der Pakt mit Kronos besiegelt."></textarea>
+  </div>
+
+  <!-- Chase-specific fields (shown only when chase is selected) -->
+  <div class="form-group chase-only" style="display: none;">
+    <label for="chaseType">Chase-Typ</label>
+    <select name="chaseType" id="chaseType">
+      <option value="run_away">🏃 Flucht (PCs fliehen vor Verfolgern)</option>
+      <option value="chase_down">🎯 Verfolgung (PCs jagen jemanden)</option>
+      <option value="beat_clock">⏱️ Wettlauf gegen die Zeit</option>
+      <option value="competitive">🏁 Konkurrenz (zwei Gruppen zum Ziel)</option>
+    </select>
+  </div>
+
+  <div class="form-group chase-only" style="display: none;">
+    <label for="chaseLength">Länge</label>
+    <select name="chaseLength" id="chaseLength">
+      <option value="6">Kurz (6 Hindernisse)</option>
+      <option value="8" selected>Mittel (8 Hindernisse)</option>
+      <option value="10">Lang (10 Hindernisse)</option>
+    </select>
+  </div>
+
+  <div class="form-group chase-only" style="display: none;">
+    <label for="chaseTerrain">Terrain</label>
+    <select name="chaseTerrain" id="chaseTerrain">
+      <option value="underground">🕳️ Underground (Höhlen, Dungeons)</option>
+      <option value="urban">🏘️ Urban (Stadt, Dächer)</option>
+      <option value="wilderness">🌲 Wilderness (Wald, Berge, Flüsse)</option>
+      <option value="steppe">🌾 Steppe (Orfnir Grasland)</option>
+      <option value="ruins">🏛️ Ruinen (Nyssilion, Tempel)</option>
+      <option value="mixed">🎲 Gemischt</option>
+    </select>
+  </div>
+
+  <div class="form-group chase-only" style="display: none;">
+    <label for="chaseContext">Kontext <span class="required">*</span></label>
+    <textarea name="chaseContext" id="chaseContext" rows="4" placeholder="Beschreibe die Chase-Situation: Wer jagt wen? Warum? Was passiert bei Erfolg/Misserfolg?
+
+Beispiel:
+Die Gruppe hat den Minotauren-Schrein entweiht und muss jetzt durch das unterirdische Labyrinth fliehen. Ghorvak Blutgeweih und seine Krieger sind ihnen auf den Fersen."></textarea>
+  </div>
+
+  <!-- Dungeon-specific fields (shown only when dungeon is selected) -->
+  <div class="form-group dungeon-only" style="display: none;">
+    <label for="dungeonSize">Dungeon-Größe</label>
+    <select name="dungeonSize" id="dungeonSize">
+      <option value="4">Klein (4 Räume)</option>
+      <option value="5" selected>Mittel (5 Räume)</option>
+      <option value="6">Groß (6 Räume)</option>
+    </select>
+  </div>
+
+  <div class="form-group dungeon-only" style="display: none;">
+    <label for="dungeonTheme">Setting</label>
+    <select name="dungeonTheme" id="dungeonTheme">
+      <option value="ruins">🏛️ Ruinen (verfallene Strukturen)</option>
+      <option value="cave">🕳️ Höhle (natürliche Formationen)</option>
+      <option value="temple">⛪ Tempel (religiöse Stätte)</option>
+      <option value="fortress">🏰 Festung (militärische Anlage)</option>
+      <option value="crypt">⚰️ Krypta (Grabstätte)</option>
+      <option value="laboratory">🧪 Labor (Forschungseinrichtung)</option>
+      <option value="mine">⛏️ Mine (Bergwerk)</option>
+      <option value="sewers">🚰 Kanalisation (unterirdische Stadt)</option>
+    </select>
+  </div>
+
+  <div class="form-group dungeon-only" style="display: none;">
+    <label for="dungeonThreat">Primäre Bedrohung</label>
+    <select name="dungeonThreat" id="dungeonThreat">
+      <option value="undead">💀 Untote</option>
+      <option value="construct">🤖 Konstrukte</option>
+      <option value="humanoid">👤 Humanoide (Banditen, Kultisten)</option>
+      <option value="beast">🐺 Bestien</option>
+      <option value="aberration">👁️ Aberrationen</option>
+      <option value="demon">😈 Dämonen</option>
+      <option value="elemental">🔥 Elementare</option>
+      <option value="ooze">🟢 Schleim</option>
+      <option value="plant">🌿 Pflanzen</option>
+      <option value="dragon">🐉 Drachen</option>
+    </select>
+  </div>
+
+  <div class="form-group dungeon-only" style="display: none;">
+    <label class="checkbox-label">
+      <input type="checkbox" name="dungeonBoss" id="dungeonBoss" checked />
+      Boss-Raum einschließen
+    </label>
+  </div>
+
+  <div class="form-group dungeon-only" style="display: none;">
+    <label for="dungeonContext">Kontext <span class="required">*</span></label>
+    <textarea name="dungeonContext" id="dungeonContext" rows="4" placeholder="Warum betreten die PCs den Dungeon? Was suchen sie?
+
+Beispiel:
+Die Spieler suchen das Grab von König Aldric. Laut Gerüchten ruht dort ein mächtiges Artefakt - aber der König wurde von einem Nekromanten verflucht und seine Wachen sind nie gestorben."></textarea>
+  </div>
+
+  <!-- Combat-specific fields -->
+
+  <div class="form-group combat-only">
     <label for="partySize">Number of Players</label>
     <input type="number" name="partySize" id="partySize" value="{{partySize}}" min="1" max="8" />
   </div>
 
-  <div class="form-group">
+  <div class="form-group combat-only">
     <label>Difficulty</label>
     <div class="difficulty-options">
       <label class="radio-label">
@@ -27,7 +173,7 @@
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group combat-only">
     <label for="terrain">Terrain</label>
     <select name="terrain" id="terrain">
       {{#each terrainOptions}}
@@ -36,7 +182,7 @@
     </select>
   </div>
 
-  <div class="form-group">
+  <div class="form-group combat-only">
     <label>Include Creature Types (optional)</label>
     <div class="trait-checkboxes">
       {{#each creatureTraits}}
@@ -48,7 +194,7 @@
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group combat-only">
     <label>Exclude Creature Types (optional)</label>
     <div class="trait-checkboxes">
       {{#each creatureTraits}}

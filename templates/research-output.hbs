@@ -1,0 +1,65 @@
+<div class="research-encounter-output">
+  <!-- Header -->
+  <header class="research-header">
+    {{{titleHtml}}}
+  </header>
+
+  <!-- Location & Atmosphere -->
+  <section class="research-section location-section">
+    <h2><i class="fas fa-map-marker-alt"></i> Ort</h2>
+    {{{locationHtml}}}
+  </section>
+
+  <section class="research-section atmosphere-section">
+    <h2><i class="fas fa-cloud-moon"></i> Atmosphäre</h2>
+    {{{atmosphereHtml}}}
+  </section>
+
+  <!-- RP Mechanics -->
+  <section class="research-section mechanics-section">
+    <h2><i class="fas fa-dice-d20"></i> Research-Mechanik</h2>
+    <div class="rp-rules">
+      <div class="rp-info">
+        <span class="rp-total"><strong>Gesamt verfügbar:</strong> {{totalRp}} RP</span>
+        <span class="round-length"><strong>Rundenlänge:</strong> {{roundLength}}</span>
+      </div>
+      <table class="rp-table">
+        <tr><td>Critical Success</td><td class="success">+2 RP</td></tr>
+        <tr><td>Success</td><td class="success">+1 RP</td></tr>
+        <tr><td>Failure</td><td class="failure">-1 RP</td></tr>
+        <tr><td>Critical Failure</td><td class="failure">-2 RP</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- Fantastische Quellen -->
+  <section class="research-section sources-section">
+    <h2><i class="fas fa-book-dead"></i> Fantastische Quellen</h2>
+    <p class="section-hint">Jede Quelle hat ein Max RP. Danach muss eine andere Quelle genutzt werden.</p>
+    {{{sourcesHtml}}}
+  </section>
+
+  <!-- Thresholds -->
+  <section class="research-section thresholds-section">
+    <h2><i class="fas fa-trophy"></i> Schwellenwerte</h2>
+    <p class="section-hint">Bei Erreichen dieser RP-Werte werden Secrets enthüllt.</p>
+    {{{thresholdsHtml}}}
+  </section>
+
+  <!-- Complications -->
+  <section class="research-section complications-section">
+    <h2><i class="fas fa-exclamation-circle"></i> Komplikationen</h2>
+    <p class="section-hint">Ereignisse die bei bestimmten RP-Werten eintreten.</p>
+    {{{complicationsHtml}}}
+  </section>
+
+  <!-- Action Buttons -->
+  <footer class="research-footer">
+    <button type="button" class="regenerate-btn" data-action="regenerate">
+      <i class="fas fa-sync-alt"></i> Neu generieren
+    </button>
+    <button type="button" class="save-btn" data-action="saveJournal">
+      <i class="fas fa-book"></i> Als Journal speichern
+    </button>
+  </footer>
+</div>
