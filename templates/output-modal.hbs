@@ -8,7 +8,7 @@
       {{{situationHtml}}}
       <span class="xp-budget">
         {{encounter.xpBudget.total}} XP
-        (Monsters: {{encounter.xpBudget.monsters}}, Hazard: {{encounter.xpBudget.hazard}})
+        {{#if encounter.xpBudget.monsters}}(Monsters: {{encounter.xpBudget.monsters}}, Hazard: {{encounter.xpBudget.hazard}}){{/if}}
       </span>
     </div>
     {{#if encounter.xpBudget.breakdown}}

@@ -1,0 +1,70 @@
+<div class="infiltration-encounter-output">
+  <!-- Header -->
+  <header class="infiltration-header">
+    {{{headerHtml}}}
+  </header>
+
+  <!-- Objectives -->
+  <section class="infiltration-section objectives-section">
+    <h2><i class="fas fa-bullseye"></i> Objectives</h2>
+    <p class="section-hint">Jedes Objective erfordert eine bestimmte Anzahl Infiltration Points (IP).</p>
+    {{{objectivesHtml}}}
+  </section>
+
+  <!-- Obstacles -->
+  <section class="infiltration-section obstacles-section">
+    <h2><i class="fas fa-lock"></i> Obstacles</h2>
+    <p class="section-hint">IP = Infiltration Points. Individual = pro PC, Group = einmal für alle. Critical Success = +2 IP, Success = +1 IP.</p>
+    {{{obstaclesHtml}}}
+  </section>
+
+  <!-- Awareness Thresholds -->
+  <section class="infiltration-section awareness-section">
+    <h2><i class="fas fa-eye"></i> Awareness Points</h2>
+    <p class="section-hint">Failure = +1 AP, Critical Failure = +2 AP, +1 AP am Ende jeder Runde.</p>
+    {{{awarenessHtml}}}
+  </section>
+
+  <!-- Complications -->
+  <section class="infiltration-section complications-section">
+    <h2><i class="fas fa-exclamation-triangle"></i> Complications</h2>
+    <p class="section-hint">Unerwartete Probleme, die bei bestimmten Triggern auftreten.</p>
+    {{{complicationsHtml}}}
+  </section>
+
+  <!-- Opportunities -->
+  <section class="infiltration-section opportunities-section">
+    <h2><i class="fas fa-lightbulb"></i> Opportunities</h2>
+    <p class="section-hint">Optionale Aktionen, die keine IP geben, aber andere Vorteile bieten.</p>
+    {{{opportunitiesHtml}}}
+  </section>
+
+  <!-- Preparation Activities -->
+  <section class="infiltration-section preparation-section">
+    <h2><i class="fas fa-clipboard-list"></i> Preparation Activities</h2>
+    <p class="section-hint">Downtime-Aktivitäten vor der Infiltration. Erfolg gewährt Edge Points.</p>
+    {{{preparationHtml}}}
+  </section>
+
+  <!-- Edge Points -->
+  <section class="infiltration-section edge-section">
+    <h2><i class="fas fa-coins"></i> Edge Points</h2>
+    {{{edgePointsHtml}}}
+  </section>
+
+  <!-- Failure -->
+  <section class="infiltration-section failure-section">
+    <h2><i class="fas fa-skull"></i> Bei Fehlschlag</h2>
+    {{{failureHtml}}}
+  </section>
+
+  <!-- Footer -->
+  <footer class="infiltration-footer">
+    <button type="button" class="regenerate-btn" data-action="regenerate">
+      <i class="fas fa-sync-alt"></i> Neu generieren
+    </button>
+    <button type="button" class="save-btn" data-action="saveJournal">
+      <i class="fas fa-book"></i> Als Journal speichern
+    </button>
+  </footer>
+</div>

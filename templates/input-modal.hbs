@@ -26,6 +26,14 @@
         <input type="radio" name="encounterType" value="dungeon" />
         🏰 Dungeon
       </label>
+      <label class="radio-label">
+        <input type="radio" name="encounterType" value="lair" />
+        🐉 Lair Boss
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="encounterType" value="travel" />
+        🛤️ Travel
+      </label>
     </div>
   </div>
 
@@ -146,6 +154,110 @@ Die Gruppe hat den Minotauren-Schrein entweiht und muss jetzt durch das unterird
 
 Beispiel:
 Die Spieler suchen das Grab von König Aldric. Laut Gerüchten ruht dort ein mächtiges Artefakt - aber der König wurde von einem Nekromanten verflucht und seine Wachen sind nie gestorben."></textarea>
+  </div>
+
+  <!-- Infiltration-specific fields (shown only when infiltration is selected) -->
+  <div class="form-group infiltration-only" style="display: none;">
+    <label for="infiltrationType">Infiltration-Typ (optional)</label>
+    <select name="infiltrationType" id="infiltrationType">
+      <option value="custom">Custom (beschreibe unten)</option>
+      <option value="heist">Heist (etwas stehlen)</option>
+      <option value="sabotage">Sabotage (etwas zerstören)</option>
+      <option value="rescue">Rescue (jemanden befreien)</option>
+      <option value="assassination">Assassination (jemanden eliminieren)</option>
+      <option value="extraction">Extraction (Info beschaffen)</option>
+    </select>
+  </div>
+
+  <div class="form-group infiltration-only" style="display: none;">
+    <label for="infiltrationComplexity">Komplexität</label>
+    <select name="infiltrationComplexity" id="infiltrationComplexity">
+      <option value="5">Klein (5 IP - schneller Einsatz)</option>
+      <option value="10" selected>Mittel (10 IP - Standard)</option>
+      <option value="15">Groß (15 IP - komplexe Operation)</option>
+    </select>
+  </div>
+
+  <div class="form-group infiltration-only" style="display: none;">
+    <label for="infiltrationContext">Ziel & Kontext <span class="required">*</span></label>
+    <textarea name="infiltrationContext" id="infiltrationContext" rows="5" placeholder="Beschreibe das Ziel, den Ort und die Situation.
+
+Beispiel:
+Die Spieler müssen in das Anwesen von Lord Vexaris einbrechen, um belastende Dokumente zu stehlen. Das Anwesen wird von Wachen patrouilliert und hat magische Alarmsysteme. Lord Vexaris ist heute Abend auf einem Ball."></textarea>
+  </div>
+
+  <!-- Lair-specific fields (shown only when lair is selected) -->
+  <div class="form-group lair-only" style="display: none;">
+    <label for="lairTerrain">Terrain</label>
+    <select name="lairTerrain" id="lairTerrain">
+      <option value="cave">🕳️ Höhle</option>
+      <option value="ruin">🏛️ Ruine</option>
+      <option value="forest">🌲 Wald</option>
+      <option value="swamp">🌿 Sumpf</option>
+      <option value="mountain">⛰️ Berg</option>
+      <option value="desert">🏜️ Wüste</option>
+      <option value="underwater">🌊 Unterwasser</option>
+      <option value="volcano">🌋 Vulkan</option>
+      <option value="ice">❄️ Eiswüste</option>
+      <option value="plains">🌾 Ebene</option>
+      <option value="jungle">🌴 Dschungel</option>
+      <option value="graveyard">⚰️ Friedhof</option>
+      <option value="tower">🗼 Turm</option>
+    </select>
+  </div>
+
+  <div class="form-group lair-only" style="display: none;">
+    <label for="lairDifficulty">Boss-Stärke</label>
+    <select name="lairDifficulty" id="lairDifficulty">
+      <option value="2">⚔️ Schwer (+2 Level)</option>
+      <option value="3">💀 Tödlich (+3 Level)</option>
+    </select>
+  </div>
+
+  <div class="form-group lair-only" style="display: none;">
+    <label for="lairContext">Kontext <span class="required">*</span></label>
+    <textarea name="lairContext" id="lairContext" rows="5" placeholder="Warum betreten die PCs diesen Bau? Was bringt sie hierher?
+
+Beispiel:
+Die Spieler verfolgen einen alten Troll, der Dorfbewohner entführt hat. Der Troll hat seinen Bau in einer Höhle hinter einem Wasserfall eingerichtet - dort hält er seine Gefangenen für später fest."></textarea>
+  </div>
+
+  <!-- Travel-specific fields (shown only when travel is selected) -->
+  <div class="form-group travel-only" style="display: none;">
+    <label for="travelEncounterType">Encounter-Typ</label>
+    <select name="travelEncounterType" id="travelEncounterType">
+      <option value="a_chance_meeting">🤝 A Chance Meeting (Zufällige Begegnung)</option>
+      <option value="a_bump_in_the_road">🚧 A Bump in the Road (Hindernis)</option>
+      <option value="hidden_reserves">📦 Hidden Reserves (Versteckte Vorräte)</option>
+      <option value="needing_assistance">🆘 Needing Assistance (Hilfe benötigt)</option>
+      <option value="danger_afoot">⚠️ Danger Afoot (Gefahr voraus)</option>
+      <option value="natural_wonders">🌄 Natural Wonders (Naturwunder)</option>
+    </select>
+  </div>
+
+  <div class="form-group travel-only" style="display: none;">
+    <label for="travelBiome">Biom <span class="required">*</span></label>
+    <select name="travelBiome" id="travelBiome">
+      <option value="coasts">🏖️ Küste (Coasts)</option>
+      <option value="desert">🏜️ Wüste (Desert)</option>
+      <option value="farmlands">🌾 Agrarland (Farmlands)</option>
+      <option value="forests">🌲 Wald (Forests)</option>
+      <option value="grasslands" selected>🌿 Grasland (Grasslands)</option>
+      <option value="mountains">⛰️ Gebirge (Mountains)</option>
+      <option value="open_waters">🌊 Offenes Meer (Open Waters)</option>
+      <option value="swamps">🐊 Sumpf (Swamps)</option>
+      <option value="underground">🕳️ Untergrund (Underground)</option>
+      <option value="urban">🏘️ Stadt (Urban)</option>
+      <option value="wildlands">🗻 Wildnis (Wildlands)</option>
+    </select>
+  </div>
+
+  <div class="form-group travel-only" style="display: none;">
+    <label for="travelContext">Kontext (optional)</label>
+    <textarea name="travelContext" id="travelContext" rows="3" placeholder="Zusätzlicher Kontext für den Encounter.
+
+Beispiel:
+Die Gruppe reist von Orfnir nach Süden und folgt einem alten Handelsweg. Es ist früher Morgen."></textarea>
   </div>
 
   <!-- Combat-specific fields -->

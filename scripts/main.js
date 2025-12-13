@@ -123,6 +123,10 @@ function openLastEncounter() {
     outputApp = new ChaseOutputApp(lastEncounter);
   } else if (lastType === 'dungeon') {
     outputApp = new DungeonOutputApp(lastEncounter);
+  } else if (lastType === 'infiltration') {
+    outputApp = new InfiltrationOutputApp(lastEncounter);
+  } else if (lastType === 'lair') {
+    outputApp = new LairOutputApp(lastEncounter);
   } else {
     outputApp = new EncounterOutputApp(lastEncounter, lastType);
   }
@@ -254,6 +258,9 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const researchFields = form.querySelectorAll('.research-only');
     const chaseFields = form.querySelectorAll('.chase-only');
     const dungeonFields = form.querySelectorAll('.dungeon-only');
+    const infiltrationFields = form.querySelectorAll('.infiltration-only');
+    const lairFields = form.querySelectorAll('.lair-only');
+    const travelFields = form.querySelectorAll('.travel-only');
 
     // DEBUG: Log field counts
     console.log('Encounter Builder | _onRender DEBUG:', {
@@ -261,7 +268,10 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       influenceFields: influenceFields.length,
       researchFields: researchFields.length,
       chaseFields: chaseFields.length,
-      dungeonFields: dungeonFields.length
+      dungeonFields: dungeonFields.length,
+      infiltrationFields: infiltrationFields.length,
+      lairFields: lairFields.length,
+      travelFields: travelFields.length
     });
 
     const updateFieldVisibility = (type) => {
@@ -283,6 +293,15 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         if (type === 'dungeon') {
           console.log('Encounter Builder | Showing dungeon field:', el);
         }
+      });
+      infiltrationFields.forEach(el => {
+        el.style.display = type === 'infiltration' ? '' : 'none';
+      });
+      lairFields.forEach(el => {
+        el.style.display = type === 'lair' ? '' : 'none';
+      });
+      travelFields.forEach(el => {
+        el.style.display = type === 'travel' ? '' : 'none';
       });
     };
 
@@ -451,6 +470,144 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       } catch (error) {
         console.error('Encounter Builder | Dungeon generation failed:', error);
         ui.notifications.error(`Failed to generate dungeon: ${error.message}`);
+      }
+      return;
+    }
+
+    // Infiltration encounter
+    if (encounterType === 'infiltration') {
+      console.log('Encounter Builder | Infiltration form data:', {
+        infiltrationContext: data.infiltrationContext,
+        infiltrationType: data.infiltrationType,
+        infiltrationComplexity: data.infiltrationComplexity,
+        allKeys: Object.keys(data)
+      });
+
+      if (!data.infiltrationContext?.trim()) {
+        ui.notifications.error('Ziel & Kontext ist erforderlich für Infiltration Encounters');
+        return;
+      }
+
+      const request = {
+        encounterType: 'infiltration',
+        partyLevel: parseInt(data.partyLevel) || 1,
+        infiltrationType: data.infiltrationType || 'custom',
+        complexity: parseInt(data.infiltrationComplexity) || 10,
+        context: data.infiltrationContext.trim(),
+        narrativeHook: data.narrativeHook || null
+      };
+
+      console.log('Encounter Builder | Infiltration request:', request);
+
+      // Show loading state
+      ui.notifications.info('Generating infiltration encounter...');
+
+      try {
+        const encounter = await generateEncounter(request);
+
+        // Close input modal
+        if (inputApp) {
+          inputApp.close();
+          inputApp = null;
+        }
+
+        // Open infiltration output modal
+        outputApp = new InfiltrationOutputApp(encounter);
+        outputApp.render(true);
+
+      } catch (error) {
+        console.error('Encounter Builder | Infiltration generation failed:', error);
+        ui.notifications.error(`Failed to generate infiltration encounter: ${error.message}`);
+      }
+      return;
+    }
+
+    // Lair encounter (Boss with Lair Actions)
+    if (encounterType === 'lair') {
+      console.log('Encounter Builder | Lair form data:', {
+        lairContext: data.lairContext,
+        lairTerrain: data.lairTerrain,
+        lairDifficulty: data.lairDifficulty,
+        partyLevel: data.partyLevel
+      });
+
+      if (!data.lairContext?.trim()) {
+        ui.notifications.error('Kontext ist erforderlich für Lair Encounters');
+        return;
+      }
+
+      const request = {
+        encounterType: 'lair',
+        partyLevel: parseInt(data.partyLevel) || 1,
+        lairContext: data.lairContext.trim(),
+        lairTerrain: data.lairTerrain || 'cave',
+        lairDifficulty: parseInt(data.lairDifficulty) || 2,
+        narrativeHook: data.narrativeHook || null
+      };
+
+      console.log('Encounter Builder | Lair request:', request);
+
+      // Show loading state
+      ui.notifications.info('Generating lair encounter...');
+
+      try {
+        const encounter = await generateEncounter(request);
+
+        // Close input modal
+        if (inputApp) {
+          inputApp.close();
+          inputApp = null;
+        }
+
+        // Open lair output modal
+        outputApp = new LairOutputApp(encounter);
+        outputApp.render(true);
+
+      } catch (error) {
+        console.error('Encounter Builder | Lair generation failed:', error);
+        ui.notifications.error(`Failed to generate lair encounter: ${error.message}`);
+      }
+      return;
+    }
+
+    // Travel encounter (A Chance Meeting or A Bump in the Road)
+    if (encounterType === 'travel') {
+      console.log('Encounter Builder | Travel form data:', {
+        travelEncounterType: data.travelEncounterType,
+        travelBiome: data.travelBiome,
+        travelContext: data.travelContext,
+        partyLevel: data.partyLevel
+      });
+
+      const request = {
+        encounterType: 'travel',
+        partyLevel: parseInt(data.partyLevel) || 1,
+        travelEncounterType: data.travelEncounterType || 'a_chance_meeting',
+        travelBiome: data.travelBiome || 'grasslands',
+        travelContext: data.travelContext?.trim() || null
+      };
+
+      console.log('Encounter Builder | Travel request:', request);
+
+      // Show loading state
+      ui.notifications.info('Generating travel encounter...');
+
+      try {
+        const encounter = await generateEncounter(request);
+
+        // Close input modal
+        if (inputApp) {
+          inputApp.close();
+          inputApp = null;
+        }
+
+        // Open travel output modal
+        outputApp = new TravelEncounterOutputApp(encounter);
+        outputApp.render(true);
+
+      } catch (error) {
+        console.error('Encounter Builder | Travel generation failed:', error);
+        ui.notifications.error(`Failed to generate travel encounter: ${error.message}`);
       }
       return;
     }
@@ -642,11 +799,21 @@ class EncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       if (m.keyAbilities?.length) {
         html += `<tr><td colspan="5" class="monster-abilities"><strong>Abilities:</strong> ${m.keyAbilities.join(', ')}</td></tr>`;
       }
-      // Add behavior if present
-      if (m.behavior) {
-        html += `<tr><td colspan="5" class="monster-behavior"><em>${m.behavior}</em></td></tr>`;
+
+      // Support BOTH formats: old (behavior/dialog) and new (tactics.opening/behavior/dialog)
+      const behavior = m.behavior || m.tactics?.behavior;
+      const opening = m.tactics?.opening;
+      const dialog = m.dialog || m.tactics?.dialog;
+
+      // Add opening if present (new generic format)
+      if (opening) {
+        html += `<tr><td colspan="5" class="monster-opening"><strong>Eröffnung:</strong> ${opening}</td></tr>`;
       }
-      // Add personality if present (distinctiveFeature + motivation)
+      // Add behavior if present
+      if (behavior) {
+        html += `<tr><td colspan="5" class="monster-behavior"><em>${behavior}</em></td></tr>`;
+      }
+      // Add personality if present (distinctiveFeature + motivation) - campaign format
       if (m.personality) {
         const parts = [];
         if (m.personality.distinctiveFeature) parts.push(m.personality.distinctiveFeature);
@@ -656,8 +823,8 @@ class EncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         }
       }
       // Add dialog if present
-      if (m.dialog) {
-        html += `<tr><td colspan="5" class="monster-dialog">💬 <em>"${m.dialog}"</em></td></tr>`;
+      if (dialog) {
+        html += `<tr><td colspan="5" class="monster-dialog">💬 <em>"${dialog}"</em></td></tr>`;
       }
     }
     html += '</tbody></table>';
@@ -665,40 +832,48 @@ class EncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   _formatBattlefield() {
-    // Support both old format (terrain) and new format (battlefield)
+    // Support multiple formats: battlefield.elements, terrain array, or terrain string
     const battlefield = this.encounter.battlefield;
     const terrain = this.encounter.terrain;
 
-    if (battlefield) {
-      let html = '';
-      if (battlefield.elements?.length) {
-        html += '<ul class="terrain-list">';
-        for (const el of battlefield.elements) {
-          html += `<li><strong>${el.name}</strong>`;
-          if (el.location) html += ` <em>(${el.location})</em>`;
-          html += `: ${el.why || ''}`;
-          // Support both old (effect) and new (mechanicalEffect) format
-          const effect = el.mechanicalEffect || el.effect;
-          if (effect) html += `<br><strong>Effect:</strong> ${effect}`;
-          if (el.creativeUse) html += `<br><span class="creative-use">💡 ${el.creativeUse}</span>`;
-          html += '</li>';
-        }
-        html += '</ul>';
+    // Format 1: Campaign format with battlefield.elements
+    if (battlefield?.elements?.length) {
+      let html = '<ul class="terrain-list">';
+      for (const el of battlefield.elements) {
+        html += `<li><strong>${el.name}</strong>`;
+        if (el.location) html += ` <em>(${el.location})</em>`;
+        html += `: ${el.why || ''}`;
+        // Support both old (effect) and new (mechanicalEffect) format
+        const effect = el.mechanicalEffect || el.effect;
+        if (effect) html += `<br><strong>Effect:</strong> ${effect}`;
+        if (el.creativeUse) html += `<br><span class="creative-use">💡 ${el.creativeUse}</span>`;
+        html += '</li>';
       }
-      return html || '<p>No battlefield specified.</p>';
+      html += '</ul>';
+      return html;
     }
 
-    // Fallback to old terrain format
-    if (!terrain?.length) return '<p>No terrain specified.</p>';
+    // Format 2: Generic format with terrain array [{name, effect, creativeUse}]
+    if (Array.isArray(terrain) && terrain.length > 0) {
+      let html = '<ul class="terrain-list">';
+      for (const t of terrain) {
+        // Support both new generic format (name, effect, creativeUse) and old format (type, description, effect)
+        const name = t.name || t.type;
+        const desc = t.description || '';
+        const effect = t.effect;
+        const creativeUse = t.creativeUse;
 
-    let html = '<ul class="terrain-list">';
-    for (const t of this.encounter.terrain) {
-      html += `<li><strong>${t.type}:</strong> ${t.description}`;
-      if (t.effect) html += ` <em>(${t.effect})</em>`;
-      html += '</li>';
+        html += `<li><strong>${name}</strong>`;
+        if (desc) html += `: ${desc}`;
+        if (effect) html += `<br><strong>Effect:</strong> ${effect}`;
+        if (creativeUse) html += `<br><span class="creative-use">💡 ${creativeUse}</span>`;
+        html += '</li>';
+      }
+      html += '</ul>';
+      return html;
     }
-    html += '</ul>';
-    return html;
+
+    return '<p>No terrain specified.</p>';
   }
 
   _formatHazard() {
@@ -748,15 +923,15 @@ class EncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!n) return '<p>No narrative specified.</p>';
 
     let html = '<div class="narrative-block">';
-    if (n.whyHere) html += `<p><strong>Why here?</strong> ${n.whyHere}</p>`;
-    if (n.goal) html += `<p><strong>Goal:</strong> ${n.goal}</p>`;
+
+    // Campaign-specific fields
     if (n.connection) html += `<p><strong>Campaign connection:</strong> ${n.connection}</p>`;
     if (n.revelation) html += `<p><strong>Revelation:</strong> ${n.revelation}</p>`;
     if (n.aftermath) html += `<p><strong>Aftermath:</strong> ${n.aftermath}</p>`;
-    // NEW: Story Progression
     if (n.storyProgression) {
       html += `<p class="story-progression"><strong>📈 Story-Progression:</strong> ${n.storyProgression}</p>`;
     }
+
     html += '</div>';
     return html;
   }
@@ -1510,7 +1685,14 @@ class ChaseOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     let html = '<div class="obstacles-grid">';
 
     obstacles.forEach((obs, idx) => {
-      html += `<div class="obstacle-card">
+      // Determine card classes based on features
+      const hasShortcut = obs.shortcut && obs.shortcut !== null;
+      const hasSpecialEffect = obs.specialEffect && obs.specialEffect !== null;
+      const cardClasses = ['obstacle-card'];
+      if (hasShortcut) cardClasses.push('has-shortcut');
+      if (hasSpecialEffect) cardClasses.push('has-special-effect');
+
+      html += `<div class="${cardClasses.join(' ')}">
         <div class="obstacle-header">
           <span class="obstacle-number">${obs.number || idx + 1}</span>
           <h3 class="obstacle-name">${obs.name}</h3>
@@ -1531,6 +1713,33 @@ class ChaseOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
           </tr>`;
         });
         html += '</tbody></table>';
+      }
+
+      // Render Shortcut if present
+      if (hasShortcut) {
+        const shortcut = obs.shortcut;
+        html += `<div class="obstacle-shortcut">
+          <div class="shortcut-header">
+            <i class="fas fa-route"></i> <strong>Shortcut</strong>
+            <span class="shortcut-dc">${shortcut.skill} DC ${shortcut.dc}</span>
+          </div>
+          <p class="shortcut-description">${shortcut.description || 'Bei Critical Success: Hindernis überspringen'}</p>
+          ${shortcut.critFailEffect ? `<p class="shortcut-crit-fail"><i class="fas fa-exclamation-triangle"></i> Crit Fail: ${shortcut.critFailEffect}</p>` : ''}
+        </div>`;
+      }
+
+      // Render Special Effect if present
+      if (hasSpecialEffect) {
+        const effect = obs.specialEffect;
+        html += `<div class="obstacle-special-effect">
+          <div class="special-effect-header">
+            <i class="fas fa-bolt"></i> <strong>${effect.trigger || 'Critical Failure'}</strong>
+          </div>
+          <p class="special-effect-description">
+            ${effect.damage ? `<span class="effect-damage">${effect.damage} ${effect.damageType || ''} Schaden</span>` : ''}
+            ${effect.effect ? `<span class="effect-text">${effect.effect}</span>` : ''}
+          </p>
+        </div>`;
       }
 
       html += '</div>';
@@ -1760,9 +1969,30 @@ class DungeonOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   _formatConcept() {
+    let html = '';
+
+    // Concept
     const concept = this.encounter.concept;
-    if (!concept) return '';
-    return `<p class="dungeon-concept">${concept}</p>`;
+    if (concept) {
+      html += `<p class="dungeon-concept">${concept}</p>`;
+    }
+
+    // Faction (narratively connected encounters)
+    const faction = this.encounter.faction;
+    if (faction && faction.bossName) {
+      html += `<div class="dungeon-faction">
+        <div class="faction-header">
+          <strong><i class="fas fa-crown"></i> Fraktion: ${faction.bossName}</strong>
+        </div>
+        <div class="faction-details">
+          ${faction.bossPersonality ? `<p><strong>Persönlichkeit:</strong> ${faction.bossPersonality}</p>` : ''}
+          ${faction.minions ? `<p><strong>Schergen:</strong> ${faction.minions}</p>` : ''}
+          ${faction.motivation ? `<p><strong>Motivation:</strong> ${faction.motivation}</p>` : ''}
+        </div>
+      </div>`;
+    }
+
+    return html;
   }
 
   _formatZones() {
@@ -2009,6 +2239,53 @@ class DungeonOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         html += '</ul></div>';
       }
 
+      // Trap Details (for trap rooms) - show hazard info and tactics
+      if (room.roomType === 'trap' && (room.selectedHazard || room.trapDescription || room.trapTactics)) {
+        html += `<div class="trap-details-container">`;
+
+        // Selected Hazard with stats
+        if (room.selectedHazard) {
+          const hazardXP = room.hazardXP || '?';
+          const hazardLevel = room.hazardLevel || '?';
+          html += `<div class="trap-hazard-header">
+            <strong><i class="fas fa-exclamation-triangle"></i> Falle: ${room.selectedHazard}</strong>
+            <span class="trap-stats">(Level ${hazardLevel}, ${hazardXP} XP)</span>
+          </div>`;
+        }
+
+        // Trap Description (how it looks in the room)
+        if (room.trapDescription) {
+          html += `<div class="trap-description">
+            <strong>Beschreibung:</strong>
+            <p>${room.trapDescription}</p>
+          </div>`;
+        }
+
+        // Trap Tactics (GM hints - the important part!)
+        if (room.trapTactics) {
+          html += `<div class="trap-tactics">
+            <strong><i class="fas fa-chess"></i> Taktik für den GM:</strong>
+            <p>${room.trapTactics}</p>
+          </div>`;
+        }
+
+        // Full hazard stats if available
+        if (room.hazardDetails) {
+          const h = room.hazardDetails;
+          html += `<div class="trap-stats-block">
+            <strong>Stats:</strong>
+            <ul>
+              ${h.ac ? `<li><strong>AC:</strong> ${h.ac}</li>` : ''}
+              ${h.hp ? `<li><strong>HP:</strong> ${h.hp}${h.hardness ? ` (Hardness ${h.hardness})` : ''}</li>` : ''}
+              ${h.stealth ? `<li><strong>Stealth:</strong> +${h.stealth}</li>` : ''}
+              ${h.disable ? `<li><strong>Entschärfen:</strong> ${h.disable}</li>` : ''}
+            </ul>
+          </div>`;
+        }
+
+        html += `</div>`;
+      }
+
       // Combat Prompt (copyable) - only for combat-type rooms
       if (room.combatPrompt) {
         const promptId = `combat-prompt-${roomNum}`;
@@ -2148,6 +2425,17 @@ class DungeonOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       content += `## Konzept\n${encounter.concept}\n\n`;
     }
 
+    // Faction (narratively connected encounters)
+    if (encounter.faction && encounter.faction.bossName) {
+      const f = encounter.faction;
+      content += `## Fraktion\n`;
+      content += `**👑 Anführer:** ${f.bossName}\n`;
+      if (f.bossPersonality) content += `**Persönlichkeit:** ${f.bossPersonality}\n`;
+      if (f.minions) content += `**Schergen:** ${f.minions}\n`;
+      if (f.motivation) content += `**Motivation:** ${f.motivation}\n`;
+      content += '\n';
+    }
+
     // Zones
     if (encounter.zones?.length > 0) {
       content += `## Zonen\n\n`;
@@ -2178,6 +2466,29 @@ class DungeonOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
             content += `- ${t}\n`;
           });
           content += '\n';
+        }
+
+        // Trap Details for journal export
+        if (room.roomType === 'trap' && (room.selectedHazard || room.trapDescription || room.trapTactics)) {
+          if (room.selectedHazard) {
+            content += `**⚠️ Falle: ${room.selectedHazard}** (Level ${room.hazardLevel || '?'}, ${room.hazardXP || '?'} XP)\n\n`;
+          }
+          if (room.trapDescription) {
+            content += `*${room.trapDescription}*\n\n`;
+          }
+          if (room.trapTactics) {
+            content += `**Taktik für den GM:**\n${room.trapTactics}\n\n`;
+          }
+          if (room.hazardDetails) {
+            const h = room.hazardDetails;
+            content += `**Stats:** `;
+            const stats = [];
+            if (h.ac) stats.push(`AC ${h.ac}`);
+            if (h.hp) stats.push(`HP ${h.hp}${h.hardness ? ` (Hardness ${h.hardness})` : ''}`);
+            if (h.stealth) stats.push(`Stealth +${h.stealth}`);
+            if (h.disable) stats.push(`Entschärfen: ${h.disable}`);
+            content += stats.join(', ') + '\n\n';
+          }
         }
 
         if (room.combatPrompt) {
@@ -2232,6 +2543,808 @@ class DungeonOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         name: title,
         type: 'text',
         text: { content, format: 1 }
+      }]
+    });
+
+    ui.notifications.info(`Created journal: ${journal.name}`);
+    journal.sheet.render(true);
+  }
+
+  static async regenerate() {
+    // Close output and reopen input
+    if (outputApp) {
+      outputApp.close();
+      outputApp = null;
+    }
+    openEncounterBuilder();
+  }
+}
+
+// ============================================================================
+// Infiltration Output Application
+// ============================================================================
+
+class InfiltrationOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
+  constructor(encounter) {
+    super();
+    this.encounter = encounter;
+
+    // Persist the encounter
+    if (encounter) {
+      game.settings.set(MODULE_ID, 'lastEncounter', encounter);
+      game.settings.set(MODULE_ID, 'lastEncounterType', 'infiltration');
+      console.log('Encounter Builder | Infiltration encounter saved to settings');
+    }
+  }
+
+  static DEFAULT_OPTIONS = {
+    id: 'infiltration-builder-output',
+    classes: ['encounter-builder', 'infiltration-output'],
+    window: {
+      title: 'Infiltration',
+      icon: 'fas fa-mask',
+      resizable: true
+    },
+    position: {
+      width: 850,
+      height: 900
+    },
+    actions: {
+      saveJournal: InfiltrationOutputApp.saveAsJournal,
+      regenerate: InfiltrationOutputApp.regenerate
+    }
+  };
+
+  static PARTS = {
+    content: {
+      template: `modules/${MODULE_ID}/templates/infiltration-output.hbs`
+    }
+  };
+
+  async _prepareContext() {
+    return {
+      encounter: this.encounter,
+      headerHtml: this._formatHeader(),
+      objectivesHtml: this._formatObjectives(),
+      obstaclesHtml: this._formatObstacles(),
+      awarenessHtml: this._formatAwarenessThresholds(),
+      complicationsHtml: this._formatComplications(),
+      opportunitiesHtml: this._formatOpportunities(),
+      preparationHtml: this._formatPreparation(),
+      edgePointsHtml: this._formatEdgePoints(),
+      failureHtml: this._formatFailure()
+    };
+  }
+
+  _formatHeader() {
+    const name = this.encounter.name || 'Infiltration';
+    const location = this.encounter.location || '';
+    const complexity = this.encounter.complexity || 10;
+
+    const typeLabels = {
+      custom: 'Custom',
+      heist: 'Heist',
+      sabotage: 'Sabotage',
+      rescue: 'Rescue',
+      assassination: 'Assassination',
+      extraction: 'Extraction'
+    };
+
+    const typeLabel = typeLabels[this.encounter.infiltrationType] || 'Infiltration';
+
+    let html = `<h1 class="infiltration-title">${name}</h1>`;
+    html += `<div class="infiltration-meta">`;
+    html += `<span class="infiltration-type-badge">${typeLabel}</span>`;
+    html += `<span class="infiltration-complexity">${complexity} IP Ziel</span>`;
+    if (location) html += `<span class="infiltration-location">${location}</span>`;
+    html += `</div>`;
+    return html;
+  }
+
+  _formatObjectives() {
+    const objectives = this.encounter.objectives;
+    if (!objectives || objectives.length === 0) {
+      return '<p>Keine Objectives definiert.</p>';
+    }
+
+    let html = '<ol class="objectives-list">';
+    objectives.forEach(obj => {
+      const ip = obj.infiltrationPoints || obj.ip || '?';
+      html += `<li class="objective-item">
+        <span class="objective-name">${obj.name || obj}</span>
+        <span class="objective-ip">${ip} IP</span>
+        ${obj.description ? `<p class="objective-desc">${obj.description}</p>` : ''}
+      </li>`;
+    });
+    html += '</ol>';
+    return html;
+  }
+
+  _formatObstacles() {
+    const obstacles = this.encounter.obstacles;
+    if (!obstacles || obstacles.length === 0) {
+      return '<p>Keine Obstacles generiert.</p>';
+    }
+
+    let html = '<div class="obstacles-grid">';
+    obstacles.forEach(obs => {
+      const ip = obs.infiltrationPoints || obs.ip || '?';
+      const type = obs.type === 'group' ? 'Group' : 'Individual';
+      const typeClass = obs.type === 'group' ? 'obstacle-group' : 'obstacle-individual';
+
+      html += `<div class="obstacle-card ${typeClass}">
+        <div class="obstacle-header">
+          <h4 class="obstacle-name">${obs.name}</h4>
+          <span class="obstacle-ip">${ip} IP</span>
+          <span class="obstacle-type-badge ${typeClass}">${type}</span>
+        </div>
+        <p class="obstacle-description">${obs.description || ''}</p>
+        <div class="obstacle-overcome">
+          <strong>Overcome:</strong> ${obs.overcome || obs.skills?.join(', ') || 'Skill Check'}
+        </div>
+        ${obs.criticalFailure ? `<div class="obstacle-crit-fail"><strong>Critical Failure:</strong> ${obs.criticalFailure}</div>` : ''}
+      </div>`;
+    });
+    html += '</div>';
+    return html;
+  }
+
+  _formatAwarenessThresholds() {
+    const thresholds = this.encounter.awarenessThresholds;
+    if (!thresholds || thresholds.length === 0) {
+      // Default thresholds
+      return `
+        <table class="awareness-table">
+          <thead>
+            <tr><th>AP</th><th>Effekt</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>5</td><td>DCs +1, erste Complication</td></tr>
+            <tr><td>10</td><td>Zweite Complication</td></tr>
+            <tr><td>15</td><td>DCs +2, dritte Complication</td></tr>
+            <tr><td>20</td><td>Fehlschlag - Infiltration aufgeflogen!</td></tr>
+          </tbody>
+        </table>`;
+    }
+
+    let html = '<table class="awareness-table"><thead><tr><th>AP</th><th>Effekt</th></tr></thead><tbody>';
+    thresholds.forEach(t => {
+      const apValue = t.points || t.ap || '?';
+      html += `<tr>
+        <td class="ap-value">${apValue}</td>
+        <td class="ap-effect">${t.effect || t.description || ''}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    return html;
+  }
+
+  _formatComplications() {
+    const complications = this.encounter.complications;
+    if (!complications || complications.length === 0) {
+      return '<p>Keine Complications generiert.</p>';
+    }
+
+    let html = '<div class="complications-list">';
+    complications.forEach(comp => {
+      html += `<div class="complication-card">
+        <h4 class="complication-name">${comp.name}</h4>
+        ${comp.trigger ? `<div class="complication-trigger"><strong>Trigger:</strong> ${comp.trigger}</div>` : ''}
+        <p class="complication-description">${comp.description || ''}</p>
+        ${comp.overcome ? `<div class="complication-overcome"><strong>Overcome:</strong> ${comp.overcome}</div>` : ''}
+        <div class="complication-results">
+          ${comp.success ? `<div class="result-success"><strong>Success:</strong> ${comp.success}</div>` : ''}
+          ${comp.failure ? `<div class="result-failure"><strong>Failure:</strong> ${comp.failure}</div>` : ''}
+          ${comp.criticalFailure ? `<div class="result-crit-fail"><strong>Critical Failure:</strong> ${comp.criticalFailure}</div>` : ''}
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+    return html;
+  }
+
+  _formatOpportunities() {
+    const opportunities = this.encounter.opportunities;
+    if (!opportunities || opportunities.length === 0) {
+      return '<p>Keine Opportunities generiert.</p>';
+    }
+
+    let html = '<div class="opportunities-list">';
+    opportunities.forEach(opp => {
+      html += `<div class="opportunity-card">
+        <h4 class="opportunity-name">${opp.name}</h4>
+        ${opp.requirements ? `<div class="opportunity-requirements"><strong>Requirements:</strong> ${opp.requirements}</div>` : ''}
+        <p class="opportunity-description">${opp.description || ''}</p>
+        <div class="opportunity-effect"><strong>Effect:</strong> ${opp.effect || ''}</div>
+        ${opp.risk ? `<div class="opportunity-risk"><strong>Risk:</strong> ${opp.risk}</div>` : ''}
+      </div>`;
+    });
+    html += '</div>';
+    return html;
+  }
+
+  _formatPreparation() {
+    const activities = this.encounter.preparationActivities;
+    if (!activities || activities.length === 0) {
+      return '<p>Keine Preparation Activities generiert.</p>';
+    }
+
+    let html = '<div class="preparation-grid">';
+    activities.forEach(act => {
+      html += `<div class="preparation-card">
+        <h4 class="preparation-name">${act.name}</h4>
+        ${act.traits ? `<div class="preparation-traits">${act.traits.join(', ')}</div>` : ''}
+        ${act.cost ? `<div class="preparation-cost"><strong>Cost:</strong> ${act.cost}</div>` : ''}
+        <div class="preparation-check"><strong>Check:</strong> ${act.check || act.skill || 'Skill Check'}</div>
+        <div class="preparation-results">
+          ${act.criticalSuccess ? `<div class="result-crit-success"><strong>Critical Success:</strong> ${act.criticalSuccess}</div>` : ''}
+          ${act.success ? `<div class="result-success"><strong>Success:</strong> ${act.success}</div>` : ''}
+          ${act.failure ? `<div class="result-failure"><strong>Failure:</strong> ${act.failure}</div>` : ''}
+          ${act.criticalFailure ? `<div class="result-crit-fail"><strong>Critical Failure:</strong> ${act.criticalFailure}</div>` : ''}
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+    return html;
+  }
+
+  _formatEdgePoints() {
+    const edgePoints = this.encounter.edgePoints;
+
+    let html = `<div class="edge-points-info">
+      <p><strong>Edge Points (EP)</strong> werden durch erfolgreiche Preparation Activities gewonnen.</p>
+      <p>Ein EP kann ausgegeben werden, um ein <strong>Failure zu einem Success</strong> zu konvertieren.</p>`;
+
+    if (edgePoints && edgePoints.length > 0) {
+      html += '<ul class="edge-points-list">';
+      edgePoints.forEach(ep => {
+        html += `<li>${ep.source || ep.name}: ${ep.description || ep.effect || '+1 EP'}</li>`;
+      });
+      html += '</ul>';
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  _formatFailure() {
+    const failure = this.encounter.failure || this.encounter.failureConsequence;
+    if (!failure) {
+      return '<p>Bei 20 Awareness Points ist die Infiltration fehlgeschlagen. Die Gruppe wurde entdeckt!</p>';
+    }
+
+    if (typeof failure === 'string') {
+      return `<p>${failure}</p>`;
+    }
+
+    let html = '';
+    if (failure.description) html += `<p>${failure.description}</p>`;
+    if (failure.consequences && failure.consequences.length > 0) {
+      html += '<ul class="failure-consequences">';
+      failure.consequences.forEach(c => {
+        html += `<li>${c}</li>`;
+      });
+      html += '</ul>';
+    }
+    return html || '<p>Die Infiltration ist fehlgeschlagen!</p>';
+  }
+
+  static async saveAsJournal() {
+    const encounter = outputApp?.encounter;
+    if (!encounter) return;
+
+    const title = encounter.name || 'Infiltration';
+
+    // Build markdown content
+    let content = `# ${title}\n\n`;
+
+    // Meta info
+    if (encounter.location) content += `**Location:** ${encounter.location}\n`;
+    if (encounter.complexity) content += `**Complexity:** ${encounter.complexity} IP\n`;
+    content += '\n';
+
+    // Objectives
+    if (encounter.objectives?.length > 0) {
+      content += `## Objectives\n\n`;
+      encounter.objectives.forEach((obj, idx) => {
+        const name = obj.name || obj;
+        const ip = obj.infiltrationPoints || obj.ip || '?';
+        content += `${idx + 1}. **${name}** (${ip} IP)\n`;
+        if (obj.description) content += `   ${obj.description}\n`;
+      });
+      content += '\n';
+    }
+
+    // Obstacles
+    if (encounter.obstacles?.length > 0) {
+      content += `## Obstacles\n\n`;
+      encounter.obstacles.forEach(obs => {
+        const ip = obs.infiltrationPoints || obs.ip || '?';
+        const type = obs.type === 'group' ? 'Group' : 'Individual';
+        content += `### ${obs.name} (${ip} IP, ${type})\n`;
+        if (obs.description) content += `${obs.description}\n\n`;
+        if (obs.overcome) content += `**Overcome:** ${obs.overcome}\n`;
+        if (obs.criticalFailure) content += `**Critical Failure:** ${obs.criticalFailure}\n`;
+        content += '\n';
+      });
+    }
+
+    // Awareness Thresholds
+    content += `## Awareness Thresholds\n\n`;
+    if (encounter.awarenessThresholds?.length > 0) {
+      encounter.awarenessThresholds.forEach(t => {
+        content += `- **${t.points || t.ap} AP:** ${t.effect || t.description}\n`;
+      });
+    } else {
+      content += `- **5 AP:** DCs +1, Complication\n`;
+      content += `- **10 AP:** Complication\n`;
+      content += `- **15 AP:** DCs +2, Complication\n`;
+      content += `- **20 AP:** Fehlschlag\n`;
+    }
+    content += '\n';
+
+    // Complications
+    if (encounter.complications?.length > 0) {
+      content += `## Complications\n\n`;
+      encounter.complications.forEach(comp => {
+        content += `### ${comp.name}\n`;
+        if (comp.trigger) content += `**Trigger:** ${comp.trigger}\n`;
+        if (comp.description) content += `${comp.description}\n`;
+        if (comp.overcome) content += `**Overcome:** ${comp.overcome}\n`;
+        if (comp.success) content += `**Success:** ${comp.success}\n`;
+        if (comp.failure) content += `**Failure:** ${comp.failure}\n`;
+        content += '\n';
+      });
+    }
+
+    // Opportunities
+    if (encounter.opportunities?.length > 0) {
+      content += `## Opportunities\n\n`;
+      encounter.opportunities.forEach(opp => {
+        content += `### ${opp.name}\n`;
+        if (opp.requirements) content += `**Requirements:** ${opp.requirements}\n`;
+        if (opp.description) content += `${opp.description}\n`;
+        if (opp.effect) content += `**Effect:** ${opp.effect}\n`;
+        if (opp.risk) content += `**Risk:** ${opp.risk}\n`;
+        content += '\n';
+      });
+    }
+
+    // Preparation Activities
+    if (encounter.preparationActivities?.length > 0) {
+      content += `## Preparation Activities\n\n`;
+      encounter.preparationActivities.forEach(act => {
+        content += `### ${act.name}\n`;
+        if (act.check) content += `**Check:** ${act.check}\n`;
+        if (act.success) content += `**Success:** ${act.success}\n`;
+        if (act.failure) content += `**Failure:** ${act.failure}\n`;
+        content += '\n';
+      });
+    }
+
+    // Failure
+    if (encounter.failure || encounter.failureConsequence) {
+      content += `## Bei Fehlschlag\n\n`;
+      const failure = encounter.failure || encounter.failureConsequence;
+      if (typeof failure === 'string') {
+        content += `${failure}\n`;
+      } else if (failure.description) {
+        content += `${failure.description}\n`;
+      }
+    }
+
+    // Create journal entry
+    const journal = await JournalEntry.create({
+      name: title,
+      pages: [{
+        name: title,
+        type: 'text',
+        text: { content, format: 1 }
+      }]
+    });
+
+    ui.notifications.info(`Created journal: ${journal.name}`);
+    journal.sheet.render(true);
+  }
+
+  static async regenerate() {
+    // Close output and reopen input
+    if (outputApp) {
+      outputApp.close();
+      outputApp = null;
+    }
+    openEncounterBuilder();
+  }
+}
+
+
+// ============================================================================
+// Lair Output Application (Boss with Lair Actions)
+// ============================================================================
+
+class LairOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
+  constructor(encounter) {
+    super();
+    this.encounter = encounter;
+
+    // Persist the encounter
+    if (encounter) {
+      game.settings.set(MODULE_ID, 'lastEncounter', encounter);
+      game.settings.set(MODULE_ID, 'lastEncounterType', 'lair');
+      console.log('Encounter Builder | Lair encounter saved to settings');
+    }
+  }
+
+  static DEFAULT_OPTIONS = {
+    id: 'lair-builder-output',
+    classes: ['encounter-builder', 'lair-output'],
+    window: {
+      title: 'Lair Boss',
+      icon: 'fas fa-dragon',
+      resizable: true
+    },
+    position: {
+      width: 850,
+      height: 900
+    },
+    actions: {
+      saveJournal: LairOutputApp.saveAsJournal,
+      regenerate: LairOutputApp.regenerate
+    }
+  };
+
+  static PARTS = {
+    content: {
+      template: `modules/${MODULE_ID}/templates/lair-output.hbs`
+    }
+  };
+
+  async _prepareContext() {
+    return {
+      encounter: this.encounter,
+      headerHtml: this._formatHeader(),
+      scenicHtml: this._formatScenicDescription(),
+      bossStatsHtml: this._formatBossStats(),
+      minionStatsHtml: this._formatMinionStats(),
+      lairActionsHtml: this._formatLairActions(),
+      tacticsHtml: this._formatTactics()
+    };
+  }
+
+  _formatHeader() {
+    const bossStats = this.encounter.bossStats || {};
+    const bossName = bossStats.name || this.encounter.selectedCreature || 'Boss';
+    const bossLevel = this.encounter.bossLevel || bossStats.level || '?';
+    const partyLevel = this.encounter.partyLevel || '?';
+    const difficulty = this.encounter.difficulty === 'deadly' ? 'Toedlich' : 'Schwer';
+    const terrain = this.encounter.terrain || 'unknown';
+
+    const terrainLabels = {
+      cave: 'Hoehle', ruin: 'Ruine', forest: 'Wald', swamp: 'Sumpf',
+      mountain: 'Berg', desert: 'Wueste', underwater: 'Unterwasser',
+      volcano: 'Vulkan', ice: 'Eiswueste', plains: 'Ebene',
+      jungle: 'Dschungel', graveyard: 'Friedhof', tower: 'Turm'
+    };
+
+    let html = `<h1 class="lair-title">${bossName}</h1>`;
+    html += `<div class="lair-meta">`;
+    html += `<span class="lair-level">Level ${bossLevel}</span>`;
+    html += `<span class="lair-difficulty">${difficulty}</span>`;
+    html += `<span class="lair-terrain">${terrainLabels[terrain] || terrain}</span>`;
+    html += `<span class="lair-party">Party: L${partyLevel}</span>`;
+    html += `</div>`;
+    return html;
+  }
+
+  _formatScenicDescription() {
+    const scenic = this.encounter.scenicDescription || {};
+    let html = '';
+
+    // Combine battlefield + lair into one scene-setting description
+    const parts = [];
+    if (scenic.battlefield) parts.push(scenic.battlefield);
+    if (scenic.lair) parts.push(scenic.lair);
+
+    if (parts.length > 0) {
+      html += `<div class="scene-description">`;
+      html += `<p>${parts.join('</p><p>')}</p>`;
+      html += `</div>`;
+    }
+
+    return html || '<p>Keine Beschreibung verfuegbar.</p>';
+  }
+
+  _formatBossStats() {
+    const stats = this.encounter.bossStats;
+    const scenic = this.encounter.scenicDescription || {};
+
+    let html = '';
+
+    // Monster description (moved from scenic section)
+    if (scenic.monster) {
+      html += `<div class="boss-description">`;
+      html += `<p>${scenic.monster}</p>`;
+      html += `</div>`;
+    }
+
+    // HP only (doubled, highlighted)
+    if (stats) {
+      html += `<div class="boss-hp">`;
+      html += `<span class="hp-label">HP</span>`;
+      html += `<span class="hp-value">${stats.hp}</span>`;
+      html += `<span class="hp-note">(${stats.originalHp} x2)</span>`;
+      html += `</div>`;
+    }
+
+    return html || '<p>Keine Boss-Informationen verfuegbar.</p>';
+  }
+
+  _formatMinionStats() {
+    const stats = this.encounter.minionStats;
+    if (!stats) return '';
+
+    let html = `<div class="minion-stats">`;
+    html += `<h4><i class="fas fa-users"></i> Minion: ${stats.name}</h4>`;
+    html += `<div class="minion-grid">`;
+    html += `<span><strong>Level:</strong> ${stats.level}</span>`;
+    html += `<span><strong>AC:</strong> ${stats.ac || '?'}</span>`;
+    html += `<span><strong>HP:</strong> ${stats.hp} (Minion-Regel)</span>`;
+    html += `</div>`;
+    html += `<p class="minion-note">${stats.note || 'Stirbt bei einem erfolgreichen Treffer.'}</p>`;
+    html += `</div>`;
+
+    return html;
+  }
+
+  _formatLairActions() {
+    const actions = this.encounter.lairActions;
+    if (!actions || actions.length === 0) {
+      return '<p>Keine Lair Actions definiert.</p>';
+    }
+
+    let html = '';
+    actions.forEach(action => {
+      const actionCost = action.actionCost || 1;
+      const actionIcons = '◆'.repeat(actionCost);
+
+      html += `<div class="lair-action">`;
+      html += `<div class="lair-action-header">`;
+      html += `<span class="lair-action-name">${action.name}</span>`;
+      html += `<span class="lair-action-cost">${actionIcons}</span>`;
+      html += `</div>`;
+
+      if (action.trigger) {
+        html += `<div class="lair-action-trigger">`;
+        html += `<strong>Trigger:</strong> ${action.trigger}`;
+        html += `</div>`;
+      }
+
+      if (action.description) {
+        html += `<div class="lair-action-desc">${action.description}</div>`;
+      }
+
+      if (action.mechanics) {
+        html += `<div class="lair-action-mechanics">`;
+        html += `<strong>Mechanik:</strong> ${action.mechanics}`;
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+    });
+
+    return html;
+  }
+
+  _formatTactics() {
+    const tactics = this.encounter.tactics;
+    if (!tactics) return '<p>Keine Taktik-Hinweise.</p>';
+
+    return `<p>${tactics}</p>`;
+  }
+
+  static async saveAsJournal() {
+    const encounter = outputApp?.encounter;
+    if (!encounter) return;
+
+    const bossName = encounter.bossStats?.name || encounter.selectedCreature || 'Boss';
+    const title = `Lair: ${bossName}`;
+
+    // Build markdown content
+    let content = `# ${title}\n\n`;
+
+    // Meta info
+    content += `**Level:** ${encounter.bossLevel || '?'}\n`;
+    content += `**Party Level:** ${encounter.partyLevel || '?'}\n`;
+    content += `**Terrain:** ${encounter.terrain || '?'}\n`;
+    content += `**Difficulty:** ${encounter.difficulty === 'deadly' ? 'Toedlich' : 'Schwer'}\n\n`;
+
+    // Scenic Description
+    const scenic = encounter.scenicDescription || {};
+    if (scenic.battlefield) {
+      content += `## Das Schlachtfeld\n${scenic.battlefield}\n\n`;
+    }
+    if (scenic.monster) {
+      content += `## Der Boss\n${scenic.monster}\n\n`;
+    }
+    if (scenic.lair) {
+      content += `## Der Bau\n${scenic.lair}\n\n`;
+    }
+
+    // Boss Stats
+    const stats = encounter.bossStats;
+    if (stats) {
+      content += `## Boss Stats\n`;
+      content += `- **HP:** ${stats.hp} (${stats.originalHp} x2)\n`;
+      content += `- **AC:** ${stats.ac || '?'}\n`;
+      content += `- **Fort/Ref/Will:** +${stats.fortitude || '?'}/+${stats.reflex || '?'}/+${stats.will || '?'}\n`;
+      if (stats.immunities?.length > 0) content += `- **Immunitaeten:** ${stats.immunities.join(', ')}\n`;
+      if (stats.resistances?.length > 0) content += `- **Resistenzen:** ${stats.resistances.join(', ')}\n`;
+      if (stats.weaknesses?.length > 0) content += `- **Schwaechen:** ${stats.weaknesses.join(', ')}\n`;
+      content += `\n**Boss-Regeln:** Zwei Initiativen pro Runde. HP bereits verdoppelt.\n\n`;
+    }
+
+    // Minion Stats
+    const minion = encounter.minionStats;
+    if (minion) {
+      content += `## Minion: ${minion.name}\n`;
+      content += `- **Level:** ${minion.level}\n`;
+      content += `- **AC:** ${minion.ac || '?'}\n`;
+      content += `- **HP:** ${minion.hp} (Minion-Regel: stirbt bei einem Treffer)\n\n`;
+    }
+
+    // Lair Actions
+    if (encounter.lairActions?.length > 0) {
+      content += `## Lair Actions\n\n`;
+      encounter.lairActions.forEach(action => {
+        const cost = '◆'.repeat(action.actionCost || 1);
+        content += `### ${action.name} ${cost}\n`;
+        if (action.trigger) content += `**Trigger:** ${action.trigger}\n`;
+        if (action.description) content += `${action.description}\n`;
+        if (action.mechanics) content += `**Mechanik:** ${action.mechanics}\n`;
+        content += '\n';
+      });
+    }
+
+    // Tactics
+    if (encounter.tactics) {
+      content += `## Taktik\n${encounter.tactics}\n`;
+    }
+
+    // Create journal entry
+    const journal = await JournalEntry.create({
+      name: title,
+      pages: [{
+        name: title,
+        type: 'text',
+        text: { content, format: 1 }
+      }]
+    });
+
+    ui.notifications.info(`Created journal: ${journal.name}`);
+    journal.sheet.render(true);
+  }
+
+  static async regenerate() {
+    // Close output and reopen input
+    if (outputApp) {
+      outputApp.close();
+      outputApp = null;
+    }
+    openEncounterBuilder();
+  }
+}
+
+
+// ============================================================================
+// TravelEncounterOutputApp: A Chance Meeting Output
+// ============================================================================
+
+class TravelEncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
+  constructor(encounter) {
+    super();
+    this.encounter = encounter;
+
+    // Persist the encounter
+    if (encounter) {
+      game.settings.set(MODULE_ID, 'lastEncounter', encounter);
+      game.settings.set(MODULE_ID, 'lastEncounterType', 'travel');
+      console.log('Encounter Builder | Travel encounter saved to settings');
+    }
+  }
+
+  static DEFAULT_OPTIONS = {
+    id: 'travel-encounter-output',
+    classes: ['encounter-builder', 'travel-output'],
+    window: {
+      title: 'Travel Encounter',
+      icon: 'fas fa-road',
+      resizable: true
+    },
+    position: {
+      width: 600,
+      height: 400
+    },
+    actions: {
+      saveJournal: TravelEncounterOutputApp.saveAsJournal,
+      regenerate: TravelEncounterOutputApp.regenerate
+    }
+  };
+
+  // Override to set dynamic title based on encounter type
+  get title() {
+    return this.encounter?.encounterTypeLabel || 'Travel Encounter';
+  }
+
+  static PARTS = {
+    content: {
+      template: `modules/${MODULE_ID}/templates/travel-output.hbs`
+    }
+  };
+
+  async _prepareContext() {
+    return {
+      encounter: this.encounter,
+      headerHtml: this._formatHeader(),
+      descriptionHtml: this._formatDescription()
+    };
+  }
+
+  _formatHeader() {
+    const title = this.encounter.title || 'Travel Encounter';
+    const biome = this.encounter.biome || 'unknown';
+    const encounterTypeLabel = this.encounter.encounterTypeLabel || 'A Chance Meeting';
+
+    const biomeLabels = {
+      coasts: 'Kueste', desert: 'Wueste', farmlands: 'Agrarland',
+      forests: 'Wald', grasslands: 'Grasland', mountains: 'Gebirge',
+      open_waters: 'Offenes Meer', swamps: 'Sumpf',
+      underground: 'Untergrund', urban: 'Stadt', wildlands: 'Wildnis'
+    };
+
+    let html = `<h1 class="travel-title">${title}</h1>`;
+    html += `<div class="travel-meta">`;
+    html += `<span class="encounter-type-badge">${encounterTypeLabel}</span>`;
+    html += `<span class="biome-badge">${biomeLabels[biome] || biome}</span>`;
+    html += `</div>`;
+    return html;
+  }
+
+  _formatDescription() {
+    const description = this.encounter.description || '';
+    return `<p>${description}</p>`;
+  }
+
+  static async saveAsJournal() {
+    const encounter = this.encounter;
+    if (!encounter) {
+      ui.notifications.error('No encounter data to save');
+      return;
+    }
+
+    const title = encounter.title || 'Travel Encounter';
+    const biome = encounter.biome || 'unknown';
+    const encounterTypeLabel = encounter.encounterTypeLabel || 'A Chance Meeting';
+
+    const biomeLabels = {
+      coasts: 'Kueste', desert: 'Wueste', farmlands: 'Agrarland',
+      forests: 'Wald', grasslands: 'Grasland', mountains: 'Gebirge',
+      open_waters: 'Offenes Meer', swamps: 'Sumpf',
+      underground: 'Untergrund', urban: 'Stadt', wildlands: 'Wildnis'
+    };
+
+    let content = `<h2>${title}</h2>`;
+    content += `<p><strong>Typ:</strong> ${encounterTypeLabel}</p>`;
+    content += `<p><strong>Biom:</strong> ${biomeLabels[biome] || biome}</p>`;
+    content += `<hr>`;
+    content += `<p>${encounter.description || ''}</p>`;
+
+    // Create journal entry
+    const journal = await JournalEntry.create({
+      name: `Travel: ${title}`,
+      pages: [{
+        name: title,
+        type: 'text',
+        text: { content }
       }]
     });
 

@@ -1,0 +1,58 @@
+<div class="lair-encounter-output">
+  {{!-- Header with Boss Name --}}
+  <div class="lair-header">
+    {{{headerHtml}}}
+  </div>
+
+  {{!-- Scenic Description: Battlefield, Monster, Lair --}}
+  <section class="lair-section scenic-section">
+    <h2><i class="fas fa-theater-masks"></i> Szenenbeschreibung</h2>
+    <div class="section-content">
+      {{{scenicHtml}}}
+    </div>
+  </section>
+
+  {{!-- Boss Description + HP --}}
+  <section class="lair-section boss-stats-section">
+    <h2><i class="fas fa-dragon"></i> Der Boss</h2>
+    <div class="section-content">
+      {{{bossStatsHtml}}}
+    </div>
+  </section>
+
+  {{!-- Minion Stats (optional) --}}
+  {{#if minionStatsHtml}}
+  <section class="lair-section minion-stats-section">
+    <h2><i class="fas fa-users"></i> Minions</h2>
+    <div class="section-content">
+      {{{minionStatsHtml}}}
+    </div>
+  </section>
+  {{/if}}
+
+  {{!-- Lair Actions --}}
+  <section class="lair-section lair-actions-section">
+    <h2><i class="fas fa-bolt"></i> Lair Aktionen</h2>
+    <div class="section-content">
+      {{{lairActionsHtml}}}
+    </div>
+  </section>
+
+  {{!-- Tactics --}}
+  <section class="lair-section tactics-section">
+    <h2><i class="fas fa-chess"></i> Taktiken</h2>
+    <div class="section-content">
+      {{{tacticsHtml}}}
+    </div>
+  </section>
+
+  {{!-- Action Buttons --}}
+  <footer class="lair-footer">
+    <button type="button" class="save-journal-btn" data-action="saveJournal">
+      <i class="fas fa-book"></i> Als Journal speichern
+    </button>
+    <button type="button" class="regenerate-btn" data-action="regenerate">
+      <i class="fas fa-redo"></i> Neu generieren
+    </button>
+  </footer>
+</div>
