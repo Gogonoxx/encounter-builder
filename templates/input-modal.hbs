@@ -37,8 +37,8 @@
     </div>
   </div>
 
-  <!-- Party Level - needed for both Combat AND Influence (for DC calculation) -->
-  <div class="form-group">
+  <!-- Party Level - needed for Combat, Influence, etc. (hidden for Travel) -->
+  <div class="form-group party-level-group">
     <label for="partyLevel">Party Level</label>
     <input type="number" name="partyLevel" id="partyLevel" value="{{partyLevel}}" min="1" max="25" />
   </div>
@@ -226,12 +226,19 @@ Die Spieler verfolgen einen alten Troll, der Dorfbewohner entführt hat. Der Tro
   <div class="form-group travel-only" style="display: none;">
     <label for="travelEncounterType">Encounter-Typ</label>
     <select name="travelEncounterType" id="travelEncounterType">
+      <option value="random">🎲 Random (Zufälliger Typ)</option>
       <option value="a_chance_meeting">🤝 A Chance Meeting (Zufällige Begegnung)</option>
       <option value="a_bump_in_the_road">🚧 A Bump in the Road (Hindernis)</option>
       <option value="hidden_reserves">📦 Hidden Reserves (Versteckte Vorräte)</option>
       <option value="needing_assistance">🆘 Needing Assistance (Hilfe benötigt)</option>
       <option value="danger_afoot">⚠️ Danger Afoot (Gefahr voraus)</option>
       <option value="natural_wonders">🌄 Natural Wonders (Naturwunder)</option>
+      <option value="monster_hunt">🏹 Monster Hunt (Monsterjagd)</option>
+      <option value="a_place_to_rest">🏕️ A Place to Rest (Rastplatz)</option>
+      <option value="old_memories">🏛️ Old Memories (Alte Erinnerungen)</option>
+      <option value="a_dark_place">🌑 A Dark Place (Dunkler Ort)</option>
+      <option value="deadly_fight">⚔️ Deadly Fight (Tödlicher Kampf)</option>
+      <option value="fateful_encounter">🌟 Fateful Encounter (Schicksalhafte Begegnung)</option>
     </select>
   </div>
 
@@ -253,11 +260,61 @@ Die Spieler verfolgen einen alten Troll, der Dorfbewohner entführt hat. Der Tro
   </div>
 
   <div class="form-group travel-only" style="display: none;">
-    <label for="travelContext">Kontext (optional)</label>
-    <textarea name="travelContext" id="travelContext" rows="3" placeholder="Zusätzlicher Kontext für den Encounter.
+    <label class="checkbox-label campaign-specific">
+      <input type="checkbox" name="campaignSpecific" id="campaignSpecific" />
+      🎭 Kampagnenspezifisch (Fronten, Geheimnisse, Spieler-Hooks)
+    </label>
+    <p class="hint">Bindet aktive Dangers, Secrets und Spieler-Hooks aus der Orfnir-Kampagne ein.</p>
+  </div>
 
-Beispiel:
-Die Gruppe reist von Orfnir nach Süden und folgt einem alten Handelsweg. Es ist früher Morgen."></textarea>
+  <div class="form-group travel-only campaign-fronts-section" id="front-selection-group" style="display: none;">
+    <label>Fronten (optional - keine Auswahl = alle)</label>
+    <div class="front-checkboxes">
+      <label class="checkbox-label front-checkbox">
+        <input type="checkbox" name="selectedFronts" value="etwas_erwacht_in_der_tiefe" />
+        🌊 Etwas erwacht in der Tiefe
+      </label>
+      <label class="checkbox-label front-checkbox">
+        <input type="checkbox" name="selectedFronts" value="die_ostfront" />
+        ⚔️ Die Ostfront
+      </label>
+      <label class="checkbox-label front-checkbox">
+        <input type="checkbox" name="selectedFronts" value="der_mochtegern_erzmagier" />
+        🧙 Der Mochtegern Erzmagier
+      </label>
+      <label class="checkbox-label front-checkbox">
+        <input type="checkbox" name="selectedFronts" value="die_stimmen_der_steppe" />
+        🏜️ Die Stimmen der Steppe
+      </label>
+    </div>
+    <p class="hint">Beschraenkt Dangers und Secrets auf ausgewaehlte Fronten.</p>
+  </div>
+
+  <div class="form-group travel-only campaign-players-section" style="display: none;">
+    <label>Anwesende Spieler (für Hook-Auswahl)</label>
+    <div class="player-checkboxes">
+      <label class="checkbox-label player-checkbox">
+        <input type="checkbox" name="activePlayers" value="finn" checked />
+        🐉 Finn (Dragon Disciple)
+      </label>
+      <label class="checkbox-label player-checkbox">
+        <input type="checkbox" name="activePlayers" value="ignatius" checked />
+        🔥 Ignatius (Magier)
+      </label>
+      <label class="checkbox-label player-checkbox">
+        <input type="checkbox" name="activePlayers" value="dante" checked />
+        ⚔️ Dante (Krieger)
+      </label>
+      <label class="checkbox-label player-checkbox">
+        <input type="checkbox" name="activePlayers" value="snaf" />
+        🎭 Snaf (Barde)
+      </label>
+      <label class="checkbox-label player-checkbox">
+        <input type="checkbox" name="activePlayers" value="bernard" />
+        🐴 Bernard (Zentaur)
+      </label>
+    </div>
+    <p class="hint">Gruppen-Hooks (Beutelbart, Errtu, Vaelorn, etc.) werden immer einbezogen.</p>
   </div>
 
   <!-- Combat-specific fields -->
@@ -319,8 +376,24 @@ Die Gruppe reist von Orfnir nach Süden und folgt einem alten Handelsweg. Es ist
   </div>
 
   <div class="form-group">
+    <label class="checkbox-label">
+      <input type="checkbox" name="comedicRelief" id="comedicRelief" />
+      😄 Comedic Relief (humorvoller Encounter)
+    </label>
+    <p class="hint">Der Encounter soll lustig und unterhaltsam sein - eine leichte Pause vom ernsten Abenteuer.</p>
+  </div>
+
+  <div class="form-group combat-only">
     <label for="narrativeHook">Narrative Hook (optional)</label>
     <textarea name="narrativeHook" id="narrativeHook" rows="3" placeholder="E.g., The players are searching for a missing merchant in the swamp..."></textarea>
+  </div>
+
+  <div class="form-group travel-only" style="display: none;">
+    <label for="travelContext">Kontext (optional)</label>
+    <textarea name="travelContext" id="travelContext" rows="3" placeholder="Zusätzlicher Kontext für den Encounter.
+
+Beispiel:
+Die Gruppe reist von Orfnir nach Süden und folgt einem alten Handelsweg."></textarea>
   </div>
 
   <div class="form-buttons">

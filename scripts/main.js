@@ -16,6 +16,7 @@ const DEFAULT_SERVER_URL = 'http://localhost:3000';
 
 let inputApp = null;
 let outputApp = null;
+let lastTravelRequest = null;  // Store last travel request for regeneration
 
 // ============================================================================
 // Settings Registration
@@ -74,6 +75,15 @@ Hooks.once('init', () => {
     type: String,
     default: 'combat'
   });
+
+  // Hidden setting to track if output window was open (for persistence)
+  game.settings.register(MODULE_ID, 'windowOpen', {
+    name: 'Window Open State',
+    scope: 'client',
+    config: false,
+    type: Boolean,
+    default: false
+  });
 });
 
 // ============================================================================
@@ -90,8 +100,15 @@ Hooks.once('ready', () => {
     openLast: openLastEncounter
   };
 
+  // Restore window state if it was open before reload
   if (game.user.isGM) {
-    ui.notifications.info('Encounter Builder loaded. Use the scene control button or type: EncounterBuilder.open()');
+    const wasOpen = game.settings.get(MODULE_ID, 'windowOpen');
+    if (wasOpen) {
+      console.log('Encounter Builder | Restoring window state');
+      openLastEncounter();
+    } else {
+      ui.notifications.info('Encounter Builder loaded. Use the scene control button or type: EncounterBuilder.open()');
+    }
   }
 });
 
@@ -127,6 +144,14 @@ function openLastEncounter() {
     outputApp = new InfiltrationOutputApp(lastEncounter);
   } else if (lastType === 'lair') {
     outputApp = new LairOutputApp(lastEncounter);
+  } else if (lastType === 'simple-combat') {
+    // Extract requestData from the stored encounter object
+    const requestData = lastEncounter.requestData || {
+      partyLevel: lastEncounter.partyLevel || 1,
+      partySize: lastEncounter.partySize || 4,
+      difficulty: lastEncounter.difficulty || 'severe'
+    };
+    outputApp = new SimpleCombatOutputApp(lastEncounter, requestData);
   } else {
     outputApp = new EncounterOutputApp(lastEncounter, lastType);
   }
@@ -161,6 +186,27 @@ Hooks.on('getSceneControlButtons', (controls) => {
 // ============================================================================
 
 function openEncounterBuilder() {
+  // If output window is already open, bring it to front
+  if (outputApp && outputApp.rendered) {
+    outputApp.bringToFront();
+    return;
+  }
+
+  // If we have a saved encounter, restore it
+  const lastEncounter = game.settings.get(MODULE_ID, 'lastEncounter');
+  if (lastEncounter) {
+    openLastEncounter();
+    return;
+  }
+
+  // Otherwise open the input dialog
+  openEncounterInput();
+}
+
+/**
+ * Force open the input dialog (used by backToBuilder)
+ */
+function openEncounterInput() {
   if (inputApp && inputApp.rendered) {
     inputApp.bringToFront();
     return;
@@ -187,7 +233,7 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       resizable: true
     },
     position: {
-      width: 580,
+      width: 500,
       height: 700
     },
     form: {
@@ -274,8 +320,16 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       travelFields: travelFields.length
     });
 
+    // Track current encounter type (needs to be let, not const, so it can update)
+    let currentEncounterType = form.querySelector('input[name="encounterType"]:checked')?.value || 'combat';
+
+    // Party level field (hide for travel)
+    const partyLevelGroup = form.querySelector('.party-level-group');
+
     const updateFieldVisibility = (type) => {
       console.log('Encounter Builder | updateFieldVisibility called with type:', type);
+      currentEncounterType = type; // Update current type
+
       combatFields.forEach(el => {
         el.style.display = type === 'combat' ? '' : 'none';
       });
@@ -303,17 +357,129 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       travelFields.forEach(el => {
         el.style.display = type === 'travel' ? '' : 'none';
       });
+
+      // Hide party level for travel encounters
+      if (partyLevelGroup) {
+        partyLevelGroup.style.display = type === 'travel' ? 'none' : '';
+      }
     };
 
+    // Campaign-specific section handling (fronts + players)
+    const campaignSpecificCheckbox = form.querySelector('#campaignSpecific');
+    const campaignPlayersSection = form.querySelector('.campaign-players-section');
+    const campaignFrontsSection = form.querySelector('.campaign-fronts-section');
+    const playerCheckboxes = form.querySelectorAll('input[name="activePlayers"]');
+    const frontCheckboxes = form.querySelectorAll('input[name="selectedFronts"]');
+
+    // Show/hide campaign sections based on campaignSpecific checkbox
+    const updateCampaignSectionsVisibility = () => {
+      const showCampaignSections = campaignSpecificCheckbox?.checked && currentEncounterType === 'travel';
+
+      if (campaignFrontsSection) {
+        campaignFrontsSection.style.display = showCampaignSections ? '' : 'none';
+      }
+      if (campaignPlayersSection) {
+        campaignPlayersSection.style.display = showCampaignSections ? '' : 'none';
+      }
+      console.log('Encounter Builder | updateCampaignSectionsVisibility:', { showCampaignSections, checked: campaignSpecificCheckbox?.checked, type: currentEncounterType });
+    };
+
+    // Load saved player selection from localStorage
+    const loadSavedPlayerSelection = () => {
+      try {
+        const saved = localStorage.getItem('encounter-builder-active-players');
+        if (saved) {
+          const activePlayers = JSON.parse(saved);
+          playerCheckboxes.forEach(checkbox => {
+            checkbox.checked = activePlayers.includes(checkbox.value);
+          });
+          console.log('Encounter Builder | Loaded player selection:', activePlayers);
+        }
+      } catch (e) {
+        console.warn('Encounter Builder | Could not load player selection:', e);
+      }
+    };
+
+    // Save player selection to localStorage
+    const savePlayerSelection = () => {
+      const activePlayers = Array.from(playerCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+      localStorage.setItem('encounter-builder-active-players', JSON.stringify(activePlayers));
+      console.log('Encounter Builder | Saved player selection:', activePlayers);
+    };
+
+    // Load saved front selection from localStorage
+    const loadSavedFrontSelection = () => {
+      try {
+        const saved = localStorage.getItem('encounter-builder-selected-fronts');
+        if (saved) {
+          const selectedFronts = JSON.parse(saved);
+          frontCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectedFronts.includes(checkbox.value);
+          });
+          console.log('Encounter Builder | Loaded front selection:', selectedFronts);
+        }
+      } catch (e) {
+        console.warn('Encounter Builder | Could not load front selection:', e);
+      }
+    };
+
+    // Save front selection to localStorage
+    const saveFrontSelection = () => {
+      const selectedFronts = Array.from(frontCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+      localStorage.setItem('encounter-builder-selected-fronts', JSON.stringify(selectedFronts));
+      console.log('Encounter Builder | Saved front selection:', selectedFronts);
+    };
+
+    // Load saved campaignSpecific state
+    const loadCampaignSpecificState = () => {
+      try {
+        const saved = localStorage.getItem('encounter-builder-campaign-specific');
+        if (saved === 'true' && campaignSpecificCheckbox) {
+          campaignSpecificCheckbox.checked = true;
+        }
+      } catch (e) {
+        console.warn('Encounter Builder | Could not load campaign-specific state:', e);
+      }
+    };
+
+    // Event listener for encounterType radios
     encounterTypeRadios.forEach(radio => {
       radio.addEventListener('change', (e) => {
         updateFieldVisibility(e.target.value);
+        updateCampaignSectionsVisibility();
       });
     });
 
     // Initialize visibility based on current selection
-    const selectedType = form.querySelector('input[name="encounterType"]:checked')?.value || 'combat';
-    updateFieldVisibility(selectedType);
+    updateFieldVisibility(currentEncounterType);
+
+    // Event listener for campaignSpecific checkbox
+    if (campaignSpecificCheckbox) {
+      campaignSpecificCheckbox.addEventListener('change', (e) => {
+        localStorage.setItem('encounter-builder-campaign-specific', e.target.checked);
+        updateCampaignSectionsVisibility();
+      });
+    }
+
+    // Event listeners for player checkboxes (save on change)
+    playerCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', savePlayerSelection);
+    });
+
+    // Event listeners for front checkboxes (save on change)
+    frontCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', saveFrontSelection);
+    });
+
+    // Initialize on load
+    loadSavedPlayerSelection();
+    loadSavedFrontSelection();
+    loadCampaignSpecificState();
+    updateCampaignSectionsVisibility();
   }
 
   static async formHandler(event, form, formData) {
@@ -330,7 +496,8 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       const request = {
         encounterType: 'influence',
         partyLevel: parseInt(data.partyLevel) || 1,
-        influencePrompt: data.influencePrompt.trim()
+        influencePrompt: data.influencePrompt.trim(),
+        comedicRelief: data.comedicRelief || false
       };
 
       // Show loading state
@@ -367,7 +534,8 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         encounterType: 'research',
         partyLevel: parseInt(data.partyLevel) || 1,
         researchPrompt: data.researchPrompt.trim(),
-        narrativeHook: data.narrativeHook || null
+        narrativeHook: data.narrativeHook || null,
+        comedicRelief: data.comedicRelief || false
       };
 
       // Show loading state
@@ -407,7 +575,8 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         chaseLength: parseInt(data.chaseLength) || 8,
         chaseTerrain: data.chaseTerrain || 'wilderness',
         chaseContext: data.chaseContext.trim(),
-        narrativeHook: data.narrativeHook || null
+        narrativeHook: data.narrativeHook || null,
+        comedicRelief: data.comedicRelief || false
       };
 
       // Show loading state
@@ -448,7 +617,8 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         dungeonThreat: data.dungeonThreat || 'undead',
         dungeonBoss: data.dungeonBoss === 'on' || data.dungeonBoss === true,
         dungeonContext: data.dungeonContext.trim(),
-        narrativeHook: data.narrativeHook || null
+        narrativeHook: data.narrativeHook || null,
+        comedicRelief: data.comedicRelief || false
       };
 
       // Show loading state
@@ -494,7 +664,8 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         infiltrationType: data.infiltrationType || 'custom',
         complexity: parseInt(data.infiltrationComplexity) || 10,
         context: data.infiltrationContext.trim(),
-        narrativeHook: data.narrativeHook || null
+        narrativeHook: data.narrativeHook || null,
+        comedicRelief: data.comedicRelief || false
       };
 
       console.log('Encounter Builder | Infiltration request:', request);
@@ -542,7 +713,8 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         lairContext: data.lairContext.trim(),
         lairTerrain: data.lairTerrain || 'cave',
         lairDifficulty: parseInt(data.lairDifficulty) || 2,
-        narrativeHook: data.narrativeHook || null
+        narrativeHook: data.narrativeHook || null,
+        comedicRelief: data.comedicRelief || false
       };
 
       console.log('Encounter Builder | Lair request:', request);
@@ -572,11 +744,26 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     // Travel encounter (A Chance Meeting or A Bump in the Road)
     if (encounterType === 'travel') {
+      // Get active players from checkboxes (for campaign-specific hooks)
+      // Filter out null/undefined values that come from unchecked checkboxes
+      const activePlayers = data.activePlayers
+        ? (Array.isArray(data.activePlayers) ? data.activePlayers : [data.activePlayers]).filter(p => p != null)
+        : [];
+
+      // Get selected fronts from checkboxes (for filtering dangers/secrets)
+      const selectedFronts = data.selectedFronts
+        ? (Array.isArray(data.selectedFronts) ? data.selectedFronts : [data.selectedFronts]).filter(f => f != null)
+        : [];
+
       console.log('Encounter Builder | Travel form data:', {
         travelEncounterType: data.travelEncounterType,
         travelBiome: data.travelBiome,
         travelContext: data.travelContext,
-        partyLevel: data.partyLevel
+        partyLevel: data.partyLevel,
+        campaignSpecific: data.campaignSpecific,
+        comedicRelief: data.comedicRelief,
+        activePlayers: activePlayers,
+        selectedFronts: selectedFronts
       });
 
       const request = {
@@ -584,10 +771,17 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         partyLevel: parseInt(data.partyLevel) || 1,
         travelEncounterType: data.travelEncounterType || 'a_chance_meeting',
         travelBiome: data.travelBiome || 'grasslands',
-        travelContext: data.travelContext?.trim() || null
+        travelContext: data.travelContext?.trim() || null,
+        campaignSpecific: Boolean(data.campaignSpecific),
+        comedicRelief: Boolean(data.comedicRelief),
+        activePlayers: activePlayers,
+        selectedFronts: selectedFronts.length > 0 ? selectedFronts : null
       };
 
       console.log('Encounter Builder | Travel request:', request);
+
+      // Store the request for regeneration
+      lastTravelRequest = request;
 
       // Show loading state
       ui.notifications.info('Generating travel encounter...');
@@ -612,31 +806,26 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       return;
     }
 
-    // Combat encounter (default)
-    // Parse traits arrays
+    // Combat encounter (default) - uses simplified combat generator
+    // Parse creature types from includeTraits
     const includeTraits = data.includeTraits
       ? (Array.isArray(data.includeTraits) ? data.includeTraits : [data.includeTraits])
-      : [];
-    const excludeTraits = data.excludeTraits
-      ? (Array.isArray(data.excludeTraits) ? data.excludeTraits : [data.excludeTraits])
       : [];
 
     const request = {
       partyLevel: parseInt(data.partyLevel) || 1,
       partySize: parseInt(data.partySize) || 4,
       difficulty: data.difficulty || 'severe',
-      encounterType: data.encounterType || 'combat',
-      terrain: data.terrain || null,
-      includeTraits: includeTraits.filter(t => t),
-      excludeTraits: excludeTraits.filter(t => t),
-      narrativeHook: data.narrativeHook || null
+      creatureTypes: includeTraits.filter(t => t),
+      narrativeHint: data.narrativeHook || '',
+      terrain: data.terrain || ''
     };
 
     // Show loading state
-    ui.notifications.info('Generating encounter...');
+    ui.notifications.info('Generating combat encounter...');
 
     try {
-      const encounter = await generateEncounter(request);
+      const encounter = await generateSimpleCombat(request);
 
       // Close input modal
       if (inputApp) {
@@ -644,13 +833,13 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         inputApp = null;
       }
 
-      // Open output modal
-      outputApp = new EncounterOutputApp(encounter);
+      // Open simple combat output modal
+      outputApp = new SimpleCombatOutputApp(encounter, request);
       outputApp.render(true);
 
     } catch (error) {
-      console.error('Encounter Builder | Generation failed:', error);
-      ui.notifications.error(`Failed to generate encounter: ${error.message}`);
+      console.error('Encounter Builder | Combat generation failed:', error);
+      ui.notifications.error(`Failed to generate combat encounter: ${error.message}`);
     }
   }
 }
@@ -665,12 +854,18 @@ class EncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     this.encounter = encounter;
     this.encounterType = encounterType;
 
-    // Persist the encounter
+    // Persist the encounter and window state
     if (encounter) {
       game.settings.set(MODULE_ID, 'lastEncounter', encounter);
       game.settings.set(MODULE_ID, 'lastEncounterType', encounterType);
+      game.settings.set(MODULE_ID, 'windowOpen', true);
       console.log('Encounter Builder | Encounter saved to settings');
     }
+  }
+
+  async close(options = {}) {
+    game.settings.set(MODULE_ID, 'windowOpen', false);
+    return super.close(options);
   }
 
   static DEFAULT_OPTIONS = {
@@ -687,7 +882,8 @@ class EncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     },
     actions: {
       saveJournal: EncounterOutputApp.saveAsJournal,
-      regenerate: EncounterOutputApp.regenerate
+      regenerate: EncounterOutputApp.regenerate,
+      backToBuilder: EncounterOutputApp.backToBuilder
     }
   };
 
@@ -1082,6 +1278,15 @@ class EncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     openEncounterBuilder();
   }
+
+  static async backToBuilder() {
+    // Close output and reopen input
+    if (outputApp) {
+      outputApp.close();
+      outputApp = null;
+    }
+    openEncounterInput();
+  }
 }
 
 // ============================================================================
@@ -1092,6 +1297,18 @@ class InfluenceOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
   constructor(encounter) {
     super();
     this.encounter = encounter;
+
+    // Persist the encounter and window state
+    if (encounter) {
+      game.settings.set(MODULE_ID, 'lastEncounter', encounter);
+      game.settings.set(MODULE_ID, 'lastEncounterType', 'influence');
+      game.settings.set(MODULE_ID, 'windowOpen', true);
+    }
+  }
+
+  async close(options = {}) {
+    game.settings.set(MODULE_ID, 'windowOpen', false);
+    return super.close(options);
   }
 
   static DEFAULT_OPTIONS = {
@@ -1108,7 +1325,8 @@ class InfluenceOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     },
     actions: {
       saveJournal: InfluenceOutputApp.saveAsJournal,
-      regenerate: InfluenceOutputApp.regenerate
+      regenerate: InfluenceOutputApp.regenerate,
+      backToBuilder: InfluenceOutputApp.backToBuilder
     }
   };
 
@@ -1346,6 +1564,15 @@ class InfluenceOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     openEncounterBuilder();
   }
+
+  static async backToBuilder() {
+    // Close output and reopen input
+    if (outputApp) {
+      outputApp.close();
+      outputApp = null;
+    }
+    openEncounterInput();
+  }
 }
 
 
@@ -1357,6 +1584,18 @@ class ResearchOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
   constructor(encounter) {
     super();
     this.encounter = encounter;
+
+    // Persist the encounter and window state
+    if (encounter) {
+      game.settings.set(MODULE_ID, 'lastEncounter', encounter);
+      game.settings.set(MODULE_ID, 'lastEncounterType', 'research');
+      game.settings.set(MODULE_ID, 'windowOpen', true);
+    }
+  }
+
+  async close(options = {}) {
+    game.settings.set(MODULE_ID, 'windowOpen', false);
+    return super.close(options);
   }
 
   static DEFAULT_OPTIONS = {
@@ -1373,7 +1612,8 @@ class ResearchOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     },
     actions: {
       saveJournal: ResearchOutputApp.saveAsJournal,
-      regenerate: ResearchOutputApp.regenerate
+      regenerate: ResearchOutputApp.regenerate,
+      backToBuilder: ResearchOutputApp.backToBuilder
     }
   };
 
@@ -1487,17 +1727,90 @@ class ResearchOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const complications = this.encounter.complications;
     if (!complications || complications.length === 0) return '<p class="empty">Keine Komplikationen</p>';
 
-    let html = '<ul class="complications-list">';
+    // Get DCs from encounter (research encounters have dcs object)
+    const dcs = this.encounter.dcs || {};
 
-    complications.forEach(c => {
-      html += `<li>
-        <span class="complication-trigger">Bei ${c.atRp} RP:</span>
-        <span class="complication-event">${c.event}</span>
-      </li>`;
+    let html = '<div class="complications-list">';
+
+    complications.forEach((c, index) => {
+      html += `<div class="complication-card" data-complication-index="${index}">`;
+      html += `<div class="complication-header">`;
+      html += `<span class="complication-trigger">Bei ${c.atRp} RP</span>`;
+      html += `</div>`;
+      html += `<div class="complication-event">${c.event}</div>`;
+
+      // Handle structured save/condition OR legacy mechanic string
+      if (c.save && c.condition) {
+        // New structured format
+        const dcValue = c.save.dc === 'standard' ? (dcs.standard || 15) :
+                        c.save.dc === 'easy' ? (dcs.easy || 13) :
+                        c.save.dc === 'hard' ? (dcs.hard || 17) :
+                        c.save.dc;
+        const saveType = c.save.type.charAt(0).toUpperCase() + c.save.type.slice(1);
+        html += `<div class="complication-mechanic">`;
+        html += `<strong>Save:</strong> ${saveType} DC ${dcValue}<br>`;
+        html += `<strong>Bei Fehlschlag:</strong> ${c.condition.name.charAt(0).toUpperCase() + c.condition.name.slice(1)} ${c.condition.value}`;
+        html += `</div>`;
+      } else if (c.mechanic) {
+        // Legacy string format
+        html += `<div class="complication-mechanic"><strong>Mechanik:</strong> ${c.mechanic}</div>`;
+      }
+
+      // Post to Chat button
+      html += `<button class="post-to-chat" data-complication-index="${index}">`;
+      html += `<i class="fas fa-comment"></i> Im Chat posten`;
+      html += `</button>`;
+
+      html += `</div>`;
     });
 
-    html += '</ul>';
+    html += '</div>';
     return html;
+  }
+
+  /**
+   * Attach event listeners after render
+   */
+  _onRender(context, options) {
+    // Attach event listeners for Post to Chat buttons on complications
+    this.element.querySelectorAll('.complication-card .post-to-chat').forEach(btn => {
+      btn.addEventListener('click', async (event) => {
+        const index = parseInt(event.currentTarget.dataset.complicationIndex);
+        await this.postComplicationToChat(index);
+      });
+    });
+  }
+
+  /**
+   * Post a complication to chat with clickable save button
+   */
+  async postComplicationToChat(index) {
+    const comp = this.encounter.complications?.[index];
+    if (!comp) return;
+
+    const dcs = this.encounter.dcs || {};
+
+    let content = `<div class="pf2e-ability-chat complication-chat">`;
+    content += `<h3><i class="fas fa-exclamation-triangle"></i> Komplikation (${comp.atRp} RP)</h3>`;
+    content += `<p class="complication-event">${comp.event}</p>`;
+
+    // Handle structured save/condition OR legacy format
+    if (comp.save && comp.condition) {
+      const dcValue = comp.save.dc === 'standard' ? (dcs.standard || 15) :
+                      comp.save.dc === 'easy' ? (dcs.easy || 13) :
+                      comp.save.dc === 'hard' ? (dcs.hard || 17) :
+                      comp.save.dc;
+
+      // PF2E clickable save button
+      content += `<p><strong>Saving Throw:</strong> @Check[type:${comp.save.type}|dc:${dcValue}]</p>`;
+      content += `<p><strong>Bei Fehlschlag:</strong> ${comp.condition.name.charAt(0).toUpperCase() + comp.condition.name.slice(1)} ${comp.condition.value}</p>`;
+    } else if (comp.mechanic) {
+      content += `<p><strong>Mechanik:</strong> ${comp.mechanic}</p>`;
+    }
+
+    content += `</div>`;
+
+    await ChatMessage.create({ content });
   }
 
   static async saveAsJournal() {
@@ -1578,6 +1891,15 @@ class ResearchOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     openEncounterBuilder();
   }
+
+  static async backToBuilder() {
+    // Close output and reopen input
+    if (outputApp) {
+      outputApp.close();
+      outputApp = null;
+    }
+    openEncounterInput();
+  }
 }
 
 
@@ -1596,12 +1918,18 @@ class ChaseOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     console.log('Encounter Builder | obstacles type:', typeof encounter?.obstacles);
     console.log('Encounter Builder | obstacles length:', encounter?.obstacles?.length);
 
-    // Persist the encounter
+    // Persist the encounter and window state
     if (encounter) {
       game.settings.set(MODULE_ID, 'lastEncounter', encounter);
       game.settings.set(MODULE_ID, 'lastEncounterType', 'chase');
+      game.settings.set(MODULE_ID, 'windowOpen', true);
       console.log('Encounter Builder | Chase encounter saved to settings');
     }
+  }
+
+  async close(options = {}) {
+    game.settings.set(MODULE_ID, 'windowOpen', false);
+    return super.close(options);
   }
 
   static DEFAULT_OPTIONS = {
@@ -1618,7 +1946,8 @@ class ChaseOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     },
     actions: {
       saveJournal: ChaseOutputApp.saveAsJournal,
-      regenerate: ChaseOutputApp.regenerate
+      regenerate: ChaseOutputApp.regenerate,
+      backToBuilder: ChaseOutputApp.backToBuilder
     }
   };
 
@@ -1883,6 +2212,15 @@ class ChaseOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     openEncounterBuilder();
   }
+
+  static async backToBuilder() {
+    // Close output and reopen input
+    if (outputApp) {
+      outputApp.close();
+      outputApp = null;
+    }
+    openEncounterInput();
+  }
 }
 
 
@@ -1895,12 +2233,18 @@ class DungeonOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     super();
     this.encounter = encounter;
 
-    // Persist the encounter
+    // Persist the encounter and window state
     if (encounter) {
       game.settings.set(MODULE_ID, 'lastEncounter', encounter);
       game.settings.set(MODULE_ID, 'lastEncounterType', 'dungeon');
+      game.settings.set(MODULE_ID, 'windowOpen', true);
       console.log('Encounter Builder | Dungeon encounter saved to settings');
     }
+  }
+
+  async close(options = {}) {
+    game.settings.set(MODULE_ID, 'windowOpen', false);
+    return super.close(options);
   }
 
   static DEFAULT_OPTIONS = {
@@ -1918,7 +2262,8 @@ class DungeonOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     actions: {
       saveJournal: DungeonOutputApp.saveAsJournal,
       regenerate: DungeonOutputApp.regenerate,
-      copyPrompt: DungeonOutputApp.copyPrompt
+      copyPrompt: DungeonOutputApp.copyPrompt,
+      backToBuilder: DungeonOutputApp.backToBuilder
     }
   };
 
@@ -2558,6 +2903,15 @@ class DungeonOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     openEncounterBuilder();
   }
+
+  static async backToBuilder() {
+    // Close output and reopen input
+    if (outputApp) {
+      outputApp.close();
+      outputApp = null;
+    }
+    openEncounterInput();
+  }
 }
 
 // ============================================================================
@@ -2569,12 +2923,18 @@ class InfiltrationOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     super();
     this.encounter = encounter;
 
-    // Persist the encounter
+    // Persist the encounter and window state
     if (encounter) {
       game.settings.set(MODULE_ID, 'lastEncounter', encounter);
       game.settings.set(MODULE_ID, 'lastEncounterType', 'infiltration');
+      game.settings.set(MODULE_ID, 'windowOpen', true);
       console.log('Encounter Builder | Infiltration encounter saved to settings');
     }
+  }
+
+  async close(options = {}) {
+    game.settings.set(MODULE_ID, 'windowOpen', false);
+    return super.close(options);
   }
 
   static DEFAULT_OPTIONS = {
@@ -2591,7 +2951,8 @@ class InfiltrationOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     },
     actions: {
       saveJournal: InfiltrationOutputApp.saveAsJournal,
-      regenerate: InfiltrationOutputApp.regenerate
+      regenerate: InfiltrationOutputApp.regenerate,
+      backToBuilder: InfiltrationOutputApp.backToBuilder
     }
   };
 
@@ -2955,6 +3316,15 @@ class InfiltrationOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     openEncounterBuilder();
   }
+
+  static async backToBuilder() {
+    // Close output and reopen input
+    if (outputApp) {
+      outputApp.close();
+      outputApp = null;
+    }
+    openEncounterInput();
+  }
 }
 
 
@@ -2967,12 +3337,18 @@ class LairOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     super();
     this.encounter = encounter;
 
-    // Persist the encounter
+    // Persist the encounter and window state
     if (encounter) {
       game.settings.set(MODULE_ID, 'lastEncounter', encounter);
       game.settings.set(MODULE_ID, 'lastEncounterType', 'lair');
+      game.settings.set(MODULE_ID, 'windowOpen', true);
       console.log('Encounter Builder | Lair encounter saved to settings');
     }
+  }
+
+  async close(options = {}) {
+    game.settings.set(MODULE_ID, 'windowOpen', false);
+    return super.close(options);
   }
 
   static DEFAULT_OPTIONS = {
@@ -2989,7 +3365,8 @@ class LairOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     },
     actions: {
       saveJournal: LairOutputApp.saveAsJournal,
-      regenerate: LairOutputApp.regenerate
+      regenerate: LairOutputApp.regenerate,
+      backToBuilder: LairOutputApp.backToBuilder
     }
   };
 
@@ -3103,33 +3480,93 @@ class LairOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     let html = '';
-    actions.forEach(action => {
+    actions.forEach((action, index) => {
       const actionCost = action.actionCost || 1;
       const actionIcons = '◆'.repeat(actionCost);
 
-      html += `<div class="lair-action">`;
-      html += `<div class="lair-action-header">`;
-      html += `<span class="lair-action-name">${action.name}</span>`;
-      html += `<span class="lair-action-cost">${actionIcons}</span>`;
+      html += `<div class="lair-action pf2e-ability" data-action-index="${index}">`;
+
+      // Header with name, action cost, and recharge
+      html += `<div class="ability-header">`;
+      html += `<h4 class="ability-name">${action.name}</h4>`;
+      html += `<span class="action-glyph">${actionIcons}</span>`;
+      if (action.recharge) {
+        html += `<span class="recharge-badge">Recharge ${action.recharge}</span>`;
+      }
       html += `</div>`;
 
-      if (action.trigger) {
-        html += `<div class="lair-action-trigger">`;
-        html += `<strong>Trigger:</strong> ${action.trigger}`;
+      // Traits
+      if (action.traits && action.traits.length > 0) {
+        html += `<div class="ability-traits">`;
+        action.traits.forEach(trait => {
+          html += `<span class="trait">${trait}</span>`;
+        });
         html += `</div>`;
       }
 
+      // Content
+      html += `<div class="ability-content">`;
+
+      // Area
+      if (action.area) {
+        html += `<p><strong>${action.area.size}-foot ${action.area.type}</strong></p>`;
+      }
+
+      // Description
       if (action.description) {
-        html += `<div class="lair-action-desc">${action.description}</div>`;
+        html += `<p class="ability-desc">${action.description}</p>`;
       }
 
-      if (action.mechanics) {
-        html += `<div class="lair-action-mechanics">`;
-        html += `<strong>Mechanik:</strong> ${action.mechanics}`;
-        html += `</div>`;
+      // Save (readable format for display)
+      if (action.save) {
+        const saveType = action.save.type.charAt(0).toUpperCase() + action.save.type.slice(1);
+        const basicText = action.save.basic ? ' (Basic)' : '';
+        html += `<p><strong>Saving Throw:</strong> ${saveType} DC ${action.save.dc}${basicText}</p>`;
       }
 
-      html += `</div>`;
+      // Damage (readable format for display)
+      if (action.damage) {
+        const damageType = action.damage.type.charAt(0).toUpperCase() + action.damage.type.slice(1);
+        html += `<p><strong>Damage:</strong> ${action.damage.formula} ${damageType}</p>`;
+      }
+
+      // All 4 Outcomes (PF2E standard)
+      if (action.criticalSuccess || action.success || action.failure || action.criticalFailure) {
+        html += `<hr class="outcome-divider">`;
+        if (action.criticalSuccess) {
+          html += `<p><strong>Critical Success:</strong> ${action.criticalSuccess}</p>`;
+        }
+        if (action.success) {
+          html += `<p><strong>Success:</strong> ${action.success}</p>`;
+        }
+        if (action.failure) {
+          html += `<p><strong>Failure:</strong> ${action.failure}</p>`;
+        }
+        if (action.criticalFailure) {
+          html += `<p><strong>Critical Failure:</strong> ${action.criticalFailure}</p>`;
+        }
+      }
+
+      // Legacy mechanics field (for backwards compatibility)
+      if (action.mechanics && !action.save && !action.damage) {
+        html += `<p><strong>Mechanik:</strong> ${action.mechanics}</p>`;
+      }
+
+      html += `</div>`; // ability-content
+
+      // Post to Chat button
+      html += `<button class="post-to-chat" data-action-index="${index}">`;
+      html += `<i class="fas fa-comment"></i> Im Chat posten`;
+      html += `</button>`;
+
+      // Roll Recharge button (if applicable)
+      if (action.recharge) {
+        html += `<button class="roll-recharge" data-action-index="${index}">`;
+        html += `<i class="fas fa-dice-d6"></i> Recharge wuerfeln`;
+        html += `</button>`;
+      }
+
+      html += `</div>`; // lair-action
     });
 
     return html;
@@ -3140,6 +3577,150 @@ class LairOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!tactics) return '<p>Keine Taktik-Hinweise.</p>';
 
     return `<p>${tactics}</p>`;
+  }
+
+  _onRender(context, options) {
+    super._onRender?.(context, options);
+
+    // Attach event listeners for Post to Chat buttons
+    this.element.querySelectorAll('.post-to-chat').forEach(btn => {
+      btn.addEventListener('click', async (event) => {
+        const index = parseInt(event.currentTarget.dataset.actionIndex);
+        await this.postLairActionToChat(index);
+      });
+    });
+
+    // Attach event listeners for Roll Recharge buttons
+    this.element.querySelectorAll('.roll-recharge').forEach(btn => {
+      btn.addEventListener('click', async (event) => {
+        const index = parseInt(event.currentTarget.dataset.actionIndex);
+        await this.rollRecharge(index);
+      });
+    });
+  }
+
+  // Helper: Convert condition names to clickable @UUID links
+  // Format from Fear spell: @UUID[Compendium.pf2e.conditionitems.Item.Frightened]{Frightened 1}
+  _enrichConditions(text) {
+    if (!text) return text;
+
+    // Official PF2E conditions - use exact names as they appear in compendium
+    const conditions = [
+      'Frightened', 'Sickened', 'Drained', 'Slowed', 'Stunned', 'Clumsy',
+      'Enfeebled', 'Stupefied', 'Blinded', 'Deafened', 'Fascinated',
+      'Fleeing', 'Paralyzed', 'Petrified', 'Prone', 'Restrained',
+      'Immobilized', 'Off-Guard', 'Hidden', 'Invisible', 'Concealed',
+      'Grabbed', 'Quickened', 'Fatigued', 'Unconscious', 'Dying',
+      'Wounded', 'Doomed', 'Confused', 'Controlled', 'Dazzled',
+      'Encumbered', 'Undetected', 'Unnoticed'
+    ];
+
+    let enriched = text;
+    for (const condition of conditions) {
+      // Match "Condition X" or just "Condition" (case insensitive)
+      const regex = new RegExp(`\\b(${condition})\\s*(\\d*)\\b`, 'gi');
+      enriched = enriched.replace(regex, (match, name, value) => {
+        const displayName = value ? `${condition} ${value}` : condition;
+        return `@UUID[Compendium.pf2e.conditionitems.Item.${condition}]{${displayName}}`;
+      });
+    }
+    return enriched;
+  }
+
+  async postLairActionToChat(actionIndex) {
+    const action = this.encounter.lairActions?.[actionIndex];
+    if (!action) return;
+
+    const actionCost = action.actionCost || 1;
+    const actionIcons = '◆'.repeat(actionCost);
+
+    // Build chat message content with Foundry enrichers
+    let content = `<div class="pf2e-ability-chat">`;
+    content += `<h3>${action.name} <span class="action-glyph">${actionIcons}</span></h3>`;
+
+    // Traits
+    if (action.traits && action.traits.length > 0) {
+      content += `<p class="action-traits">${action.traits.join(', ')}</p>`;
+    }
+
+    // Area with clickable @Template
+    if (action.area) {
+      content += `<p><strong>Area:</strong> @Template[${action.area.type}|distance:${action.area.size}]{${action.area.size}-foot ${action.area.type}}</p>`;
+    }
+
+    // Description
+    if (action.description) {
+      content += `<p>${action.description}</p>`;
+    }
+
+    // Save (Foundry PF2E format)
+    if (action.save) {
+      const basicText = action.save.basic ? '|basic:true' : '';
+      content += `<p><strong>Saving Throw:</strong> @Check[type:${action.save.type}|dc:${action.save.dc}${basicText}]</p>`;
+    }
+
+    // Damage (Foundry inline roll format)
+    if (action.damage) {
+      content += `<p><strong>Damage:</strong> @Damage[${action.damage.formula}[${action.damage.type}]]</p>`;
+    }
+
+    // All 4 Outcomes with enriched conditions
+    if (action.criticalSuccess || action.success || action.failure || action.criticalFailure) {
+      content += `<hr>`;
+      if (action.criticalSuccess) {
+        content += `<p><strong>Critical Success:</strong> ${this._enrichConditions(action.criticalSuccess)}</p>`;
+      }
+      if (action.success) {
+        content += `<p><strong>Success:</strong> ${this._enrichConditions(action.success)}</p>`;
+      }
+      if (action.failure) {
+        content += `<p><strong>Failure:</strong> ${this._enrichConditions(action.failure)}</p>`;
+      }
+      if (action.criticalFailure) {
+        content += `<p><strong>Critical Failure:</strong> ${this._enrichConditions(action.criticalFailure)}</p>`;
+      }
+    }
+
+    content += `</div>`;
+
+    // Send to chat - Foundry v13 handles enrichment automatically during render
+    await ChatMessage.create({ content });
+  }
+
+  async rollRecharge(actionIndex) {
+    const action = this.encounter.lairActions?.[actionIndex];
+    if (!action || !action.recharge) return;
+
+    // Parse recharge value (e.g., "5-6" -> minimum 5, "6" -> minimum 6, "4-6" -> minimum 4)
+    let minValue = 6;
+    if (action.recharge === '5-6') minValue = 5;
+    else if (action.recharge === '4-6') minValue = 4;
+    else if (action.recharge === '6') minValue = 6;
+
+    // Roll the die
+    const roll = await new Roll('1d6').evaluate();
+
+    const recharged = roll.total >= minValue;
+
+    if (recharged) {
+      // Success: Show flavor text to ALL players
+      const flavorText = action.rechargeFlavorText || `${action.name} ist wieder bereit!`;
+      await ChatMessage.create({
+        content: `<div class="recharge-success">
+          <p class="recharge-flavor">${flavorText}</p>
+        </div>`
+      });
+    } else {
+      // Failure: Only GM sees this
+      await ChatMessage.create({
+        content: `<div class="recharge-fail">
+          <i class="fas fa-dice-d6"></i> ${action.name} - Recharge ${action.recharge}: <strong>${roll.total}</strong> (nicht aufgeladen)
+        </div>`,
+        whisper: [game.user.id]
+      });
+    }
+
+    return recharged;
   }
 
   static async saveAsJournal() {
@@ -3232,6 +3813,15 @@ class LairOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     openEncounterBuilder();
   }
+
+  static async backToBuilder() {
+    // Close output and reopen input
+    if (outputApp) {
+      outputApp.close();
+      outputApp = null;
+    }
+    openEncounterInput();
+  }
 }
 
 
@@ -3244,12 +3834,18 @@ class TravelEncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2)
     super();
     this.encounter = encounter;
 
-    // Persist the encounter
+    // Persist the encounter and window state
     if (encounter) {
       game.settings.set(MODULE_ID, 'lastEncounter', encounter);
       game.settings.set(MODULE_ID, 'lastEncounterType', 'travel');
+      game.settings.set(MODULE_ID, 'windowOpen', true);
       console.log('Encounter Builder | Travel encounter saved to settings');
     }
+  }
+
+  async close(options = {}) {
+    game.settings.set(MODULE_ID, 'windowOpen', false);
+    return super.close(options);
   }
 
   static DEFAULT_OPTIONS = {
@@ -3261,12 +3857,13 @@ class TravelEncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2)
       resizable: true
     },
     position: {
-      width: 600,
-      height: 400
+      width: 700,
+      height: 'auto'
     },
     actions: {
       saveJournal: TravelEncounterOutputApp.saveAsJournal,
-      regenerate: TravelEncounterOutputApp.regenerate
+      regenerate: TravelEncounterOutputApp.regenerate,
+      backToBuilder: TravelEncounterOutputApp.backToBuilder
     }
   };
 
@@ -3282,10 +3879,30 @@ class TravelEncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2)
   };
 
   async _prepareContext() {
+    // Campaign mode labels
+    const modeLabels = {
+      standalone: 'Standalone',
+      front_specific: 'Front-spezifisch',
+      personal: 'Persönlich'
+    };
+
+    // Debug: Log campaign metadata
+    console.log('Encounter Builder | Campaign metadata:', {
+      campaignSpecific: this.encounter?.campaignSpecific,
+      campaignMode: this.encounter?.campaignMode,
+      campaignDanger: this.encounter?.campaignDanger,
+      campaignFront: this.encounter?.campaignFront,
+      campaignSecretXP: this.encounter?.campaignSecretXP,
+      campaignSecretText: this.encounter?.campaignSecretText,
+      campaignPC: this.encounter?.campaignPC,
+      campaignHook: this.encounter?.campaignHook
+    });
+
     return {
       encounter: this.encounter,
       headerHtml: this._formatHeader(),
-      descriptionHtml: this._formatDescription()
+      descriptionHtml: this._formatDescription(),
+      campaignModeLabel: modeLabels[this.encounter?.campaignMode] || this.encounter?.campaignMode
     };
   }
 
@@ -3353,12 +3970,299 @@ class TravelEncounterOutputApp extends HandlebarsApplicationMixin(ApplicationV2)
   }
 
   static async regenerate() {
+    // Auto-regenerate using the stored request
+    if (!lastTravelRequest) {
+      ui.notifications.error('No previous travel request to regenerate');
+      return;
+    }
+
+    ui.notifications.info('Regenerating travel encounter...');
+
+    try {
+      const encounter = await generateEncounter(lastTravelRequest);
+
+      // Update the encounter in the current app
+      if (outputApp) {
+        outputApp.encounter = encounter;
+        // Persist the new encounter
+        game.settings.set(MODULE_ID, 'lastEncounter', encounter);
+        outputApp.render(true);
+      }
+    } catch (error) {
+      console.error('Encounter Builder | Travel regeneration failed:', error);
+      ui.notifications.error(`Failed to regenerate travel encounter: ${error.message}`);
+    }
+  }
+
+  static async backToBuilder() {
     // Close output and reopen input
     if (outputApp) {
       outputApp.close();
       outputApp = null;
     }
-    openEncounterBuilder();
+    openEncounterInput();
+  }
+}
+
+
+// ============================================================================
+// SimpleCombatOutputApp: Lightweight Combat Output (4 sections only)
+// ============================================================================
+
+class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
+  constructor(encounter, requestData) {
+    super();
+    this.encounter = encounter;
+    this.requestData = requestData;
+    console.log('Encounter Builder | Simple combat received:', encounter);
+    if (encounter) {
+      // Store requestData in encounter for persistence
+      encounter.requestData = requestData;
+      game.settings.set(MODULE_ID, 'lastEncounter', encounter);
+      game.settings.set(MODULE_ID, 'lastEncounterType', 'simple-combat');
+      game.settings.set(MODULE_ID, 'windowOpen', true);
+    }
+  }
+
+  async close(options = {}) {
+    game.settings.set(MODULE_ID, 'windowOpen', false);
+    return super.close(options);
+  }
+
+  static DEFAULT_OPTIONS = {
+    id: 'simple-combat-output',
+    classes: ['encounter-builder', 'combat-output'],
+    window: { title: 'Combat Encounter', icon: 'fas fa-swords', resizable: true },
+    position: { width: 800, height: 700 },
+    actions: {
+      saveJournal: SimpleCombatOutputApp.saveAsJournal,
+      regenerate: SimpleCombatOutputApp.regenerate,
+      backToBuilder: SimpleCombatOutputApp.backToBuilder
+    }
+  };
+
+  static PARTS = {
+    content: { template: `modules/${MODULE_ID}/templates/combat-output.hbs` }
+  };
+
+  async _prepareContext() {
+    const parsed = this._parseRawOutput(this.encounter.rawOutput || '');
+    console.log('Encounter Builder | Parsed XP:', parsed.xpTotal, 'from monsters:', parsed.monsters?.substring(0, 100));
+    return {
+      title: parsed.title?.trim() || 'Combat Encounter',
+      difficulty: this.requestData?.difficulty || 'severe',
+      partyLevel: this.requestData?.partyLevel || 1,
+      partySize: this.requestData?.partySize || 4,
+      xpTotal: parsed.xpTotal || 0,
+      sceneHtml: this._formatMarkdown(parsed.scene || 'Keine Szene.'),
+      monstersTableHtml: this._formatMarkdown(parsed.monsters || 'Keine Monster.'),
+      tacticsHtml: this._formatMarkdown(parsed.tactics || 'Keine Taktik.'),
+      winConditionsHtml: this._formatMarkdown(parsed.winConditions || 'Keine Win Conditions.')
+    };
+  }
+
+  _parseRawOutput(rawOutput) {
+    const result = { title: '', scene: '', monsters: '', tactics: '', winConditions: '', xpTotal: 0 };
+    if (!rawOutput) return result;
+
+    // More robust parsing using section numbers and names
+    // Pattern: ## 0. Titel, ## 1. Szene, ## 2. Monster, ## 3. Taktik, ## 4. Win Conditions
+    const sectionPatterns = [
+      { key: 'title', pattern: /#{1,3}\s*0\.?\s*titel/i },
+      { key: 'scene', pattern: /#{1,3}\s*1\.?\s*szene/i },
+      { key: 'monsters', pattern: /#{1,3}\s*2\.?\s*monster/i },
+      { key: 'tactics', pattern: /#{1,3}\s*3\.?\s*taktik/i },
+      { key: 'winConditions', pattern: /#{1,3}\s*4\.?\s*win\s*conditions/i }
+    ];
+
+    // Find all section start positions
+    const positions = [];
+    for (const { key, pattern } of sectionPatterns) {
+      const match = rawOutput.match(pattern);
+      if (match) {
+        positions.push({ key, index: match.index, matchLength: match[0].length });
+      }
+    }
+
+    // Sort by position
+    positions.sort((a, b) => a.index - b.index);
+
+    // Extract content between sections
+    for (let i = 0; i < positions.length; i++) {
+      const current = positions[i];
+      const nextIndex = i + 1 < positions.length ? positions[i + 1].index : rawOutput.length;
+      const content = rawOutput.substring(current.index + current.matchLength, nextIndex).trim();
+      result[current.key] = content;
+
+      // Extract XP from monster section
+      if (current.key === 'monsters') {
+        const xpMatch = content.match(/gesamt-xp[:\s]*(\d+)/i);
+        if (xpMatch) result.xpTotal = parseInt(xpMatch[1]);
+      }
+    }
+
+    // Fallback: if numbered sections not found, try keyword-based parsing
+    if (!result.scene && !result.monsters && !result.tactics && !result.winConditions) {
+      console.log('Encounter Builder | Falling back to keyword-based parsing');
+      const sections = rawOutput.split(/(?=#{1,3}\s+(?:Szene|Monster|Taktik|Win\s*Conditions))/i);
+      for (const section of sections) {
+        const lower = section.toLowerCase();
+        const cleanSection = section.replace(/^#{1,3}\s+\d*\.?\s*\w+[^\n]*\n?/i, '').trim();
+        if (lower.match(/^#{1,3}\s+\d*\.?\s*szene/i)) {
+          result.scene = cleanSection;
+        } else if (lower.match(/^#{1,3}\s+\d*\.?\s*monster/i)) {
+          result.monsters = cleanSection;
+          const xpMatch = section.match(/gesamt-xp[:\s]*(\d+)/i);
+          if (xpMatch) result.xpTotal = parseInt(xpMatch[1]);
+        } else if (lower.match(/^#{1,3}\s+\d*\.?\s*taktik/i)) {
+          result.tactics = cleanSection;
+        } else if (lower.match(/^#{1,3}\s+\d*\.?\s*win\s*conditions/i)) {
+          result.winConditions = cleanSection;
+        }
+      }
+    }
+
+    console.log('Encounter Builder | Parsed sections:', {
+      scene: result.scene?.substring(0, 50) + '...',
+      monsters: result.monsters?.substring(0, 50) + '...',
+      tactics: result.tactics?.substring(0, 50) + '...',
+      winConditions: result.winConditions?.substring(0, 50) + '...'
+    });
+
+    return result;
+  }
+
+  _formatMarkdown(text) {
+    if (!text) return '';
+
+    // First, handle tables
+    const lines = text.split('\n');
+    let html = '';
+    let inTable = false;
+    let tableRows = [];
+
+    for (const line of lines) {
+      // Check if this is a table row (starts with |)
+      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+        // Skip separator rows (|---|---|)
+        if (line.match(/^\|[\s-:|]+\|$/)) continue;
+
+        if (!inTable) {
+          inTable = true;
+          tableRows = [];
+        }
+        tableRows.push(line);
+      } else {
+        // End of table, render it
+        if (inTable && tableRows.length > 0) {
+          html += this._renderTable(tableRows);
+          tableRows = [];
+          inTable = false;
+        }
+        // Regular line
+        html += line + '\n';
+      }
+    }
+
+    // Handle table at end of text
+    if (inTable && tableRows.length > 0) {
+      html += this._renderTable(tableRows);
+    }
+
+    // Now format the rest
+    html = html
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replace(/^[-*]\s+(.+)$/gm, '<li>$1</li>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+    html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+    // Clean up empty paragraphs and excess breaks
+    html = html.replace(/<br><br>/g, '</p><p>');
+    html = html.replace(/<p><\/p>/g, '');
+    if (!html.startsWith('<')) html = `<p>${html}</p>`;
+    return html;
+  }
+
+  _renderTable(rows) {
+    if (rows.length === 0) return '';
+
+    let html = '<table class="monster-table"><thead><tr>';
+
+    // First row is header
+    const headerCells = rows[0].split('|').filter(c => c.trim());
+    for (const cell of headerCells) {
+      html += `<th>${cell.trim()}</th>`;
+    }
+    html += '</tr></thead><tbody>';
+
+    // Rest are data rows
+    for (let i = 1; i < rows.length; i++) {
+      const cells = rows[i].split('|').filter(c => c.trim());
+      html += '<tr>';
+      for (const cell of cells) {
+        html += `<td>${cell.trim()}</td>`;
+      }
+      html += '</tr>';
+    }
+
+    html += '</tbody></table>';
+    return html;
+  }
+
+  static async saveAsJournal() {
+    const encounter = outputApp?.encounter;
+    if (!encounter) { ui.notifications.warn('No encounter'); return; }
+    try {
+      const journal = await JournalEntry.create({
+        name: `Combat - ${new Date().toLocaleDateString('de-DE')}`,
+        pages: [{ name: 'Encounter', type: 'text', text: { content: encounter.rawOutput || '', format: CONST.JOURNAL_ENTRY_PAGE_FORMATS.MARKDOWN } }]
+      });
+      ui.notifications.info(`Journal "${journal.name}" created!`);
+    } catch (e) { ui.notifications.error('Journal save failed'); }
+  }
+
+  static async regenerate() {
+    const req = outputApp?.requestData;
+    if (!req) { ui.notifications.warn('No request data'); return; }
+    ui.notifications.info('Regenerating...');
+    try {
+      const enc = await generateSimpleCombat(req);
+      if (outputApp) { outputApp.encounter = enc; game.settings.set(MODULE_ID, 'lastEncounter', enc); outputApp.render(true); }
+    } catch (e) { ui.notifications.error(`Failed: ${e.message}`); }
+  }
+
+  static async backToBuilder() {
+    if (outputApp) { outputApp.close(); outputApp = null; }
+    openEncounterInput();
+  }
+}
+
+
+// ============================================================================
+// API: Generate Simple Combat
+// ============================================================================
+
+async function generateSimpleCombat(request) {
+  const serverUrl = game.settings.get(MODULE_ID, 'serverUrl');
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 120000);
+  try {
+    const response = await fetch(`${serverUrl}/api/generate-combat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(request),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    if (!response.ok) throw new Error(`Server error: ${response.status}`);
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || 'Unknown error');
+    return data;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') throw new Error('Request timed out');
+    throw error;
   }
 }
 

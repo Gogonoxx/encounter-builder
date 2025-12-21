@@ -4,16 +4,16 @@
    ============================================================================ */
 
 :root {
-  --pf2e-red: #5c0000;
-  --pf2e-brown-dark: #3a2318;
-  --pf2e-brown-medium: #5e3929;
-  --pf2e-brown-light: #7a4c3a;
-  --pf2e-tan: #c9b18a;
-  --pf2e-tan-light: #e8dcc4;
-  --pf2e-tan-dark: #a89672;
-  --pf2e-gold: #c4a000;
-  --pf2e-text: #1c1612;
-  --pf2e-text-light: #f5f0e6;
+  --eb-red: #5c0000;
+  --eb-brown-dark: #3a2318;
+  --eb-brown-medium: #5e3929;
+  --eb-brown-light: #7a4c3a;
+  --eb-tan: #c9b18a;
+  --eb-tan-light: #e8dcc4;
+  --eb-tan-dark: #a89672;
+  --eb-gold: #c4a000;
+  --eb-text: #1c1612;
+  --eb-text-light: #f5f0e6;
 }
 
 /* ----------------------------------------------------------------------------
@@ -21,25 +21,25 @@
    ---------------------------------------------------------------------------- */
 
 .encounter-builder.application {
-  background: linear-gradient(135deg, var(--pf2e-brown-dark) 0%, var(--pf2e-brown-medium) 100%);
-  border: 3px solid var(--pf2e-red);
+  background: linear-gradient(135deg, var(--eb-brown-dark) 0%, var(--eb-brown-medium) 100%);
+  border: 3px solid var(--eb-red);
   border-radius: 8px;
 }
 
 .encounter-builder .window-header {
-  background: var(--pf2e-red);
-  border-bottom: 2px solid var(--pf2e-tan-dark);
-  color: var(--pf2e-tan-light);
+  background: var(--eb-red);
+  border-bottom: 2px solid var(--eb-tan-dark);
+  color: var(--eb-tan-light);
 }
 
 .encounter-builder .window-header .window-title {
-  color: var(--pf2e-tan-light);
+  color: var(--eb-tan-light);
   text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 
 .encounter-builder .window-content {
-  background: linear-gradient(180deg, var(--pf2e-tan-light) 0%, var(--pf2e-tan) 100%);
-  color: var(--pf2e-text);
+  background: linear-gradient(180deg, var(--eb-tan-light) 0%, var(--eb-tan) 100%);
+  color: var(--eb-text);
   padding: 1rem;
   overflow-y: auto !important;
   overflow-x: hidden;
@@ -61,7 +61,7 @@
   display: block;
   font-weight: bold;
   margin-bottom: 0.5rem;
-  color: var(--pf2e-brown-dark);
+  color: var(--eb-brown-dark);
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -73,10 +73,10 @@
 .encounter-builder-input textarea {
   width: 100%;
   padding: 0.6rem 0.8rem;
-  border: 2px solid var(--pf2e-brown-medium);
+  border: 2px solid var(--eb-brown-medium);
   border-radius: 4px;
   background: #fff;
-  color: var(--pf2e-text);
+  color: var(--eb-text);
   font-size: 1rem;
   font-family: inherit;
 }
@@ -92,19 +92,31 @@
   background-repeat: no-repeat;
   background-position: right 0.7rem center;
   background-size: 12px;
+  color: #1c1612 !important;
+  background-color: #fff !important;
+  /* Fix text visibility - explicit sizing */
+  height: 2.4rem !important;
+  line-height: 1.2 !important;
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+  overflow: visible !important;
+  vertical-align: middle;
 }
 
 .encounter-builder-input select option {
   padding: 0.5rem;
   white-space: normal;
   word-wrap: break-word;
+  color: #1c1612 !important;
+  background-color: #fff !important;
+  line-height: 1.4;
 }
 
 .encounter-builder-input input[type="number"]:focus,
 .encounter-builder-input select:focus,
 .encounter-builder-input textarea:focus {
   outline: none;
-  border-color: var(--pf2e-red);
+  border-color: var(--eb-red);
   box-shadow: 0 0 4px rgba(92, 0, 0, 0.3);
 }
 
@@ -126,24 +138,24 @@
   gap: 0.4rem;
   cursor: pointer;
   padding: 0.5rem 1rem;
-  background: var(--pf2e-tan);
-  border: 2px solid var(--pf2e-brown-medium);
+  background: var(--eb-tan);
+  border: 2px solid var(--eb-brown-medium);
   border-radius: 4px;
   transition: all 0.2s;
 }
 
 .encounter-builder-input .radio-label:hover {
-  background: var(--pf2e-tan-dark);
+  background: var(--eb-tan-dark);
 }
 
 .encounter-builder-input .radio-label:has(input:checked) {
-  background: var(--pf2e-red);
-  color: var(--pf2e-tan-light);
-  border-color: var(--pf2e-red);
+  background: var(--eb-red);
+  color: var(--eb-tan-light);
+  border-color: var(--eb-red);
 }
 
 .encounter-builder-input .radio-label input[type="radio"] {
-  accent-color: var(--pf2e-red);
+  accent-color: var(--eb-red);
   width: 1rem;
   height: 1rem;
 }
@@ -156,7 +168,7 @@
   max-height: 150px;
   overflow-y: auto;
   padding: 0.5rem;
-  border: 2px solid var(--pf2e-brown-medium);
+  border: 2px solid var(--eb-brown-medium);
   border-radius: 4px;
   background: #fff;
 }
@@ -173,13 +185,36 @@
 }
 
 .encounter-builder-input .checkbox-label:hover {
-  background: var(--pf2e-tan);
+  background: var(--eb-tan);
 }
 
 .encounter-builder-input .checkbox-label input[type="checkbox"] {
-  accent-color: var(--pf2e-red);
+  accent-color: var(--eb-red);
   width: 1rem;
   height: 1rem;
+}
+
+/* Campaign-specific checkbox */
+.encounter-builder-input .checkbox-label.campaign-specific {
+  background: linear-gradient(135deg, var(--eb-tan) 0%, var(--eb-tan-light) 100%);
+  border: 2px solid var(--eb-brown-medium);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.encounter-builder-input .checkbox-label.campaign-specific:hover {
+  border-color: var(--eb-red);
+  box-shadow: 0 0 4px rgba(92, 0, 0, 0.3);
+}
+
+/* Hint text */
+.encounter-builder-input .hint {
+  font-size: 0.8rem;
+  color: var(--eb-brown-light);
+  font-style: italic;
+  margin-top: 0.3rem;
+  padding-left: 0.5rem;
 }
 
 /* Textarea */
@@ -195,12 +230,12 @@
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 2px solid var(--pf2e-brown-medium);
+  border-top: 2px solid var(--eb-brown-medium);
 }
 
 .encounter-builder-input .generate-btn {
-  background: var(--pf2e-red);
-  color: var(--pf2e-tan-light);
+  background: var(--eb-red);
+  color: var(--eb-tan-light);
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 4px;
@@ -219,9 +254,9 @@
 }
 
 .encounter-builder-input .cancel-btn {
-  background: var(--pf2e-tan);
-  color: var(--pf2e-brown-dark);
-  border: 2px solid var(--pf2e-brown-medium);
+  background: var(--eb-tan);
+  color: var(--eb-brown-dark);
+  border: 2px solid var(--eb-brown-medium);
   padding: 0.6rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;
@@ -230,7 +265,7 @@
 }
 
 .encounter-builder-input .cancel-btn:hover {
-  background: var(--pf2e-tan-dark);
+  background: var(--eb-tan-dark);
 }
 
 /* ----------------------------------------------------------------------------
@@ -251,9 +286,9 @@
   text-align: center;
   padding: 1rem;
   margin-bottom: 1rem;
-  background: var(--pf2e-red);
+  background: var(--eb-red);
   border-radius: 4px;
-  color: var(--pf2e-tan-light);
+  color: var(--eb-tan-light);
 }
 
 .encounter-header h2 {
@@ -274,24 +309,24 @@
   border-radius: 4px;
   font-weight: bold;
   text-transform: uppercase;
-  background: var(--pf2e-brown-dark);
+  background: var(--eb-brown-dark);
 }
 
 .encounter-meta .xp-budget {
-  color: var(--pf2e-tan);
+  color: var(--eb-tan);
 }
 
 .encounter-header .xp-breakdown {
   margin-top: 0.5rem;
   font-size: 0.85rem;
-  color: var(--pf2e-tan);
+  color: var(--eb-tan);
   opacity: 0.9;
 }
 
 /* Front Reference Block */
 .front-block {
-  background: var(--pf2e-tan-light);
-  border-left: 4px solid var(--pf2e-red);
+  background: var(--eb-tan-light);
+  border-left: 4px solid var(--eb-red);
   padding: 0.75rem;
 }
 
@@ -305,10 +340,10 @@
 
 /* Monster Behavior */
 .monster-behavior {
-  background: var(--pf2e-tan-light);
+  background: var(--eb-tan-light);
   padding: 0.5rem 1rem !important;
   font-style: italic;
-  color: var(--pf2e-brown-dark);
+  color: var(--eb-brown-dark);
   border-top: none !important;
 }
 
@@ -317,7 +352,7 @@
   background: rgba(92, 0, 0, 0.05);
   padding: 0.4rem 1rem !important;
   font-size: 0.9rem;
-  color: var(--pf2e-brown-medium);
+  color: var(--eb-brown-medium);
   border-top: none !important;
 }
 
@@ -326,20 +361,20 @@
   background: rgba(139, 69, 19, 0.08);
   padding: 0.4rem 1rem !important;
   font-size: 0.95rem;
-  color: var(--pf2e-brown-dark);
+  color: var(--eb-brown-dark);
   border-top: none !important;
-  border-bottom: 2px solid var(--pf2e-tan-dark);
+  border-bottom: 2px solid var(--eb-tan-dark);
 }
 
 /* Battlefield */
 .battlefield-description {
   margin-bottom: 0.75rem;
-  color: var(--pf2e-brown-dark);
+  color: var(--eb-brown-dark);
   font-style: italic;
 }
 
 .creative-use {
-  color: var(--pf2e-red);
+  color: var(--eb-red);
   font-size: 0.9rem;
   display: inline-block;
   margin-top: 0.25rem;
@@ -348,7 +383,7 @@
 .encounter-section {
   margin-bottom: 1.25rem;
   background: #fff;
-  border: 2px solid var(--pf2e-brown-medium);
+  border: 2px solid var(--eb-brown-medium);
   border-radius: 4px;
 }
 
@@ -367,8 +402,8 @@
 .encounter-section h3 {
   margin: 0;
   padding: 0.5rem 0.75rem;
-  background: var(--pf2e-brown-medium);
-  color: var(--pf2e-tan-light);
+  background: var(--eb-brown-medium);
+  color: var(--eb-tan-light);
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -393,13 +428,13 @@
 .monster-table td {
   padding: 0.5rem;
   text-align: left;
-  border-bottom: 1px solid var(--pf2e-tan);
+  border-bottom: 1px solid var(--eb-tan);
 }
 
 .monster-table th {
-  background: var(--pf2e-tan);
+  background: var(--eb-tan);
   font-weight: bold;
-  color: var(--pf2e-brown-dark);
+  color: var(--eb-brown-dark);
   text-transform: uppercase;
   font-size: 0.85rem;
 }
@@ -409,7 +444,7 @@
 }
 
 .monster-table tr:hover td {
-  background: var(--pf2e-tan-light);
+  background: var(--eb-tan-light);
 }
 
 /* Terrain List */
@@ -421,27 +456,27 @@
 
 .terrain-list li {
   margin-bottom: 0.5rem;
-  color: var(--pf2e-text);
+  color: var(--eb-text);
 }
 
 .terrain-list li em {
-  color: var(--pf2e-brown-medium);
+  color: var(--eb-brown-medium);
 }
 
 /* Hazard Block */
 .hazard-block {
-  background: var(--pf2e-tan-light);
-  border-left: 4px solid var(--pf2e-red);
+  background: var(--eb-tan-light);
+  border-left: 4px solid var(--eb-red);
 }
 
 .hazard-block h4 {
   margin: 0 0 0.5rem 0;
-  color: var(--pf2e-red);
+  color: var(--eb-red);
 }
 
 .complex-badge {
-  background: var(--pf2e-red);
-  color: var(--pf2e-tan-light);
+  background: var(--eb-red);
+  color: var(--eb-tan-light);
   font-size: 0.7rem;
   font-weight: bold;
   padding: 0.15rem 0.4rem;
@@ -476,7 +511,7 @@
 .tactics-block,
 .roleplaying-block,
 .narrative-block {
-  background: var(--pf2e-tan-light);
+  background: var(--eb-tan-light);
   padding: 0.75rem !important;
   border-radius: 4px;
   margin-bottom: 0.5rem;
@@ -508,7 +543,7 @@
 
 .win-conditions li::before {
   content: "✓";
-  color: var(--pf2e-red);
+  color: var(--eb-red);
   font-weight: bold;
   position: absolute;
   left: -1.25rem;
@@ -521,13 +556,13 @@
   gap: 0.75rem;
   margin-top: auto;
   padding-top: 1rem;
-  border-top: 2px solid var(--pf2e-brown-medium);
+  border-top: 2px solid var(--eb-brown-medium);
 }
 
 .encounter-footer .regenerate-btn {
-  background: var(--pf2e-tan);
-  color: var(--pf2e-brown-dark);
-  border: 2px solid var(--pf2e-brown-medium);
+  background: var(--eb-tan);
+  color: var(--eb-brown-dark);
+  border: 2px solid var(--eb-brown-medium);
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
@@ -536,12 +571,12 @@
 }
 
 .encounter-footer .regenerate-btn:hover {
-  background: var(--pf2e-tan-dark);
+  background: var(--eb-tan-dark);
 }
 
 .encounter-footer .save-btn {
-  background: var(--pf2e-red);
-  color: var(--pf2e-tan-light);
+  background: var(--eb-red);
+  color: var(--eb-tan-light);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -560,17 +595,17 @@
 }
 
 .encounter-builder ::-webkit-scrollbar-track {
-  background: var(--pf2e-tan);
+  background: var(--eb-tan);
   border-radius: 4px;
 }
 
 .encounter-builder ::-webkit-scrollbar-thumb {
-  background: var(--pf2e-brown-medium);
+  background: var(--eb-brown-medium);
   border-radius: 4px;
 }
 
 .encounter-builder ::-webkit-scrollbar-thumb:hover {
-  background: var(--pf2e-brown-dark);
+  background: var(--eb-brown-dark);
 }
 
 /* ----------------------------------------------------------------------------
@@ -582,8 +617,8 @@
 }
 
 .situation-badge {
-  background: var(--pf2e-brown-dark);
-  color: var(--pf2e-tan-light);
+  background: var(--eb-brown-dark);
+  color: var(--eb-tan-light);
   padding: 0.3rem 0.8rem;
   border-radius: 4px;
   font-size: 0.85rem;
@@ -592,7 +627,7 @@
 }
 
 .player-hook-section {
-  border-left: 4px solid var(--pf2e-gold);
+  border-left: 4px solid var(--eb-gold);
 }
 
 .player-hook-block {
@@ -620,10 +655,10 @@
    ---------------------------------------------------------------------------- */
 
 .story-progression {
-  background: var(--pf2e-tan-dark);
+  background: var(--eb-tan-dark);
   padding: 0.75rem;
   border-radius: 4px;
-  border-left: 4px solid var(--pf2e-gold);
+  border-left: 4px solid var(--eb-gold);
   margin-top: 0.5rem;
 }
 
@@ -647,7 +682,7 @@
 }
 
 .win-method {
-  color: var(--pf2e-brown-medium);
+  color: var(--eb-brown-medium);
   font-size: 0.9rem;
 }
 
@@ -658,7 +693,7 @@
 .win-alternatives h4 {
   margin: 0 0 0.75rem 0;
   font-size: 1rem;
-  color: var(--pf2e-brown-dark);
+  color: var(--eb-brown-dark);
 }
 
 .win-alternative {
@@ -666,7 +701,7 @@
   padding: 0.75rem;
   border-radius: 4px;
   margin-bottom: 0.5rem;
-  border-left: 3px solid var(--pf2e-gold);
+  border-left: 3px solid var(--eb-gold);
 }
 
 .win-alternative p {
@@ -675,11 +710,11 @@
 
 .alt-name {
   font-size: 1rem;
-  color: var(--pf2e-brown-dark);
+  color: var(--eb-brown-dark);
 }
 
 .alt-approach {
-  color: var(--pf2e-brown-medium);
+  color: var(--eb-brown-medium);
   font-size: 0.9rem;
 }
 
@@ -689,14 +724,14 @@
 
 .alt-outcome {
   font-size: 0.9rem;
-  color: var(--pf2e-brown-dark);
+  color: var(--eb-brown-dark);
 }
 
 .win-timer {
   background: rgba(196, 160, 0, 0.15);
   padding: 0.5rem 0.75rem;
   border-radius: 4px;
-  border-left: 3px solid var(--pf2e-gold);
+  border-left: 3px solid var(--eb-gold);
 }
 
 .win-timer p {
@@ -705,7 +740,7 @@
 
 .win-timer h4 {
   margin: 0 0 0.5rem 0;
-  color: var(--pf2e-gold-dark);
+  color: var(--eb-gold-dark);
   font-size: 0.9rem;
 }
 
@@ -719,7 +754,7 @@
   position: relative;
   padding: 0.3rem 0;
   padding-left: 1rem;
-  border-left: 2px solid var(--pf2e-gold);
+  border-left: 2px solid var(--eb-gold);
   margin-bottom: 0.5rem;
 }
 
@@ -733,7 +768,7 @@
 
 .mechanical-impact {
   display: block;
-  color: var(--pf2e-red);
+  color: var(--eb-red);
   font-size: 0.85rem;
   margin-top: 0.2rem;
 }
@@ -783,12 +818,12 @@
    ---------------------------------------------------------------------------- */
 
 .scene-description-section {
-  border-left: 4px solid var(--pf2e-brown-dark);
+  border-left: 4px solid var(--eb-brown-dark);
   background: linear-gradient(135deg, #fefae0 0%, #f5ebe0 100%);
 }
 
 .scene-description-section h3 {
-  background: var(--pf2e-brown-dark);
+  background: var(--eb-brown-dark);
 }
 
 .scene-description-block {
@@ -801,17 +836,17 @@
   font-style: italic;
   font-size: 1.05rem;
   line-height: 1.6;
-  color: var(--pf2e-brown-dark);
+  color: var(--eb-brown-dark);
   background: rgba(255, 248, 220, 0.5);
   border-radius: 4px;
-  border: 1px dashed var(--pf2e-tan-dark);
+  border: 1px dashed var(--eb-tan-dark);
   position: relative;
 }
 
 .read-aloud::before {
   content: open-quote;
   font-size: 2.5rem;
-  color: var(--pf2e-brown-medium);
+  color: var(--eb-brown-medium);
   position: absolute;
   top: 0.25rem;
   left: 0.5rem;
@@ -841,9 +876,9 @@
   text-align: center;
   padding: 1rem;
   margin-bottom: 1rem;
-  background: var(--pf2e-red);
+  background: var(--eb-red);
   border-radius: 4px;
-  color: var(--pf2e-tan-light);
+  color: var(--eb-tan-light);
 }
 
 .influence-header .npc-name {
@@ -862,15 +897,15 @@
 .influence-section {
   margin-bottom: 1rem;
   background: #fff;
-  border: 2px solid var(--pf2e-brown-medium);
+  border: 2px solid var(--eb-brown-medium);
   border-radius: 4px;
 }
 
 .influence-section h2 {
   margin: 0;
   padding: 0.5rem 0.75rem;
-  background: var(--pf2e-brown-medium);
-  color: var(--pf2e-tan-light);
+  background: var(--eb-brown-medium);
+  color: var(--eb-tan-light);
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -887,11 +922,11 @@
 .influence-section .section-hint {
   margin: 0;
   padding: 0.5rem 0.75rem;
-  background: var(--pf2e-tan-light);
+  background: var(--eb-tan-light);
   font-size: 0.85rem;
-  color: var(--pf2e-brown-medium);
+  color: var(--eb-brown-medium);
   font-style: italic;
-  border-bottom: 1px solid var(--pf2e-tan);
+  border-bottom: 1px solid var(--eb-tan);
 }
 
 /* Goal Section */
@@ -914,14 +949,14 @@
 .influence-skills-table td {
   padding: 0.5rem;
   text-align: left;
-  border-bottom: 1px solid var(--pf2e-tan);
+  border-bottom: 1px solid var(--eb-tan);
 }
 
 .discovery-table th,
 .influence-skills-table th {
-  background: var(--pf2e-tan);
+  background: var(--eb-tan);
   font-weight: bold;
-  color: var(--pf2e-brown-dark);
+  color: var(--eb-brown-dark);
   text-transform: uppercase;
   font-size: 0.85rem;
 }
@@ -958,7 +993,7 @@
 
 .thresholds-list li {
   padding: 0.5rem 0;
-  border-bottom: 1px dashed var(--pf2e-tan);
+  border-bottom: 1px dashed var(--eb-tan);
 }
 
 .thresholds-list li:last-child {
@@ -966,7 +1001,7 @@
 }
 
 .thresholds-list li strong {
-  color: var(--pf2e-red);
+  color: var(--eb-red);
 }
 
 /* Two Column Layout for Resistances/Weaknesses */
@@ -998,7 +1033,7 @@
 }
 
 .resistances-list li strong {
-  color: var(--pf2e-text);
+  color: var(--eb-text);
 }
 
 /* Weaknesses */
@@ -1022,7 +1057,7 @@
 }
 
 .weaknesses-list li strong {
-  color: var(--pf2e-text);
+  color: var(--eb-text);
 }
 
 /* Penalties Section */
@@ -1052,12 +1087,12 @@
 }
 
 .penalties-list li strong {
-  color: var(--pf2e-text);
+  color: var(--eb-text);
 }
 
 /* Rounds Section */
 .rounds-section {
-  background: var(--pf2e-tan-light);
+  background: var(--eb-tan-light);
 }
 
 .rounds-section p {
@@ -1073,7 +1108,7 @@
 
 .failure-section h2 {
   background: #ffc107;
-  color: var(--pf2e-text);
+  color: var(--eb-text);
 }
 
 .failure-text {
@@ -1088,13 +1123,13 @@
   gap: 0.75rem;
   margin-top: auto;
   padding-top: 1rem;
-  border-top: 2px solid var(--pf2e-brown-medium);
+  border-top: 2px solid var(--eb-brown-medium);
 }
 
 .influence-footer .regenerate-btn {
-  background: var(--pf2e-tan);
-  color: var(--pf2e-brown-dark);
-  border: 2px solid var(--pf2e-brown-medium);
+  background: var(--eb-tan);
+  color: var(--eb-brown-dark);
+  border: 2px solid var(--eb-brown-medium);
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
@@ -1103,12 +1138,12 @@
 }
 
 .influence-footer .regenerate-btn:hover {
-  background: var(--pf2e-tan-dark);
+  background: var(--eb-tan-dark);
 }
 
 .influence-footer .save-btn {
-  background: var(--pf2e-red);
-  color: var(--pf2e-tan-light);
+  background: var(--eb-red);
+  color: var(--eb-tan-light);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -1131,17 +1166,17 @@
 .encounter-builder-input input[type="text"] {
   width: 100%;
   padding: 0.6rem 0.8rem;
-  border: 2px solid var(--pf2e-brown-medium);
+  border: 2px solid var(--eb-brown-medium);
   border-radius: 4px;
   background: #fff;
-  color: var(--pf2e-text);
+  color: var(--eb-text);
   font-size: 1rem;
   font-family: inherit;
 }
 
 .encounter-builder-input input[type="text"]:focus {
   outline: none;
-  border-color: var(--pf2e-red);
+  border-color: var(--eb-red);
   box-shadow: 0 0 4px rgba(92, 0, 0, 0.3);
 }
 
@@ -1415,35 +1450,129 @@
   font-size: 0.9rem;
 }
 
-/* Complications Section */
-.complications-list {
-  list-style: none;
-  margin: 0;
-  padding: 0.5rem 0.75rem;
-}
-
-.complications-list li {
-  padding: 0.5rem 0;
-  border-bottom: 1px dashed var(--research-purple-light);
+/* Complications Section - Research */
+.research-builder-output .complications-list {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.75rem;
+  padding: 0.75rem;
 }
 
-.complications-list li:last-child {
-  border-bottom: none;
+.research-builder-output .complication-card {
+  background: linear-gradient(135deg, rgba(128, 0, 128, 0.08) 0%, rgba(255, 255, 255, 0.9) 100%);
+  border: 1px solid var(--research-purple-light);
+  border-left: 4px solid var(--research-purple-medium);
+  border-radius: 4px;
+  padding: 0.75rem;
 }
 
-.complication-trigger {
-  color: var(--research-purple-dark);
+.research-builder-output .complication-header {
+  margin-bottom: 0.5rem;
+}
+
+.research-builder-output .complication-trigger {
+  display: inline-block;
+  background: var(--research-purple-medium);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
-.complication-event {
+.research-builder-output .complication-event {
   color: #333;
   font-size: 0.95rem;
-  padding-left: 0.5rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.research-builder-output .complication-mechanic {
+  background: rgba(220, 53, 69, 0.1);
+  border-left: 3px solid #dc3545;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.4rem;
+  border-radius: 0 3px 3px 0;
+  font-size: 0.9rem;
+  color: #721c24;
+}
+
+.research-builder-output .complication-mechanic strong {
+  color: #dc3545;
+}
+
+.research-builder-output .complication-resolution {
+  background: rgba(40, 167, 69, 0.1);
+  border-left: 3px solid #28a745;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0 3px 3px 0;
+  font-size: 0.9rem;
+  color: #155724;
+}
+
+.research-builder-output .complication-resolution strong {
+  color: #28a745;
+}
+
+/* Post to Chat Button for Complications */
+.research-builder-output .complication-card .post-to-chat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--research-purple-medium);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.research-builder-output .complication-card .post-to-chat:hover {
+  background: var(--research-purple-dark);
+  transform: translateY(-1px);
+}
+
+.research-builder-output .complication-card .post-to-chat i {
+  font-size: 0.8rem;
+}
+
+/* Complication Chat Message */
+.complication-chat {
+  background: linear-gradient(135deg, var(--research-violet-light, #e8d4f8), #f5f0ff);
+  border: 2px solid var(--research-purple-medium, #6b3fa0);
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.complication-chat h3 {
+  color: var(--research-purple-dark, #4a1c6b);
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.complication-chat h3 i {
+  color: #dc3545;
+}
+
+.complication-chat .complication-event {
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+.complication-chat p {
+  margin: 0.25rem 0;
+}
+
+.complication-chat .resolution {
+  color: #28a745;
+  margin-top: 0.5rem;
 }
 
 /* Research Footer */
@@ -2362,7 +2491,7 @@
 }
 
 .combat-prompt-header strong {
-  color: var(--pf2e-red);
+  color: var(--eb-red);
   font-size: 0.9rem;
 }
 
@@ -3401,6 +3530,34 @@
   font-weight: normal;
 }
 
+/* Lair Meta Tags */
+.lair-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.lair-meta span {
+  background: rgba(139, 0, 0, 0.4);
+  border: 1px solid var(--lair-blood-medium);
+  color: var(--lair-bone);
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.lair-meta .lair-level {
+  background: linear-gradient(135deg, var(--lair-blood-dark) 0%, var(--lair-blood-medium) 100%);
+  font-weight: bold;
+  color: var(--lair-gold);
+}
+
+.lair-meta .lair-difficulty {
+  background: linear-gradient(135deg, #4a0000 0%, #8b0000 100%);
+  color: #ff6666;
+}
+
 /* Section Base */
 .lair-section {
   margin: 0.75rem;
@@ -3410,10 +3567,8 @@
   overflow: visible;
 }
 
-/* Section Content - scrollable */
+/* Section Content - no max-height, window scrolls instead */
 .lair-section .section-content {
-  max-height: 250px;
-  overflow-y: auto;
   padding: 1rem;
 }
 
@@ -3643,6 +3798,165 @@
   font-family: monospace;
 }
 
+/* New Lair Action Styles (PF2E ability format) */
+.lair-actions-section .pf2e-ability {
+  position: relative;
+}
+
+.lair-actions-section .ability-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.lair-actions-section .ability-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--lair-gold);
+}
+
+.lair-actions-section .action-glyph {
+  color: var(--lair-blood-light);
+  font-size: 1rem;
+  letter-spacing: 2px;
+}
+
+.lair-actions-section .recharge-badge {
+  background: linear-gradient(135deg, #4a0080 0%, #6b1ab3 100%);
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+.lair-actions-section .ability-traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.lair-actions-section .ability-traits .trait {
+  background: rgba(139, 69, 19, 0.6);
+  color: var(--lair-bone);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  text-transform: lowercase;
+  border: 1px solid rgba(139, 69, 19, 0.8);
+}
+
+.lair-actions-section .ability-content {
+  font-size: 0.95rem;
+  color: var(--lair-bone);
+  line-height: 1.5;
+}
+
+.lair-actions-section .ability-content p {
+  margin: 0.3rem 0;
+}
+
+.lair-actions-section .ability-desc {
+  font-style: italic;
+  color: var(--lair-bone-dim, #a09080);
+}
+
+/* Lair Action Buttons */
+.lair-actions-section .post-to-chat,
+.lair-actions-section .roll-recharge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  border: none;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lair-actions-section .post-to-chat {
+  background: var(--lair-blood-dark);
+  color: var(--lair-bone);
+  border: 1px solid var(--lair-blood-medium);
+}
+
+.lair-actions-section .post-to-chat:hover {
+  background: var(--lair-blood-medium);
+  transform: translateY(-1px);
+}
+
+.lair-actions-section .roll-recharge {
+  background: linear-gradient(135deg, #4a0080 0%, #6b1ab3 100%);
+  color: #fff;
+  border: 1px solid #8b2ae3;
+}
+
+.lair-actions-section .roll-recharge:hover {
+  background: linear-gradient(135deg, #5a0090 0%, #7b2ac3 100%);
+  transform: translateY(-1px);
+}
+
+/* Recharge Chat Messages */
+.recharge-success {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.3) 0%, rgba(74, 0, 128, 0.3) 100%);
+  border-left: 4px solid #d4af37;
+  padding: 0.75rem 1rem;
+  border-radius: 0 4px 4px 0;
+}
+
+.recharge-success .recharge-flavor {
+  margin: 0;
+  font-style: italic;
+  font-size: 1rem;
+  color: #f5e6d3;
+  line-height: 1.5;
+}
+
+.recharge-fail {
+  background: rgba(60, 60, 60, 0.3);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.recharge-fail i {
+  margin-right: 0.3rem;
+}
+
+/* PF2E Ability Chat Message */
+.pf2e-ability-chat {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.2) 0%, rgba(26, 10, 10, 0.4) 100%);
+  border-left: 4px solid #d4af37;
+  padding: 0.75rem 1rem;
+  border-radius: 0 4px 4px 0;
+}
+
+.pf2e-ability-chat h3 {
+  margin: 0 0 0.5rem 0;
+  color: #191813;
+  font-size: 1.1rem;
+}
+
+.pf2e-ability-chat .action-glyph {
+  color: #dc143c;
+  margin-left: 0.3rem;
+}
+
+.pf2e-ability-chat p {
+  margin: 0.3rem 0;
+  line-height: 1.5;
+}
+
 /* Tactics Section */
 .tactics-section p {
   margin: 0;
@@ -3778,11 +4092,57 @@
   font-style: italic;
 }
 
+/* Campaign Metadata */
+.campaign-metadata {
+  background: rgba(92, 0, 0, 0.08);
+  border: 1px solid var(--travel-path-light);
+  border-left: 4px solid var(--travel-forest);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.campaign-metadata .metadata-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.campaign-metadata .metadata-row:last-child {
+  margin-bottom: 0;
+}
+
+.campaign-metadata .metadata-label {
+  color: var(--travel-forest);
+  font-weight: 600;
+  min-width: 60px;
+}
+
+.campaign-metadata .metadata-value {
+  color: var(--travel-text);
+}
+
+.campaign-metadata .metadata-value.standalone {
+  color: #666;
+}
+
+.campaign-metadata .metadata-value.front_specific {
+  color: #8b4513;
+  font-weight: 500;
+}
+
+.campaign-metadata .metadata-value.personal {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
 /* Footer */
 .travel-footer {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   padding-top: 1rem;
   border-top: 1px solid var(--travel-path-light);
 }
@@ -3819,4 +4179,287 @@
 .travel-footer .regenerate-btn:hover {
   background: var(--travel-path-light);
   transform: translateY(-1px);
+}
+
+.travel-footer .back-to-builder-btn {
+  background: #6c757d;
+  color: white;
+  border: 1px solid #5a6268;
+}
+
+.travel-footer .back-to-builder-btn:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* =================================================
+   SIMPLE COMBAT OUTPUT
+   ================================================= */
+
+.combat-encounter-output {
+  padding: 1rem;
+  font-family: var(--eb-font-body, 'Signika', sans-serif);
+  color: var(--eb-text, #3e2723);
+}
+
+.combat-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--eb-tan, #d4a574);
+}
+
+.combat-header h2 {
+  font-family: var(--eb-font-title, 'Modesto Condensed', serif);
+  font-size: 2rem;
+  color: var(--eb-brown-dark, #5d4e37);
+  margin: 0 0 0.5rem 0;
+}
+
+.combat-meta {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.combat-meta span {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.combat-meta .difficulty {
+  background: var(--eb-tan, #d4a574);
+  color: var(--eb-brown-dark, #5d4e37);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.combat-meta .difficulty-severe {
+  background: #e74c3c;
+  color: white;
+}
+
+.combat-meta .difficulty-extreme {
+  background: #8e44ad;
+  color: white;
+}
+
+.combat-meta .difficulty-moderate {
+  background: #f39c12;
+  color: white;
+}
+
+.combat-meta .xp-total {
+  background: var(--eb-brown-dark, #5d4e37);
+  color: white;
+  font-weight: bold;
+}
+
+.combat-meta .party-info {
+  background: rgba(0,0,0,0.1);
+  color: var(--eb-text, #3e2723);
+}
+
+.combat-section {
+  margin-bottom: 1.5rem;
+}
+
+.combat-section h3 {
+  font-family: var(--eb-font-title, 'Modesto Condensed', serif);
+  font-size: 1.4rem;
+  color: var(--eb-brown-dark, #5d4e37);
+  border-bottom: 1px solid var(--eb-tan, #d4a574);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.combat-section h3 i {
+  margin-right: 0.5rem;
+  color: var(--eb-tan, #d4a574);
+}
+
+.combat-section .read-aloud {
+  font-style: italic;
+  background: rgba(212, 165, 116, 0.15);
+  padding: 1rem;
+  border-left: 4px solid var(--eb-tan, #d4a574);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Monster table in combat output */
+.combat-section .monster-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+}
+
+.combat-section .monster-table th,
+.combat-section .monster-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--eb-tan, #d4a574);
+}
+
+.combat-section .monster-table th {
+  background: var(--eb-tan, #d4a574);
+  font-weight: bold;
+  color: var(--eb-brown-dark, #5d4e37);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.combat-section .monster-table tr:hover td {
+  background: rgba(212, 165, 116, 0.15);
+}
+
+/* Tactics Section - Enhanced */
+.combat-encounter-output .tactics-section {
+  background: rgba(93, 78, 55, 0.05);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+}
+
+.combat-encounter-output .tactics-section p {
+  margin: 0 0 0.75rem 0;
+  line-height: 1.7;
+  color: var(--eb-text, #3d3d3d);
+}
+
+.combat-encounter-output .tactics-section p:last-child {
+  margin-bottom: 0;
+}
+
+.combat-encounter-output .tactics-section strong {
+  color: var(--eb-brown-dark, #5d4e37);
+  font-weight: 600;
+}
+
+/* Taktik Sub-Headers */
+.combat-encounter-output .tactics-section h4 {
+  color: var(--eb-brown-dark, #5d4e37);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px dashed var(--eb-tan, #d4a574);
+}
+
+.combat-encounter-output .tactics-section h4:first-child {
+  margin-top: 0;
+}
+
+/* Win Conditions Section - Enhanced */
+.combat-encounter-output .win-section {
+  background: rgba(93, 78, 55, 0.03);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+}
+
+.combat-encounter-output .win-section p {
+  margin: 0 0 0.75rem 0;
+  line-height: 1.7;
+  color: var(--eb-text, #3d3d3d);
+}
+
+.combat-encounter-output .win-section p:last-child {
+  margin-bottom: 0;
+}
+
+.combat-encounter-output .win-section strong {
+  color: var(--eb-brown-dark, #5d4e37);
+  font-weight: 600;
+}
+
+/* Win Conditions als Liste */
+.combat-encounter-output .win-section ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.combat-encounter-output .win-section li {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  position: relative;
+  background: linear-gradient(90deg, rgba(212, 165, 116, 0.08), transparent);
+  border-left: 3px solid var(--eb-tan, #d4a574);
+  border-radius: 0 4px 4px 0;
+}
+
+.combat-encounter-output .win-section li:last-child {
+  margin-bottom: 0;
+}
+
+.combat-encounter-output .win-section li::before {
+  content: "▸";
+  position: absolute;
+  left: 0.5rem;
+  color: var(--eb-tan, #d4a574);
+  font-weight: bold;
+}
+
+.combat-encounter-output .win-section li strong {
+  color: var(--eb-brown-dark, #5d4e37);
+}
+
+/* Win Conditions Sub-Headers */
+.combat-encounter-output .win-section h4 {
+  color: var(--eb-brown-dark, #5d4e37);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px dashed var(--eb-tan, #d4a574);
+}
+
+.combat-encounter-output .win-section h4:first-child {
+  margin-top: 0;
+}
+
+.combat-footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--eb-tan, #d4a574);
+  margin-top: 1rem;
+}
+
+.combat-footer button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.combat-footer .back-btn {
+  background: #6c757d;
+  color: white;
+}
+
+.combat-footer .back-btn:hover {
+  background: #5a6268;
+}
+
+.combat-footer .regenerate-btn {
+  background: var(--eb-tan, #d4a574);
+  color: var(--eb-brown-dark, #5d4e37);
+}
+
+.combat-footer .regenerate-btn:hover {
+  background: var(--eb-brown-dark, #5d4e37);
+  color: white;
+}
+
+.combat-footer .save-btn {
+  background: var(--eb-brown-dark, #5d4e37);
+  color: white;
+}
+
+.combat-footer .save-btn:hover {
+  background: var(--eb-brown, #8b7355);
 }

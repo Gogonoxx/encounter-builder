@@ -1,0 +1,46 @@
+<div class="combat-encounter-output">
+  <header class="combat-header">
+    <h2>{{title}}</h2>
+    <div class="combat-meta">
+      <span class="difficulty difficulty-{{difficulty}}">{{difficulty}}</span>
+      <span class="xp-total">{{xpTotal}} XP</span>
+      <span class="party-info">Level {{partyLevel}}, {{partySize}} Spieler</span>
+    </div>
+  </header>
+
+  <!-- SZENE -->
+  <section class="combat-section scene-section">
+    <h3><i class="fas fa-scroll"></i> Szene</h3>
+    <div class="read-aloud">{{{sceneHtml}}}</div>
+  </section>
+
+  <!-- MONSTER TABELLE -->
+  <section class="combat-section monsters-section">
+    <h3><i class="fas fa-skull"></i> Monster</h3>
+    {{{monstersTableHtml}}}
+  </section>
+
+  <!-- TAKTIK -->
+  <section class="combat-section tactics-section">
+    <h3><i class="fas fa-chess"></i> Taktik</h3>
+    {{{tacticsHtml}}}
+  </section>
+
+  <!-- WIN CONDITIONS -->
+  <section class="combat-section win-section">
+    <h3><i class="fas fa-trophy"></i> Win Conditions</h3>
+    {{{winConditionsHtml}}}
+  </section>
+
+  <footer class="combat-footer">
+    <button type="button" data-action="backToBuilder" class="back-btn">
+      <i class="fas fa-arrow-left"></i> Zurück
+    </button>
+    <button type="button" data-action="regenerate" class="regenerate-btn">
+      <i class="fas fa-redo"></i> Neu generieren
+    </button>
+    <button type="button" data-action="saveJournal" class="save-btn">
+      <i class="fas fa-book"></i> Als Journal speichern
+    </button>
+  </footer>
+</div>

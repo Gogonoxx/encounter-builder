@@ -4,6 +4,46 @@
     {{{headerHtml}}}
   </div>
 
+  {{!-- Campaign Metadata (only if campaign-specific) --}}
+  {{#if encounter.campaignSpecific}}
+  <section class="campaign-metadata">
+    <div class="metadata-row">
+      <span class="metadata-label">Modus:</span>
+      <span class="metadata-value {{encounter.campaignMode}}">{{campaignModeLabel}}</span>
+    </div>
+    {{#if encounter.campaignDanger}}
+    <div class="metadata-row">
+      <span class="metadata-label">Danger:</span>
+      <span class="metadata-value">{{encounter.campaignDanger}}</span>
+    </div>
+    {{/if}}
+    {{#if encounter.campaignFront}}
+    <div class="metadata-row">
+      <span class="metadata-label">Front:</span>
+      <span class="metadata-value">{{encounter.campaignFront}}</span>
+    </div>
+    {{/if}}
+    {{#if encounter.campaignSecretXP}}
+    <div class="metadata-row secret-row">
+      <span class="metadata-label">Secret ({{encounter.campaignSecretXP}}xp):</span>
+      <span class="metadata-value secret-text">{{encounter.campaignSecretText}}</span>
+    </div>
+    {{/if}}
+    {{#if encounter.campaignPC}}
+    <div class="metadata-row">
+      <span class="metadata-label">Spieler:</span>
+      <span class="metadata-value">{{encounter.campaignPC}}</span>
+    </div>
+    {{/if}}
+    {{#if encounter.campaignHook}}
+    <div class="metadata-row">
+      <span class="metadata-label">Hook:</span>
+      <span class="metadata-value">{{encounter.campaignHook}}</span>
+    </div>
+    {{/if}}
+  </section>
+  {{/if}}
+
   {{!-- Main Description --}}
   <section class="travel-description">
     {{{descriptionHtml}}}
@@ -11,11 +51,14 @@
 
   {{!-- Action Buttons --}}
   <footer class="travel-footer">
-    <button type="button" class="save-journal-btn" data-action="saveJournal">
-      <i class="fas fa-book"></i> Als Journal speichern
+    <button type="button" class="back-to-builder-btn" data-action="backToBuilder">
+      <i class="fas fa-arrow-left"></i> Zurück
     </button>
     <button type="button" class="regenerate-btn" data-action="regenerate">
       <i class="fas fa-redo"></i> Neu generieren
+    </button>
+    <button type="button" class="save-journal-btn" data-action="saveJournal">
+      <i class="fas fa-book"></i> Als Journal speichern
     </button>
   </footer>
 </div>
