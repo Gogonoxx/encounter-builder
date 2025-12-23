@@ -2,7 +2,7 @@
   "id": "encounter-builder",
   "title": "PF2E Encounter Builder",
   "description": "AI-powered encounter generator for Pathfinder 2E. Creates tactically interesting encounters with proper monster roles, terrain, hazards, and narrative elements.",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "authors": [
     {
       "name": "Gogonoxx"
