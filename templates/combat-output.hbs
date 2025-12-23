@@ -17,6 +17,14 @@
     <div class="read-aloud">{{{sceneHtml}}}</div>
   </section>
 
+  {{#if objectiveHtml}}
+  <!-- KONTEXT - kurzer scanbarer Text um was es geht -->
+  <section class="combat-section objective-section">
+    <h3><i class="fas fa-info-circle"></i> Kontext</h3>
+    {{{objectiveHtml}}}
+  </section>
+  {{/if}}
+
   <!-- MONSTER TABELLE -->
   <section class="combat-section monsters-section">
     <h3><i class="fas fa-skull"></i> Monster</h3>
