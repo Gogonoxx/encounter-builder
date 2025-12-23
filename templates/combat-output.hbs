@@ -3,6 +3,9 @@
     <h2>{{title}}</h2>
     <div class="combat-meta">
       <span class="difficulty difficulty-{{difficulty}}">{{difficulty}}</span>
+      {{#if objectiveLabel}}
+      <span class="objective-type">{{objectiveLabel}}</span>
+      {{/if}}
       <span class="xp-total">{{xpTotal}} XP</span>
       <span class="party-info">Level {{partyLevel}}, {{partySize}} Spieler</span>
     </div>

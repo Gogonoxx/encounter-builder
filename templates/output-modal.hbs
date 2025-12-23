@@ -5,6 +5,11 @@
       <span class="difficulty difficulty-{{encounter.difficulty}}">
         {{encounter.difficulty}}
       </span>
+      {{#if encounter.objective}}
+      <span class="objective-type objective-{{encounter.objective}}">
+        {{encounter.objectiveLabel}}
+      </span>
+      {{/if}}
       {{{situationHtml}}}
       <span class="xp-budget">
         {{encounter.xpBudget.total}} XP
