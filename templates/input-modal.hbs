@@ -343,6 +343,23 @@ Die Spieler verfolgen einen alten Troll, der Dorfbewohner entführt hat. Der Tro
   </div>
 
   <div class="form-group combat-only">
+    <label for="combatObjective">Combat Objective</label>
+    <select name="combatObjective" id="combatObjective">
+      <option value="random">🎲 Random (Zufälliges Objective)</option>
+      <option value="none">📋 Standard (Kein spezielles Objective)</option>
+      <option value="protect">🛡️ Protect (Schütze NPC/Objekt)</option>
+      <option value="assassinate">🎯 Assassinate (Eliminiere Ziel)</option>
+      <option value="prevent">🚫 Prevent (Verhindere Ereignis)</option>
+      <option value="capture">🔒 Capture (Fange lebendig)</option>
+      <option value="survive">⏳ Survive (Überlebe X Runden)</option>
+      <option value="escape">🏃 Escape (Entkommen)</option>
+      <option value="hold_the_line">🏰 Hold the Line (Position halten)</option>
+      <option value="steal_destroy">💎 Steal/Destroy (Objekt holen)</option>
+    </select>
+    <p class="hint">Wähle ein Ziel für den Kampf - Random wählt zufällig eines aus.</p>
+  </div>
+
+  <div class="form-group combat-only">
     <label for="terrain">Terrain</label>
     <select name="terrain" id="terrain">
       {{#each terrainOptions}}

@@ -4262,6 +4262,13 @@
   color: var(--eb-text, #3e2723);
 }
 
+.combat-meta .objective-type {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
 .combat-section {
   margin-bottom: 1.5rem;
 }
@@ -4462,4 +4469,143 @@
 
 .combat-footer .save-btn:hover {
   background: var(--eb-brown, #8b7355);
+}
+
+/* ----------------------------------------------------------------------------
+   Natural Wonder Mechanics Section (Interactive Wonders)
+   ---------------------------------------------------------------------------- */
+
+.wonder-mechanic-section {
+  background: linear-gradient(135deg, #1a2a1a 0%, #2d4a2d 100%);
+  border: 2px solid #4a7c4a;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  color: #e8f5e8;
+}
+
+.wonder-mechanic-section h3 {
+  margin: 0 0 0.8rem 0;
+  color: #90EE90;
+  font-size: 1.3rem;
+  border-bottom: 1px solid #4a7c4a;
+  padding-bottom: 0.5rem;
+}
+
+.wonder-mechanic-section h3 i {
+  margin-right: 0.5rem;
+  color: #FFD700;
+}
+
+.wonder-mechanic-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.wonder-benefit-cost {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.wonder-benefit,
+.wonder-cost {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.6rem 0.8rem;
+  border-radius: 4px;
+}
+
+.wonder-benefit .label,
+.wonder-cost .label,
+.wonder-rules .label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+  color: #90EE90;
+}
+
+.wonder-benefit .label i { color: #50C878; }
+.wonder-cost .label i { color: #FF6B6B; }
+.wonder-rules .label i { color: #87CEEB; }
+
+.wonder-benefit .value,
+.wonder-cost .value {
+  font-size: 1rem;
+}
+
+.wonder-rules {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.6rem 0.8rem;
+  border-radius: 4px;
+  border-left: 3px solid #87CEEB;
+}
+
+.wonder-rules .value {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* Wonder Tables */
+.wonder-effect-table,
+.wonder-condition-table,
+.wonder-element-table {
+  margin-top: 0.8rem;
+}
+
+.wonder-effect-table h4,
+.wonder-condition-table h4,
+.wonder-element-table h4 {
+  margin: 0 0 0.5rem 0;
+  color: #FFD700;
+  font-size: 1rem;
+}
+
+.wonder-effect-table h4 i,
+.wonder-condition-table h4 i,
+.wonder-element-table h4 i {
+  margin-right: 0.4rem;
+}
+
+.wonder-mechanic-section table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.wonder-mechanic-section table thead {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.wonder-mechanic-section table th,
+.wonder-mechanic-section table td {
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wonder-mechanic-section table th {
+  color: #90EE90;
+  font-weight: bold;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.wonder-mechanic-section table .roll-cell {
+  font-weight: bold;
+  color: #FFD700;
+  width: 60px;
+  text-align: center;
+}
+
+.wonder-mechanic-section table tr:last-child td {
+  border-bottom: none;
+}
+
+.wonder-mechanic-section table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
 }

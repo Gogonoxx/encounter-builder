@@ -49,6 +49,100 @@
     {{{descriptionHtml}}}
   </section>
 
+  {{!-- Natural Wonder Mechanics (only for interactive wonders) --}}
+  {{#if encounter.wonderMechanic}}
+  <section class="wonder-mechanic-section">
+    <h3><i class="fas fa-sparkles"></i> {{encounter.wonderName}}</h3>
+    <div class="wonder-mechanic-box">
+      <div class="wonder-benefit-cost">
+        <div class="wonder-benefit">
+          <span class="label"><i class="fas fa-gift"></i> Nutzen:</span>
+          <span class="value">{{encounter.wonderBenefit}}</span>
+        </div>
+        <div class="wonder-cost">
+          <span class="label"><i class="fas fa-skull-crossbones"></i> Preis:</span>
+          <span class="value">{{encounter.wonderCost}}</span>
+        </div>
+      </div>
+      <div class="wonder-rules">
+        <span class="label"><i class="fas fa-scroll"></i> Regeln:</span>
+        <p class="value">{{encounter.wonderMechanic}}</p>
+      </div>
+
+      {{!-- Effect Table (Wunschbrunnen 1d20) --}}
+      {{#if encounter.wonderEffectTable}}
+      <div class="wonder-effect-table">
+        <h4><i class="fas fa-dice-d20"></i> 1d20 Effekt-Tabelle</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Wurf</th>
+              <th>Effekt</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each encounter.wonderEffectTable}}
+            <tr>
+              <td class="roll-cell">{{this.roll}}</td>
+              <td>{{this.effect}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+      {{/if}}
+
+      {{!-- Condition Table (Heilquelle 1d4) --}}
+      {{#if encounter.wonderConditionTable}}
+      <div class="wonder-condition-table">
+        <h4><i class="fas fa-dice-d6"></i> 1d4 Condition-Tabelle</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Wurf</th>
+              <th>Condition</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each encounter.wonderConditionTable}}
+            <tr>
+              <td class="roll-cell">{{this.roll}}</td>
+              <td>{{this.condition}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+      {{/if}}
+
+      {{!-- Element Table (Elementarquelle 1d4) --}}
+      {{#if encounter.wonderElementTable}}
+      <div class="wonder-element-table">
+        <h4><i class="fas fa-fire"></i> 1d4 Element-Tabelle</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Wurf</th>
+              <th>Element</th>
+              <th>Farbe</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each encounter.wonderElementTable}}
+            <tr>
+              <td class="roll-cell">{{this.roll}}</td>
+              <td>{{this.element}}</td>
+              <td>{{this.color}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+      {{/if}}
+    </div>
+  </section>
+  {{/if}}
+
   {{!-- Action Buttons --}}
   <footer class="travel-footer">
     <button type="button" class="back-to-builder-btn" data-action="backToBuilder">

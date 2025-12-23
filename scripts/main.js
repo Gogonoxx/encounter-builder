@@ -766,16 +766,32 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         selectedFronts: selectedFronts
       });
 
+      // Natural Wonder types for auto-rolling (interactive wonders with fixed mechanics)
+      const NATURAL_WONDER_TYPES = [
+        'healing_spring', 'wishing_well', 'elemental_spring', 'fruit_tree',
+        'echo_cave', 'mist_pool', 'moonstone', 'whispering_tree',
+        'mirror_spring', 'lifebloom'
+      ];
+
+      // Auto-roll wonder sub-type if natural_wonders is selected
+      let wonderSubType = null;
+      const travelType = data.travelEncounterType || 'a_chance_meeting';
+      if (travelType === 'natural_wonders') {
+        wonderSubType = NATURAL_WONDER_TYPES[Math.floor(Math.random() * NATURAL_WONDER_TYPES.length)];
+        console.log('Encounter Builder | Auto-rolled Natural Wonder:', wonderSubType);
+      }
+
       const request = {
         encounterType: 'travel',
         partyLevel: parseInt(data.partyLevel) || 1,
-        travelEncounterType: data.travelEncounterType || 'a_chance_meeting',
+        travelEncounterType: travelType,
         travelBiome: data.travelBiome || 'grasslands',
         travelContext: data.travelContext?.trim() || null,
         campaignSpecific: Boolean(data.campaignSpecific),
         comedicRelief: Boolean(data.comedicRelief),
         activePlayers: activePlayers,
-        selectedFronts: selectedFronts.length > 0 ? selectedFronts : null
+        selectedFronts: selectedFronts.length > 0 ? selectedFronts : null,
+        wonderSubType: wonderSubType
       };
 
       console.log('Encounter Builder | Travel request:', request);
@@ -818,7 +834,8 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       difficulty: data.difficulty || 'severe',
       creatureTypes: includeTraits.filter(t => t),
       narrativeHint: data.narrativeHook || '',
-      terrain: data.terrain || ''
+      terrain: data.terrain || '',
+      combatObjective: data.combatObjective || ''
     };
 
     // Show loading state
@@ -4048,13 +4065,30 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
   async _prepareContext() {
     const parsed = this._parseRawOutput(this.encounter.rawOutput || '');
     console.log('Encounter Builder | Parsed XP:', parsed.xpTotal, 'from monsters:', parsed.monsters?.substring(0, 100));
+
+    // Get objective label - use selectedObjective from response (the actual choice, not "random")
+    const objective = this.encounter.selectedObjective || this.requestData?.combatObjective || '';
+    const objectiveLabels = {
+      'protect': '🛡️ Protect',
+      'assassinate': '🎯 Assassinate',
+      'prevent': '🚫 Prevent',
+      'capture': '🔒 Capture',
+      'survive': '⏳ Survive',
+      'escape': '🏃 Escape',
+      'hold_the_line': '🏰 Hold the Line',
+      'steal_destroy': '💎 Steal/Destroy'
+    };
+
     return {
       title: parsed.title?.trim() || 'Combat Encounter',
       difficulty: this.requestData?.difficulty || 'severe',
       partyLevel: this.requestData?.partyLevel || 1,
       partySize: this.requestData?.partySize || 4,
       xpTotal: parsed.xpTotal || 0,
+      objective: objective,
+      objectiveLabel: objectiveLabels[objective] || '',
       sceneHtml: this._formatMarkdown(parsed.scene || 'Keine Szene.'),
+      objectiveHtml: parsed.objective ? this._formatMarkdown(parsed.objective) : '',
       monstersTableHtml: this._formatMarkdown(parsed.monsters || 'Keine Monster.'),
       tacticsHtml: this._formatMarkdown(parsed.tactics || 'Keine Taktik.'),
       winConditionsHtml: this._formatMarkdown(parsed.winConditions || 'Keine Win Conditions.')
@@ -4062,17 +4096,19 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   _parseRawOutput(rawOutput) {
-    const result = { title: '', scene: '', monsters: '', tactics: '', winConditions: '', xpTotal: 0 };
+    const result = { title: '', scene: '', objective: '', monsters: '', tactics: '', winConditions: '', xpTotal: 0 };
     if (!rawOutput) return result;
 
-    // More robust parsing using section numbers and names
-    // Pattern: ## 0. Titel, ## 1. Szene, ## 2. Monster, ## 3. Taktik, ## 4. Win Conditions
+    // Flexible parsing - look for section NAMES regardless of number
+    // Supports: ## 1. Szene, ## Szene, ### 3. Monster, etc.
     const sectionPatterns = [
-      { key: 'title', pattern: /#{1,3}\s*0\.?\s*titel/i },
-      { key: 'scene', pattern: /#{1,3}\s*1\.?\s*szene/i },
-      { key: 'monsters', pattern: /#{1,3}\s*2\.?\s*monster/i },
-      { key: 'tactics', pattern: /#{1,3}\s*3\.?\s*taktik/i },
-      { key: 'winConditions', pattern: /#{1,3}\s*4\.?\s*win\s*conditions/i }
+      { key: 'title', pattern: /#{1,3}\s*\d*\.?\s*titel/i },
+      { key: 'scene', pattern: /#{1,3}\s*\d*\.?\s*szene/i },
+      // Kontext section (for all combat encounters - explains what the encounter is about)
+      { key: 'objective', pattern: /#{1,3}\s*\d*\.?\s*kontext/i },
+      { key: 'monsters', pattern: /#{1,3}\s*\d*\.?\s*monster/i },
+      { key: 'tactics', pattern: /#{1,3}\s*\d*\.?\s*taktik/i },
+      { key: 'winConditions', pattern: /#{1,3}\s*\d*\.?\s*win\s*conditions/i }
     ];
 
     // Find all section start positions
@@ -4091,7 +4127,9 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     for (let i = 0; i < positions.length; i++) {
       const current = positions[i];
       const nextIndex = i + 1 < positions.length ? positions[i + 1].index : rawOutput.length;
-      const content = rawOutput.substring(current.index + current.matchLength, nextIndex).trim();
+      let content = rawOutput.substring(current.index + current.matchLength, nextIndex);
+      // Remove the remainder of the header line (everything until first newline), then trim
+      content = content.replace(/^[^\n]*\n/, '').trim();
       result[current.key] = content;
 
       // Extract XP from monster section
@@ -4101,29 +4139,9 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       }
     }
 
-    // Fallback: if numbered sections not found, try keyword-based parsing
-    if (!result.scene && !result.monsters && !result.tactics && !result.winConditions) {
-      console.log('Encounter Builder | Falling back to keyword-based parsing');
-      const sections = rawOutput.split(/(?=#{1,3}\s+(?:Szene|Monster|Taktik|Win\s*Conditions))/i);
-      for (const section of sections) {
-        const lower = section.toLowerCase();
-        const cleanSection = section.replace(/^#{1,3}\s+\d*\.?\s*\w+[^\n]*\n?/i, '').trim();
-        if (lower.match(/^#{1,3}\s+\d*\.?\s*szene/i)) {
-          result.scene = cleanSection;
-        } else if (lower.match(/^#{1,3}\s+\d*\.?\s*monster/i)) {
-          result.monsters = cleanSection;
-          const xpMatch = section.match(/gesamt-xp[:\s]*(\d+)/i);
-          if (xpMatch) result.xpTotal = parseInt(xpMatch[1]);
-        } else if (lower.match(/^#{1,3}\s+\d*\.?\s*taktik/i)) {
-          result.tactics = cleanSection;
-        } else if (lower.match(/^#{1,3}\s+\d*\.?\s*win\s*conditions/i)) {
-          result.winConditions = cleanSection;
-        }
-      }
-    }
-
     console.log('Encounter Builder | Parsed sections:', {
       scene: result.scene?.substring(0, 50) + '...',
+      objective: result.objective?.substring(0, 50) + '...',
       monsters: result.monsters?.substring(0, 50) + '...',
       tactics: result.tactics?.substring(0, 50) + '...',
       winConditions: result.winConditions?.substring(0, 50) + '...'

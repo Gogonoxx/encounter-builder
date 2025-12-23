@@ -3,6 +3,9 @@
     <h2>{{title}}</h2>
     <div class="combat-meta">
       <span class="difficulty difficulty-{{difficulty}}">{{difficulty}}</span>
+      {{#if objectiveLabel}}
+      <span class="objective-type">{{objectiveLabel}}</span>
+      {{/if}}
       <span class="xp-total">{{xpTotal}} XP</span>
       <span class="party-info">Level {{partyLevel}}, {{partySize}} Spieler</span>
     </div>
@@ -13,6 +16,14 @@
     <h3><i class="fas fa-scroll"></i> Szene</h3>
     <div class="read-aloud">{{{sceneHtml}}}</div>
   </section>
+
+  {{#if objectiveHtml}}
+  <!-- KONTEXT - kurzer scanbarer Text um was es geht -->
+  <section class="combat-section objective-section">
+    <h3><i class="fas fa-info-circle"></i> Kontext</h3>
+    {{{objectiveHtml}}}
+  </section>
+  {{/if}}
 
   <!-- MONSTER TABELLE -->
   <section class="combat-section monsters-section">
