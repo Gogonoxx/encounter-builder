@@ -822,20 +822,14 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       return;
     }
 
-    // Combat encounter (default) - uses simplified combat generator
-    // Parse creature types from includeTraits
-    const includeTraits = data.includeTraits
-      ? (Array.isArray(data.includeTraits) ? data.includeTraits : [data.includeTraits])
-      : [];
-
+    // Combat encounter (default) - uses situation-based generator (v2)
     const request = {
       partyLevel: parseInt(data.partyLevel) || 1,
       partySize: parseInt(data.partySize) || 4,
       difficulty: data.difficulty || 'severe',
-      creatureTypes: includeTraits.filter(t => t),
       narrativeHint: data.narrativeHook || '',
       terrain: data.terrain || '',
-      combatObjective: data.combatObjective || ''
+      situationHint: data.situationHint || ''
     };
 
     // Show loading state
@@ -4054,7 +4048,8 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     actions: {
       saveJournal: SimpleCombatOutputApp.saveAsJournal,
       regenerate: SimpleCombatOutputApp.regenerate,
-      backToBuilder: SimpleCombatOutputApp.backToBuilder
+      backToBuilder: SimpleCombatOutputApp.backToBuilder,
+      createScene: SimpleCombatOutputApp.createScene
     }
   };
 
@@ -4064,51 +4059,45 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _prepareContext() {
     const parsed = this._parseRawOutput(this.encounter.rawOutput || '');
-    console.log('Encounter Builder | Parsed XP:', parsed.xpTotal, 'from monsters:', parsed.monsters?.substring(0, 100));
+    console.log('Encounter Builder | Parsed situation sections:', Object.keys(parsed).filter(k => parsed[k]));
 
-    // Get objective label - use selectedObjective from response (the actual choice, not "random")
-    const objective = this.encounter.selectedObjective || this.requestData?.combatObjective || '';
-    const objectiveLabels = {
-      'protect': '🛡️ Protect',
-      'assassinate': '🎯 Assassinate',
-      'prevent': '🚫 Prevent',
-      'capture': '🔒 Capture',
-      'survive': '⏳ Survive',
-      'escape': '🏃 Escape',
-      'hold_the_line': '🏰 Hold the Line',
-      'steal_destroy': '💎 Steal/Destroy'
-    };
+    const suggestedMaps = this.encounter.suggestedMaps || [];
+    console.log('Encounter Builder | Suggested maps:', suggestedMaps.length);
 
     return {
-      title: parsed.title?.trim() || 'Combat Encounter',
+      title: parsed.title?.trim() || 'Kampfsituation',
       difficulty: this.requestData?.difficulty || 'severe',
       partyLevel: this.requestData?.partyLevel || 1,
       partySize: this.requestData?.partySize || 4,
-      xpTotal: parsed.xpTotal || 0,
-      objective: objective,
-      objectiveLabel: objectiveLabels[objective] || '',
-      sceneHtml: this._formatMarkdown(parsed.scene || 'Keine Szene.'),
-      objectiveHtml: parsed.objective ? this._formatMarkdown(parsed.objective) : '',
-      monstersTableHtml: this._formatMarkdown(parsed.monsters || 'Keine Monster.'),
-      tacticsHtml: this._formatMarkdown(parsed.tactics || 'Keine Taktik.'),
-      winConditionsHtml: this._formatMarkdown(parsed.winConditions || 'Keine Win Conditions.')
+      sceneHtml: this._formatMarkdown(parsed.scene || ''),
+      goalsHtml: this._formatMarkdown(parsed.goals || ''),
+      timerHtml: this._formatMarkdown(parsed.timer || ''),
+      rolesHtml: this._formatMarkdown(parsed.roles || ''),
+      dilemmaHtml: this._formatMarkdown(parsed.dilemma || ''),
+      // Map suggestions from Map Browser
+      suggestedMaps: suggestedMaps,
+      hasMaps: suggestedMaps.length > 0
     };
   }
 
   _parseRawOutput(rawOutput) {
-    const result = { title: '', scene: '', objective: '', monsters: '', tactics: '', winConditions: '', xpTotal: 0 };
+    // NEW: Situation-based output format (v2)
+    const result = { title: '', scene: '', goals: '', timer: '', roles: '', dilemma: '' };
     if (!rawOutput) return result;
 
-    // Flexible parsing - look for section NAMES regardless of number
-    // Supports: ## 1. Szene, ## Szene, ### 3. Monster, etc.
+    // Extract title from first heading (## [Titel] or ## Titel)
+    const titleMatch = rawOutput.match(/^#{1,3}\s*\[?([^\]\n]+)\]?/m);
+    if (titleMatch) {
+      result.title = titleMatch[1].trim();
+    }
+
+    // Section patterns for new situation-based format
     const sectionPatterns = [
-      { key: 'title', pattern: /#{1,3}\s*\d*\.?\s*titel/i },
       { key: 'scene', pattern: /#{1,3}\s*\d*\.?\s*szene/i },
-      // Kontext section (for all combat encounters - explains what the encounter is about)
-      { key: 'objective', pattern: /#{1,3}\s*\d*\.?\s*kontext/i },
-      { key: 'monsters', pattern: /#{1,3}\s*\d*\.?\s*monster/i },
-      { key: 'tactics', pattern: /#{1,3}\s*\d*\.?\s*taktik/i },
-      { key: 'winConditions', pattern: /#{1,3}\s*\d*\.?\s*win\s*conditions/i }
+      { key: 'goals', pattern: /#{1,3}\s*\d*\.?\s*ziele/i },
+      { key: 'timer', pattern: /#{1,3}\s*\d*\.?\s*timer/i },
+      { key: 'roles', pattern: /#{1,3}\s*\d*\.?\s*monster-?rollen/i },
+      { key: 'dilemma', pattern: /#{1,3}\s*\d*\.?\s*taktisches?\s*dilemma/i }
     ];
 
     // Find all section start positions
@@ -4131,20 +4120,15 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       // Remove the remainder of the header line (everything until first newline), then trim
       content = content.replace(/^[^\n]*\n/, '').trim();
       result[current.key] = content;
-
-      // Extract XP from monster section
-      if (current.key === 'monsters') {
-        const xpMatch = content.match(/gesamt-xp[:\s]*(\d+)/i);
-        if (xpMatch) result.xpTotal = parseInt(xpMatch[1]);
-      }
     }
 
-    console.log('Encounter Builder | Parsed sections:', {
-      scene: result.scene?.substring(0, 50) + '...',
-      objective: result.objective?.substring(0, 50) + '...',
-      monsters: result.monsters?.substring(0, 50) + '...',
-      tactics: result.tactics?.substring(0, 50) + '...',
-      winConditions: result.winConditions?.substring(0, 50) + '...'
+    console.log('Encounter Builder | Parsed situation sections:', {
+      title: result.title?.substring(0, 30),
+      scene: result.scene ? 'yes' : 'no',
+      goals: result.goals ? 'yes' : 'no',
+      timer: result.timer ? 'yes' : 'no',
+      roles: result.roles ? 'yes' : 'no',
+      dilemma: result.dilemma ? 'yes' : 'no'
     });
 
     return result;
@@ -4253,6 +4237,93 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static async backToBuilder() {
     if (outputApp) { outputApp.close(); outputApp = null; }
     openEncounterInput();
+  }
+
+  static async createScene(event, target) {
+    const mapId = target.dataset.mapId;
+
+    if (!mapId) {
+      ui.notifications.warn('No map ID found');
+      return;
+    }
+
+    console.log('Encounter Builder | Creating scene for map:', mapId);
+
+    // Check if Map Browser module is active
+    const mapBrowserModule = game.modules.get('map-browser');
+    if (!mapBrowserModule?.active) {
+      ui.notifications.warn('Map Browser module is not active');
+      return;
+    }
+
+    // Use Map Browser API to create scene directly
+    if (globalThis.MapBrowser?.createSceneFromLocation) {
+      await globalThis.MapBrowser.createSceneFromLocation(mapId);
+    } else {
+      ui.notifications.error('Map Browser API not available - please update Map Browser module');
+    }
+  }
+
+  // Setup hover-to-enlarge for map thumbnails
+  _onRender(context, options) {
+    super._onRender?.(context, options);
+    this._setupMapThumbnailHover();
+  }
+
+  _setupMapThumbnailHover() {
+    const html = this.element;
+    if (!html) return;
+
+    // Create preview overlay if not exists
+    let previewOverlay = document.querySelector('.map-thumb-preview-overlay');
+    if (!previewOverlay) {
+      previewOverlay = document.createElement('div');
+      previewOverlay.className = 'map-thumb-preview-overlay';
+      previewOverlay.innerHTML = '<img src="" alt="Preview">';
+      document.body.appendChild(previewOverlay);
+    }
+
+    const previewImg = previewOverlay.querySelector('img');
+    let hoverTimeout = null;
+
+    // Add hover handlers to map thumbnails
+    html.querySelectorAll('.map-thumb').forEach(thumb => {
+      thumb.addEventListener('mouseenter', (e) => {
+        hoverTimeout = setTimeout(() => {
+          previewImg.src = thumb.src;
+          previewOverlay.classList.add('visible');
+          this._positionPreview(previewOverlay, e);
+        }, 300);
+      });
+
+      thumb.addEventListener('mousemove', (e) => {
+        if (previewOverlay.classList.contains('visible')) {
+          this._positionPreview(previewOverlay, e);
+        }
+      });
+
+      thumb.addEventListener('mouseleave', () => {
+        clearTimeout(hoverTimeout);
+        previewOverlay.classList.remove('visible');
+      });
+    });
+  }
+
+  _positionPreview(overlay, event) {
+    const padding = 20;
+    let x = event.clientX + padding;
+    let y = event.clientY + padding;
+
+    // Keep within viewport
+    if (x + 420 > window.innerWidth) {
+      x = event.clientX - 420 - padding;
+    }
+    if (y + 320 > window.innerHeight) {
+      y = event.clientY - 320 - padding;
+    }
+
+    overlay.style.left = `${x}px`;
+    overlay.style.top = `${y}px`;
   }
 }
 

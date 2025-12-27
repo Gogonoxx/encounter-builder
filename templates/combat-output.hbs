@@ -1,12 +1,8 @@
-<div class="combat-encounter-output">
+<div class="combat-encounter-output situation-output">
   <header class="combat-header">
     <h2>{{title}}</h2>
     <div class="combat-meta">
       <span class="difficulty difficulty-{{difficulty}}">{{difficulty}}</span>
-      {{#if objectiveLabel}}
-      <span class="objective-type">{{objectiveLabel}}</span>
-      {{/if}}
-      <span class="xp-total">{{xpTotal}} XP</span>
       <span class="party-info">Level {{partyLevel}}, {{partySize}} Spieler</span>
     </div>
   </header>
@@ -17,31 +13,69 @@
     <div class="read-aloud">{{{sceneHtml}}}</div>
   </section>
 
-  {{#if objectiveHtml}}
-  <!-- KONTEXT - kurzer scanbarer Text um was es geht -->
-  <section class="combat-section objective-section">
-    <h3><i class="fas fa-info-circle"></i> Kontext</h3>
-    {{{objectiveHtml}}}
+  {{#if goalsHtml}}
+  <!-- ZIELE & PRIORITÄTEN -->
+  <section class="combat-section goals-section">
+    <h3><i class="fas fa-bullseye"></i> Ziele & Prioritäten</h3>
+    {{{goalsHtml}}}
   </section>
   {{/if}}
 
-  <!-- MONSTER TABELLE -->
-  <section class="combat-section monsters-section">
-    <h3><i class="fas fa-skull"></i> Monster</h3>
-    {{{monstersTableHtml}}}
+  {{#if timerHtml}}
+  <!-- TIMER -->
+  <section class="combat-section timer-section">
+    <h3><i class="fas fa-clock"></i> Timer</h3>
+    {{{timerHtml}}}
   </section>
+  {{/if}}
 
-  <!-- TAKTIK -->
-  <section class="combat-section tactics-section">
-    <h3><i class="fas fa-chess"></i> Taktik</h3>
-    {{{tacticsHtml}}}
+  {{#if rolesHtml}}
+  <!-- MONSTER-ROLLEN -->
+  <section class="combat-section roles-section">
+    <h3><i class="fas fa-users"></i> Monster-Rollen</h3>
+    {{{rolesHtml}}}
+    <p class="hint">Wähle für jede Rolle ein passendes Monster aus deiner Sammlung.</p>
   </section>
+  {{/if}}
 
-  <!-- WIN CONDITIONS -->
-  <section class="combat-section win-section">
-    <h3><i class="fas fa-trophy"></i> Win Conditions</h3>
-    {{{winConditionsHtml}}}
+  {{#if dilemmaHtml}}
+  <!-- TAKTISCHES DILEMMA -->
+  <section class="combat-section dilemma-section">
+    <h3><i class="fas fa-balance-scale"></i> Taktisches Dilemma</h3>
+    <blockquote class="dilemma-quote">{{{dilemmaHtml}}}</blockquote>
   </section>
+  {{/if}}
+
+  {{#if hasMaps}}
+  <!-- PASSENDE MAPS -->
+  <section class="combat-section maps-section">
+    <h3><i class="fas fa-map"></i> Passende Maps</h3>
+    <div class="map-suggestions">
+      {{#each suggestedMaps}}
+      <div class="map-card" data-map-id="{{id}}">
+        <img class="map-thumb"
+             src="modules/map-browser/data/thumbs/{{folder_name}}.jpg"
+             alt="{{title}}"
+             onerror="this.src='icons/svg/mystery-man.svg'">
+        <div class="map-info">
+          <span class="map-title">{{title}}</span>
+          {{#if reason}}<span class="map-reason">{{reason}}</span>{{/if}}
+          <div class="map-tags">
+            {{#each tags}}<span class="map-tag">{{this}}</span>{{/each}}
+          </div>
+          <div class="map-meta">
+            {{#if has_animated}}<span class="animated-badge" title="Animated"><i class="fas fa-film"></i></span>{{/if}}
+            {{#if flavor_count}}<span class="flavor-count">{{flavor_count}} Varianten</span>{{/if}}
+          </div>
+        </div>
+        <button type="button" class="create-scene-btn" data-action="createScene" data-map-id="{{id}}">
+          <i class="fas fa-plus-circle"></i> Scene
+        </button>
+      </div>
+      {{/each}}
+    </div>
+  </section>
+  {{/if}}
 
   <footer class="combat-footer">
     <button type="button" data-action="backToBuilder" class="back-btn">
