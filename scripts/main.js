@@ -323,8 +323,20 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     // Track current encounter type (needs to be let, not const, so it can update)
     let currentEncounterType = form.querySelector('input[name="encounterType"]:checked')?.value || 'combat';
 
-    // Party level field (hide for travel)
+    // Party level field (hide for travel, except monster_hunt and a_bump_in_the_road)
     const partyLevelGroup = form.querySelector('.party-level-group');
+    const travelEncounterTypeSelect = form.querySelector('#travelEncounterType');
+
+    // Helper function to update party level visibility
+    // Shows party level for: non-travel encounters, OR travel encounters with monster_hunt/a_bump_in_the_road
+    const updatePartyLevelVisibility = () => {
+      if (!partyLevelGroup) return;
+      const travelType = travelEncounterTypeSelect?.value;
+      const needsLevel = currentEncounterType !== 'travel' ||
+                         travelType === 'monster_hunt' ||
+                         travelType === 'a_bump_in_the_road';
+      partyLevelGroup.style.display = needsLevel ? '' : 'none';
+    };
 
     const updateFieldVisibility = (type) => {
       console.log('Encounter Builder | updateFieldVisibility called with type:', type);
@@ -358,10 +370,8 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         el.style.display = type === 'travel' ? '' : 'none';
       });
 
-      // Hide party level for travel encounters
-      if (partyLevelGroup) {
-        partyLevelGroup.style.display = type === 'travel' ? 'none' : '';
-      }
+      // Update party level visibility (depends on both encounter type AND travel type)
+      updatePartyLevelVisibility();
     };
 
     // Campaign-specific section handling (fronts + players)
@@ -453,6 +463,13 @@ class EncounterInputApp extends HandlebarsApplicationMixin(ApplicationV2) {
         updateCampaignSectionsVisibility();
       });
     });
+
+    // Event listener for travel encounter type (for party level visibility)
+    if (travelEncounterTypeSelect) {
+      travelEncounterTypeSelect.addEventListener('change', () => {
+        updatePartyLevelVisibility();
+      });
+    }
 
     // Initialize visibility based on current selection
     updateFieldVisibility(currentEncounterType);
@@ -4049,7 +4066,9 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       saveJournal: SimpleCombatOutputApp.saveAsJournal,
       regenerate: SimpleCombatOutputApp.regenerate,
       backToBuilder: SimpleCombatOutputApp.backToBuilder,
-      createScene: SimpleCombatOutputApp.createScene
+      createScene: SimpleCombatOutputApp.createScene,
+      addCreature: SimpleCombatOutputApp.addCreature,
+      openCreatureSheet: SimpleCombatOutputApp.openCreatureSheet
     }
   };
 
@@ -4064,6 +4083,11 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const suggestedMaps = this.encounter.suggestedMaps || [];
     console.log('Encounter Builder | Suggested maps:', suggestedMaps.length);
 
+    // Creature suggestions for abstract roles
+    const creatureSuggestions = this.encounter.creatureSuggestions || {};
+    const hasCreatureSuggestions = creatureSuggestions.mappings && creatureSuggestions.mappings.length > 0;
+    console.log('Encounter Builder | Creature suggestions:', creatureSuggestions.mappings?.length || 0, 'role mappings');
+
     return {
       title: parsed.title?.trim() || 'Kampfsituation',
       difficulty: this.requestData?.difficulty || 'severe',
@@ -4076,7 +4100,10 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
       dilemmaHtml: this._formatMarkdown(parsed.dilemma || ''),
       // Map suggestions from Map Browser
       suggestedMaps: suggestedMaps,
-      hasMaps: suggestedMaps.length > 0
+      hasMaps: suggestedMaps.length > 0,
+      // Creature suggestions for abstract roles
+      creatureSuggestions: creatureSuggestions,
+      hasCreatureSuggestions: hasCreatureSuggestions
     };
   }
 
@@ -4264,10 +4291,139 @@ class SimpleCombatOutputApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
   }
 
-  // Setup hover-to-enlarge for map thumbnails
+  // Find creature in PF2E bestiaries
+  static async _findCreatureInCompendium(creatureName) {
+    const bestiaries = [
+      'pf2e.pathfinder-bestiary',
+      'pf2e.pathfinder-bestiary-2',
+      'pf2e.pathfinder-bestiary-3',
+      'pf2e.pathfinder-monster-core',
+      'pf2e.abomination-vaults-bestiary',
+      'pf2e.age-of-ashes-bestiary',
+      'pf2e.agents-of-edgewatch-bestiary',
+      'pf2e.blood-lords-bestiary',
+      'pf2e.book-of-the-dead-bestiary',
+      'pf2e.extinction-curse-bestiary',
+      'pf2e.fall-of-plaguestone-bestiary',
+      'pf2e.fists-of-the-ruby-phoenix-bestiary',
+      'pf2e.gatewalkers-bestiary',
+      'pf2e.kingmaker-bestiary',
+      'pf2e.malevolence-bestiary',
+      'pf2e.menace-under-otari-bestiary',
+      'pf2e.night-of-the-gray-death-bestiary',
+      'pf2e.outlaws-of-alkenstar-bestiary',
+      'pf2e.quest-for-the-frozen-flame-bestiary',
+      'pf2e.season-of-ghosts-bestiary',
+      'pf2e.shadows-at-sundown-bestiary',
+      'pf2e.sky-kings-tomb-bestiary',
+      'pf2e.stolen-fate-bestiary',
+      'pf2e.strength-of-thousands-bestiary',
+      'pf2e.troubles-in-otari-bestiary',
+      'pf2e.wardens-of-wildwood-bestiary'
+    ];
+
+    const normalizedName = creatureName.toLowerCase().trim();
+
+    for (const packId of bestiaries) {
+      const pack = game.packs.get(packId);
+      if (!pack) continue;
+
+      const index = await pack.getIndex();
+      const entry = index.find(e => e.name.toLowerCase() === normalizedName);
+
+      if (entry) {
+        return { pack, entry };
+      }
+    }
+    return null;
+  }
+
+  // Open creature sheet from compendium
+  static async openCreatureSheet(event, target) {
+    const creatureName = target.closest('.creature-suggestion')?.dataset.name ||
+                        target.dataset.name ||
+                        target.textContent.trim();
+
+    if (!creatureName) {
+      ui.notifications.warn('Kein Kreaturname gefunden');
+      return;
+    }
+
+    console.log('Encounter Builder | Opening creature sheet:', creatureName);
+
+    const result = await SimpleCombatOutputApp._findCreatureInCompendium(creatureName);
+    if (result) {
+      const doc = await result.pack.getDocument(result.entry._id);
+      doc.sheet.render(true);
+    } else {
+      ui.notifications.warn(`Kreatur "${creatureName}" nicht im Kompendium gefunden`);
+    }
+  }
+
+  // Add creature to scene/combat tracker
+  static async addCreature(event, target) {
+    const suggestionEl = target.closest('.creature-suggestion');
+    if (!suggestionEl) return;
+
+    const creatureName = suggestionEl.dataset.name;
+    console.log('Encounter Builder | Adding creature:', creatureName);
+
+    const result = await SimpleCombatOutputApp._findCreatureInCompendium(creatureName);
+    if (!result) {
+      ui.notifications.warn(`Kreatur "${creatureName}" nicht gefunden`);
+      return;
+    }
+
+    const doc = await result.pack.getDocument(result.entry._id);
+
+    // Create token in center of current scene
+    if (canvas.scene) {
+      const tokenData = await doc.getTokenDocument();
+      const center = {
+        x: canvas.dimensions.width / 2,
+        y: canvas.dimensions.height / 2
+      };
+      await canvas.scene.createEmbeddedDocuments('Token', [{
+        ...tokenData.toObject(),
+        x: center.x,
+        y: center.y
+      }]);
+      ui.notifications.info(`${creatureName} zur Szene hinzugefuegt`);
+    } else {
+      ui.notifications.warn('Keine aktive Szene');
+    }
+  }
+
+  // Load creature images from compendium after render
+  async _loadCreatureImages() {
+    const html = this.element;
+    if (!html) return;
+
+    const creatureImgs = html.querySelectorAll('.creature-img');
+    console.log('Encounter Builder | Loading images for', creatureImgs.length, 'creatures');
+
+    for (const img of creatureImgs) {
+      const suggestionEl = img.closest('.creature-suggestion');
+      if (!suggestionEl) continue;
+
+      const creatureName = suggestionEl.dataset.name;
+      if (!creatureName) continue;
+
+      const result = await SimpleCombatOutputApp._findCreatureInCompendium(creatureName);
+      if (result) {
+        const doc = await result.pack.getDocument(result.entry._id);
+        if (doc?.img && doc.img !== 'icons/svg/mystery-man.svg') {
+          img.src = doc.img;
+        }
+      }
+    }
+  }
+
+  // Setup hover effects and load creature images after render
   _onRender(context, options) {
     super._onRender?.(context, options);
     this._setupMapThumbnailHover();
+    this._loadCreatureImages();  // Load creature images from compendium
   }
 
   _setupMapThumbnailHover() {

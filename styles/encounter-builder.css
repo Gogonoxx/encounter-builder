@@ -4032,6 +4032,16 @@
   padding: 1.5rem;
   background: linear-gradient(180deg, var(--travel-parchment) 0%, var(--travel-parchment-dark) 100%);
   min-height: 100%;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  cursor: text;
+}
+
+.travel-encounter-output * {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
 }
 
 /* Header */
@@ -4716,6 +4726,734 @@
 }
 
 /* ============================================================================
+   OBSTACLE APPROACHES SECTION (A Bump in the Road)
+   ============================================================================ */
+
+.obstacle-approaches-section {
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.15), rgba(255, 69, 0, 0.1));
+  border: 1px solid rgba(255, 140, 0, 0.4);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.obstacle-approaches-section h3 {
+  color: #FFA500;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.obstacle-approaches-section h3 i {
+  color: #FFD700;
+}
+
+.approaches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.approach-item {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 140, 0, 0.3);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.approach-skill {
+  background: rgba(255, 140, 0, 0.8);
+  color: #1a1a1a;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  text-shadow: none;
+}
+
+.approach-skill i {
+  color: #1a1a1a;
+}
+
+.approach-method {
+  flex: 1;
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.approach-note {
+  color: #aaa;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.failure-consequence {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(180, 20, 50, 0.4);
+  border: 1px solid rgba(220, 20, 60, 0.6);
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.failure-consequence .label {
+  color: #FF8888;
+  font-weight: bold;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.failure-consequence .label i {
+  color: #FF6666;
+}
+
+.failure-consequence .value {
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* ============================================================================
+   SUBTLE HINTS SECTION (Danger Afoot - GM Only)
+   ============================================================================ */
+
+.subtle-hints-section {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.1));
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  border-left: 4px solid #ffc107;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.subtle-hints-section h3 {
+  color: #ffc107;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subtle-hints-section h3 i {
+  color: #ff9800;
+}
+
+.subtle-hints-list {
+  margin: 0;
+  padding-left: 24px;
+  list-style-type: disc;
+}
+
+.subtle-hints-list li {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+
+.subtle-hints-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================================================
+   TRUE NATURE SECTION (Danger Afoot - GM Only)
+   ============================================================================ */
+
+.true-nature-section {
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.15), rgba(176, 42, 55, 0.1));
+  border: 1px solid rgba(220, 53, 69, 0.4);
+  border-left: 4px solid #dc3545;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.true-nature-section h3 {
+  color: #dc3545;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.true-nature-section h3 i {
+  color: #dc3545;
+}
+
+.true-nature-text {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  border-radius: 6px;
+}
+
+/* ============================================================================
+   SKILL CHECK SECTION (Needing Assistance)
+   ============================================================================ */
+
+.skill-check-section {
+  background: linear-gradient(135deg, rgba(0, 123, 255, 0.15), rgba(0, 86, 179, 0.1));
+  border: 1px solid rgba(0, 123, 255, 0.4);
+  border-left: 4px solid #007bff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.skill-check-section h3 {
+  color: #007bff;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skill-check-section h3 i {
+  color: #007bff;
+}
+
+.skill-check-text {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+}
+
+/* ============================================================================
+   SECRET DISCOVERY SECTION (Needing Assistance - GM Only)
+   ============================================================================ */
+
+.secret-discovery-section {
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.15), rgba(32, 134, 55, 0.1));
+  border: 1px solid rgba(40, 167, 69, 0.4);
+  border-left: 4px solid #28a745;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.secret-discovery-section h3 {
+  color: #28a745;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.secret-discovery-section h3 i {
+  color: #28a745;
+}
+
+.secret-discovery-section .help-required {
+  margin-bottom: 12px;
+}
+
+.secret-discovery-section .label {
+  color: #a3d9a5;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.secret-discovery-section .help-required p {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.secret-discovery-section .on-success {
+  margin-top: 12px;
+}
+
+.secret-discovery-section .revelation-quote {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  border-radius: 6px;
+  border-left: 3px solid #28a745;
+  font-style: italic;
+}
+
+/* ============================================================================
+   FRONT CONNECTION SECTION (Needing Assistance - GM Only)
+   ============================================================================ */
+
+.front-connection-section {
+  background: linear-gradient(135deg, rgba(111, 66, 193, 0.15), rgba(89, 53, 154, 0.1));
+  border: 1px solid rgba(111, 66, 193, 0.4);
+  border-left: 4px solid #6f42c1;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.front-connection-section h3 {
+  color: #6f42c1;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.front-connection-section h3 i {
+  color: #6f42c1;
+}
+
+.front-connection-section .danger-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.front-connection-section .danger-name .label {
+  color: #c4a7e7;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.front-connection-section .danger-name .value {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.front-connection-section .how-connected {
+  margin-top: 8px;
+}
+
+.front-connection-section .how-connected .label {
+  color: #c4a7e7;
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.front-connection-section .how-connected p {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+/* ============================================================================
+   PUZZLE SECTION (Hidden Reserves)
+   ============================================================================ */
+
+.puzzle-section {
+  background: linear-gradient(135deg, rgba(0, 123, 255, 0.15), rgba(0, 86, 179, 0.1));
+  border: 1px solid rgba(0, 123, 255, 0.4);
+  border-left: 4px solid #007bff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.puzzle-section h3 {
+  color: #007bff;
+  font-size: 16px;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.puzzle-section h3 i {
+  color: #0056b3;
+}
+
+.puzzle-setup,
+.puzzle-challenge,
+.puzzle-clues {
+  margin-bottom: 16px;
+}
+
+.puzzle-setup .label,
+.puzzle-challenge .label,
+.puzzle-clues .label,
+.puzzle-solution .label {
+  color: #66b3ff;
+  font-weight: bold;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.puzzle-setup p,
+.puzzle-challenge p {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+}
+
+.puzzle-challenge .challenge-text {
+  font-style: italic;
+  border-left: 3px solid #007bff;
+  padding-left: 12px;
+}
+
+.puzzle-clues .clues-list {
+  margin: 0;
+  padding-left: 24px;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.puzzle-clues .clues-list li {
+  margin-bottom: 6px;
+}
+
+.puzzle-solution {
+  background: rgba(40, 167, 69, 0.15);
+  border: 1px solid rgba(40, 167, 69, 0.4);
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 16px;
+}
+
+.puzzle-solution .label {
+  color: #28a745;
+}
+
+.puzzle-solution .solution-text {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+.puzzle-solution .solution-explanation {
+  color: #1a5c2a;
+  font-size: 13px;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ============================================================================
+   REWARD SECTION (Hidden Reserves)
+   ============================================================================ */
+
+.reward-section {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.1));
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  border-left: 4px solid #ffc107;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.reward-section h3 {
+  color: #ffc107;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reward-section h3 i {
+  color: #ff9800;
+}
+
+.reward-text {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+}
+
+/* ============================================================================
+   OBSTACLE MECHANIC SECTION (A Bump in the Road)
+   ============================================================================ */
+
+.obstacle-mechanic-section {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(75, 0, 130, 0.15));
+  border: 1px solid rgba(138, 43, 226, 0.5);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.obstacle-mechanic-section h3 {
+  color: #DDA0DD;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.obstacle-mechanic-section h3 i {
+  color: #BA55D3;
+}
+
+.mechanic-content {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(138, 43, 226, 0.3);
+  border-radius: 6px;
+  padding: 12px;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ============================================================================
+   DANGER MODE BADGE (Danger Afoot - 6 Modi)
+   ============================================================================ */
+
+.danger-mode-badge-container {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.danger-mode-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Modus-spezifische Farben - helle Textfarben für gute Lesbarkeit */
+.danger-mode-badge.chance {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.4), rgba(39, 174, 96, 0.3));
+  border: 1px solid rgba(46, 204, 113, 0.7);
+  color: #a8f0c8; /* helles Grün */
+}
+
+.danger-mode-badge.assist {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.4), rgba(41, 128, 185, 0.3));
+  border: 1px solid rgba(52, 152, 219, 0.7);
+  color: #a8d4f0; /* helles Blau */
+}
+
+.danger-mode-badge.wonder {
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.4), rgba(142, 68, 173, 0.3));
+  border: 1px solid rgba(155, 89, 182, 0.7);
+  color: #d4a8f0; /* helles Lila */
+}
+
+.danger-mode-badge.treasure {
+  background: linear-gradient(135deg, rgba(241, 196, 15, 0.4), rgba(243, 156, 18, 0.3));
+  border: 1px solid rgba(241, 196, 15, 0.7);
+  color: #fff5cc; /* helles Gelb/Creme - gut lesbar! */
+}
+
+.danger-mode-badge.rest {
+  background: linear-gradient(135deg, rgba(230, 126, 34, 0.4), rgba(211, 84, 0, 0.3));
+  border: 1px solid rgba(230, 126, 34, 0.7);
+  color: #f5d4a8; /* helles Orange */
+}
+
+.danger-mode-badge.obstacle {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.4), rgba(192, 57, 43, 0.3));
+  border: 1px solid rgba(231, 76, 60, 0.7);
+  color: #f5c4c0; /* helles Rot/Rosa */
+}
+
+/* ============================================================================
+   CATEGORY BADGE (Needing Assistance & A Chance Meeting)
+   ============================================================================ */
+
+.category-badge-container {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.category-badge i {
+  font-size: 14px;
+}
+
+/* Needing Assistance Categories */
+.category-badge.physisch {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.4), rgba(192, 57, 43, 0.3));
+  border: 1px solid rgba(231, 76, 60, 0.7);
+  color: #f5c4c0;
+}
+
+.category-badge.praktisch {
+  background: linear-gradient(135deg, rgba(241, 196, 15, 0.4), rgba(243, 156, 18, 0.3));
+  border: 1px solid rgba(241, 196, 15, 0.7);
+  color: #fff5cc;
+}
+
+.category-badge.sozial {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.4), rgba(41, 128, 185, 0.3));
+  border: 1px solid rgba(52, 152, 219, 0.7);
+  color: #a8d4f0;
+}
+
+.category-badge.skurril {
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.4), rgba(142, 68, 173, 0.3));
+  border: 1px solid rgba(155, 89, 182, 0.7);
+  color: #d4a8f0;
+}
+
+.category-badge.emotional {
+  background: linear-gradient(135deg, rgba(233, 30, 99, 0.4), rgba(194, 24, 91, 0.3));
+  border: 1px solid rgba(233, 30, 99, 0.7);
+  color: #f8bbd9;
+}
+
+/* A Chance Meeting Categories */
+.category-badge.haendler {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.4), rgba(255, 160, 0, 0.3));
+  border: 1px solid rgba(255, 193, 7, 0.7);
+  color: #fff8e1;
+}
+
+.category-badge.reisende {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.4), rgba(56, 142, 60, 0.3));
+  border: 1px solid rgba(76, 175, 80, 0.7);
+  color: #c8e6c9;
+}
+
+.category-badge.exotisch {
+  background: linear-gradient(135deg, rgba(0, 188, 212, 0.4), rgba(0, 151, 167, 0.3));
+  border: 1px solid rgba(0, 188, 212, 0.7);
+  color: #b2ebf2;
+}
+
+.category-badge.event {
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.4), rgba(230, 74, 25, 0.3));
+  border: 1px solid rgba(255, 87, 34, 0.7);
+  color: #ffccbc;
+}
+
+/* A Bump in the Road categories */
+.category-badge.terrain {
+  background: linear-gradient(135deg, rgba(121, 85, 72, 0.4), rgba(93, 64, 55, 0.3));
+  border: 1px solid rgba(121, 85, 72, 0.7);
+  color: #d7ccc8;
+}
+
+.category-badge.fauna {
+  background: linear-gradient(135deg, rgba(139, 195, 74, 0.4), rgba(104, 159, 56, 0.3));
+  border: 1px solid rgba(139, 195, 74, 0.7);
+  color: #dcedc8;
+}
+
+.category-badge.wetter {
+  background: linear-gradient(135deg, rgba(100, 181, 246, 0.4), rgba(66, 165, 245, 0.3));
+  border: 1px solid rgba(100, 181, 246, 0.7);
+  color: #bbdefb;
+}
+
+.category-badge.naturgefahren {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.4), rgba(245, 124, 0, 0.3));
+  border: 1px solid rgba(255, 152, 0, 0.7);
+  color: #ffe0b2;
+}
+
+.category-badge.magisch {
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.4), rgba(123, 31, 162, 0.3));
+  border: 1px solid rgba(156, 39, 176, 0.7);
+  color: #e1bee7;
+}
+
+/* Hidden Reserves puzzle type categories */
+.category-badge.riddle {
+  background: linear-gradient(135deg, rgba(233, 30, 99, 0.4), rgba(194, 24, 91, 0.3));
+  border: 1px solid rgba(233, 30, 99, 0.7);
+  color: #f8bbd9;
+}
+
+.category-badge.sequence {
+  background: linear-gradient(135deg, rgba(63, 81, 181, 0.4), rgba(48, 63, 159, 0.3));
+  border: 1px solid rgba(63, 81, 181, 0.7);
+  color: #c5cae9;
+}
+
+.category-badge.wordplay {
+  background: linear-gradient(135deg, rgba(0, 150, 136, 0.4), rgba(0, 121, 107, 0.3));
+  border: 1px solid rgba(0, 150, 136, 0.7);
+  color: #b2dfdb;
+}
+
+.category-badge.mechanism {
+  background: linear-gradient(135deg, rgba(96, 125, 139, 0.4), rgba(69, 90, 100, 0.3));
+  border: 1px solid rgba(96, 125, 139, 0.7);
+  color: #cfd8dc;
+}
+
+.category-badge.logic {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.4), rgba(255, 160, 0, 0.3));
+  border: 1px solid rgba(255, 193, 7, 0.7);
+  color: #fff8e1;
+}
+
+/* ============================================================================
    MAP SUGGESTIONS SECTION
    ============================================================================ */
 
@@ -4856,4 +5594,447 @@
 
 .map-card .create-scene-btn i {
   margin-right: 4px;
+}
+
+/* =====================================================
+   CREATURE SUGGESTIONS SIDEBAR
+   ===================================================== */
+
+/* Layout: Sidebar rechts vom Content */
+.combat-encounter-output.with-sidebar {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 1rem;
+}
+
+.combat-encounter-output.with-sidebar .combat-main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Sidebar Container */
+.creature-suggestions-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: rgba(20, 20, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  position: sticky;
+  top: 10px;
+}
+
+.creature-suggestions-sidebar h3 {
+  margin: 0 0 10px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.creature-suggestions-sidebar h3 i {
+  color: #e74c3c;
+}
+
+.creature-types-info {
+  margin: 0 0 12px 0;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-size: 11px;
+  color: #888;
+}
+
+.creature-types-info i {
+  margin-right: 6px;
+  color: #666;
+}
+
+/* Role Groups */
+.role-group {
+  margin-bottom: 12px;
+}
+
+.role-group h4.abstract-role {
+  margin: 0 0 6px 0;
+  padding: 4px 8px;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.3), transparent);
+  border-left: 3px solid #8b5cf6;
+  border-radius: 0 4px 4px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #c4b5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Individual Creature Suggestion */
+.creature-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.creature-suggestion:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Creature Image */
+.creature-img-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.creature-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.creature-img:hover {
+  transform: scale(5);
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9);
+  border-color: rgba(139, 92, 246, 0.6);
+  border-radius: 6px;
+}
+
+/* Creature Info */
+.creature-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.creature-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #e0e0e0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.creature-name:hover {
+  color: #8b5cf6;
+  text-decoration: underline;
+}
+
+.creature-meta {
+  font-size: 10px;
+  color: #666;
+}
+
+/* Add Creature Button */
+.add-creature-btn {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(74, 222, 128, 0.15);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 4px;
+  color: #4ade80;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.add-creature-btn:hover {
+  background: rgba(74, 222, 128, 0.3);
+  border-color: rgba(74, 222, 128, 0.5);
+  transform: scale(1.1);
+}
+
+.add-creature-btn i {
+  font-size: 10px;
+}
+
+/* Sidebar Hint */
+.sidebar-hint {
+  margin: 12px 0 0 0;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  font-size: 10px;
+  color: #666;
+  text-align: center;
+}
+
+.sidebar-hint i {
+  margin-right: 4px;
+  color: #555;
+}
+
+/* Scrollbar Styling for Sidebar */
+.creature-suggestions-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.creature-suggestions-sidebar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.creature-suggestions-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+.creature-suggestions-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ============================================================================
+   TRACKING SECTION (Monster Hunt)
+   ============================================================================ */
+
+.tracking-section {
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.2), rgba(101, 67, 33, 0.15));
+  border: 1px solid rgba(139, 69, 19, 0.4);
+  border-left: 4px solid #8b4513;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.tracking-section h3 {
+  color: #cd853f;
+  font-size: 16px;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tracking-section h3 i {
+  color: #d2691e;
+}
+
+/* Clues List */
+.tracking-clues {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.clue-item {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(139, 69, 19, 0.3);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.clue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.clue-name {
+  color: #deb887;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.clue-check {
+  background: rgba(139, 69, 19, 0.4);
+  color: #ffdead;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.clue-description {
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 10px 0;
+  font-style: italic;
+}
+
+.clue-insight,
+.clue-tactical {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.insight-label,
+.tactical-label {
+  color: #90ee90;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tactical-label {
+  color: #ff6b6b;
+}
+
+.insight-text,
+.tactical-text {
+  color: #e0e0e0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Escalation Section */
+.tracking-escalation {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(139, 69, 19, 0.3);
+}
+
+.tracking-escalation h4 {
+  color: #cd853f;
+  font-size: 14px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.escalation-stages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.escalation-stage {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  border-left: 3px solid transparent;
+}
+
+.escalation-stage.approaching {
+  border-left-color: #90ee90;
+}
+
+.escalation-stage.approaching .stage-icon {
+  color: #90ee90;
+}
+
+.escalation-stage.close {
+  border-left-color: #ffa500;
+}
+
+.escalation-stage.close .stage-icon {
+  color: #ffa500;
+}
+
+.escalation-stage.confrontation {
+  border-left-color: #ff4444;
+}
+
+.escalation-stage.confrontation .stage-icon {
+  color: #ff4444;
+}
+
+.stage-icon {
+  font-size: 14px;
+  width: 20px;
+  text-align: center;
+}
+
+.stage-text {
+  color: #e0e0e0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Surprise Bonus */
+.tracking-surprise {
+  margin-top: 12px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(218, 165, 32, 0.1));
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.surprise-label {
+  color: #ffd700;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.surprise-text {
+  color: #fff8dc;
+  font-size: 12px;
+}
+
+/* ============================================================================
+   BELOHNUNG SECTION (Monster Hunt)
+   ============================================================================ */
+
+.belohnung-section {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(218, 165, 32, 0.1));
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-left: 4px solid #ffd700;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.belohnung-section h3 {
+  color: #ffd700;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.belohnung-section h3 i {
+  color: #daa520;
+}
+
+.belohnung-text {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
 }

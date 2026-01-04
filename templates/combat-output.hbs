@@ -1,17 +1,57 @@
-<div class="combat-encounter-output situation-output">
-  <header class="combat-header">
-    <h2>{{title}}</h2>
-    <div class="combat-meta">
-      <span class="difficulty difficulty-{{difficulty}}">{{difficulty}}</span>
-      <span class="party-info">Level {{partyLevel}}, {{partySize}} Spieler</span>
-    </div>
-  </header>
+<div class="combat-encounter-output situation-output {{#if hasCreatureSuggestions}}with-sidebar{{/if}}">
+  {{#if hasCreatureSuggestions}}
+  <!-- CREATURE SUGGESTIONS SIDEBAR -->
+  <aside class="creature-suggestions-sidebar">
+    <h3><i class="fas fa-dragon"></i> Monster-Vorschläge</h3>
+    <p class="creature-types-info">
+      <i class="fas fa-tag"></i> {{creatureSuggestions.creatureTypes}}
+    </p>
 
-  <!-- SZENE -->
-  <section class="combat-section scene-section">
-    <h3><i class="fas fa-scroll"></i> Szene</h3>
-    <div class="read-aloud">{{{sceneHtml}}}</div>
-  </section>
+    {{#each creatureSuggestions.mappings}}
+    <div class="role-group">
+      <h4 class="abstract-role">{{abstractRole}}</h4>
+      {{#each suggestions}}
+      <div class="creature-suggestion" data-name="{{name}}" data-level="{{level}}" data-role="{{d4eRole}}">
+        <div class="creature-img-wrapper">
+          <img class="creature-img"
+               src="icons/svg/mystery-man.svg"
+               alt="{{name}}"
+               data-action="openCreatureSheet"
+               title="Statblock öffnen">
+        </div>
+        <div class="creature-info">
+          <span class="creature-name" data-action="openCreatureSheet" title="Statblock öffnen">{{name}}</span>
+          <span class="creature-meta">L{{level}} · {{d4eRole}}</span>
+        </div>
+        <button type="button" class="add-creature-btn" data-action="addCreature" title="Kreatur hinzufügen">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+      {{/each}}
+    </div>
+    {{/each}}
+
+    <p class="sidebar-hint">
+      <i class="fas fa-info-circle"></i>
+      Klicke auf + um eine Kreatur zum Encounter hinzuzufügen.
+    </p>
+  </aside>
+  {{/if}}
+
+  <div class="combat-main-content">
+    <header class="combat-header">
+      <h2>{{title}}</h2>
+      <div class="combat-meta">
+        <span class="difficulty difficulty-{{difficulty}}">{{difficulty}}</span>
+        <span class="party-info">Level {{partyLevel}}, {{partySize}} Spieler</span>
+      </div>
+    </header>
+
+    <!-- SZENE -->
+    <section class="combat-section scene-section">
+      <h3><i class="fas fa-scroll"></i> Szene</h3>
+      <div class="read-aloud">{{{sceneHtml}}}</div>
+    </section>
 
   {{#if goalsHtml}}
   <!-- ZIELE & PRIORITÄTEN -->
@@ -54,7 +94,7 @@
       {{#each suggestedMaps}}
       <div class="map-card" data-map-id="{{id}}">
         <img class="map-thumb"
-             src="modules/map-browser/data/thumbs/{{folder_name}}.jpg"
+             src="{{thumbnail_url}}"
              alt="{{title}}"
              onerror="this.src='icons/svg/mystery-man.svg'">
         <div class="map-info">
@@ -77,15 +117,16 @@
   </section>
   {{/if}}
 
-  <footer class="combat-footer">
-    <button type="button" data-action="backToBuilder" class="back-btn">
-      <i class="fas fa-arrow-left"></i> Zurück
-    </button>
-    <button type="button" data-action="regenerate" class="regenerate-btn">
-      <i class="fas fa-redo"></i> Neu generieren
-    </button>
-    <button type="button" data-action="saveJournal" class="save-btn">
-      <i class="fas fa-book"></i> Als Journal speichern
-    </button>
-  </footer>
+    <footer class="combat-footer">
+      <button type="button" data-action="backToBuilder" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Zurück
+      </button>
+      <button type="button" data-action="regenerate" class="regenerate-btn">
+        <i class="fas fa-redo"></i> Neu generieren
+      </button>
+      <button type="button" data-action="saveJournal" class="save-btn">
+        <i class="fas fa-book"></i> Als Journal speichern
+      </button>
+    </footer>
+  </div><!-- /.combat-main-content -->
 </div>

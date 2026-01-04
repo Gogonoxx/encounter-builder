@@ -29,6 +29,12 @@
       <span class="metadata-value secret-text">{{encounter.campaignSecretText}}</span>
     </div>
     {{/if}}
+    {{#if encounter.campaignPortent}}
+    <div class="metadata-row portent-row">
+      <span class="metadata-label">Grim Portent:</span>
+      <span class="metadata-value portent-text">{{encounter.campaignPortent}}</span>
+    </div>
+    {{/if}}
     {{#if encounter.campaignPC}}
     <div class="metadata-row">
       <span class="metadata-label">Spieler:</span>
@@ -44,10 +50,288 @@
   </section>
   {{/if}}
 
+  {{!-- Danger Mode Badge (Danger Afoot only) --}}
+  {{#if encounter.dangerMode}}
+  <div class="danger-mode-badge-container">
+    <span class="danger-mode-badge {{encounter.dangerMode}}">
+      {{#if (eq encounter.dangerMode "chance")}}Tarnung: Chance Meeting{{/if}}
+      {{#if (eq encounter.dangerMode "assist")}}Tarnung: Needing Assistance{{/if}}
+      {{#if (eq encounter.dangerMode "wonder")}}Tarnung: Natural Wonder{{/if}}
+      {{#if (eq encounter.dangerMode "treasure")}}Tarnung: Hidden Reserves{{/if}}
+      {{#if (eq encounter.dangerMode "rest")}}Tarnung: Place to Rest{{/if}}
+      {{#if (eq encounter.dangerMode "obstacle")}}Tarnung: Bump in the Road{{/if}}
+    </span>
+  </div>
+  {{/if}}
+
+  {{!-- Category Badge (Needing Assistance, A Chance Meeting, A Bump in the Road) --}}
+  {{#if encounter.category}}
+  <div class="category-badge-container">
+    <span class="category-badge {{encounter.category}}">
+      {{!-- Needing Assistance categories --}}
+      {{#if (eq encounter.category "physisch")}}<i class="fas fa-heartbeat"></i> Physisch{{/if}}
+      {{#if (eq encounter.category "praktisch")}}<i class="fas fa-tools"></i> Praktisch{{/if}}
+      {{#if (eq encounter.category "sozial")}}<i class="fas fa-users"></i> Sozial{{/if}}
+      {{#if (eq encounter.category "skurril")}}<i class="fas fa-theater-masks"></i> Skurril{{/if}}
+      {{#if (eq encounter.category "emotional")}}<i class="fas fa-heart"></i> Emotional{{/if}}
+      {{!-- A Chance Meeting categories --}}
+      {{#if (eq encounter.category "haendler")}}<i class="fas fa-coins"></i> Haendler{{/if}}
+      {{#if (eq encounter.category "reisende")}}<i class="fas fa-hiking"></i> Reisende{{/if}}
+      {{#if (eq encounter.category "exotisch")}}<i class="fas fa-dragon"></i> Exotisch{{/if}}
+      {{#if (eq encounter.category "event")}}<i class="fas fa-calendar-alt"></i> Event{{/if}}
+      {{!-- A Bump in the Road categories --}}
+      {{#if (eq encounter.category "terrain")}}<i class="fas fa-mountain"></i> Terrain{{/if}}
+      {{#if (eq encounter.category "fauna")}}<i class="fas fa-paw"></i> Fauna{{/if}}
+      {{#if (eq encounter.category "wetter")}}<i class="fas fa-cloud-showers-heavy"></i> Wetter{{/if}}
+      {{#if (eq encounter.category "naturgefahren")}}<i class="fas fa-biohazard"></i> Naturgefahren{{/if}}
+      {{#if (eq encounter.category "magisch")}}<i class="fas fa-hat-wizard"></i> Magisch{{/if}}
+      {{!-- Hidden Reserves puzzle types --}}
+      {{#if (eq encounter.category "riddle")}}<i class="fas fa-question"></i> Rätsel{{/if}}
+      {{#if (eq encounter.category "sequence")}}<i class="fas fa-sort-numeric-down"></i> Reihenfolge{{/if}}
+      {{#if (eq encounter.category "mechanism")}}<i class="fas fa-cogs"></i> Mechanismus{{/if}}
+      {{#if (eq encounter.category "logic")}}<i class="fas fa-brain"></i> Logik{{/if}}
+      {{!-- A Place to Rest categories --}}
+      {{#if (eq encounter.category "gasthaus")}}<i class="fas fa-beer"></i> Gasthaus{{/if}}
+      {{#if (eq encounter.category "naturzuflucht")}}<i class="fas fa-mountain"></i> Naturzuflucht{{/if}}
+      {{#if (eq encounter.category "verlassen")}}<i class="fas fa-house-damage"></i> Verlassen{{/if}}
+      {{#if (eq encounter.category "kreaturheim")}}<i class="fas fa-spider"></i> Kreaturheim{{/if}}
+      {{#if (eq encounter.category "gemeinschaft")}}<i class="fas fa-campground"></i> Gemeinschaft{{/if}}
+    </span>
+  </div>
+  {{/if}}
+
   {{!-- Main Description --}}
   <section class="travel-description">
     {{{descriptionHtml}}}
   </section>
+
+  {{!-- Tracking Section (Monster Hunt) --}}
+  {{#if encounter.tracking}}
+  <section class="tracking-section">
+    <h3><i class="fas fa-paw"></i> Tracking</h3>
+
+    {{!-- Clues --}}
+    {{#if encounter.tracking.clues}}
+    <div class="tracking-clues">
+      {{#each encounter.tracking.clues}}
+      <div class="clue-item">
+        <div class="clue-header">
+          <span class="clue-name">{{this.name}}</span>
+          <span class="clue-check">{{this.skill}} DC {{this.dc}}</span>
+        </div>
+        <p class="clue-description">{{this.description}}</p>
+        <div class="clue-insight">
+          <span class="insight-label"><i class="fas fa-lightbulb"></i> Bei Erfolg:</span>
+          <span class="insight-text">{{this.insight}}</span>
+        </div>
+        {{#if this.tactical}}
+        <div class="clue-tactical">
+          <span class="tactical-label"><i class="fas fa-crosshairs"></i> Taktisch:</span>
+          <span class="tactical-text">{{this.tactical}}</span>
+        </div>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{!-- Escalation --}}
+    {{#if encounter.tracking.escalation}}
+    <div class="tracking-escalation">
+      <h4><i class="fas fa-chart-line"></i> Eskalation</h4>
+      <div class="escalation-stages">
+        {{#if encounter.tracking.escalation.approaching}}
+        <div class="escalation-stage approaching">
+          <span class="stage-icon"><i class="fas fa-walking"></i></span>
+          <span class="stage-text">{{encounter.tracking.escalation.approaching}}</span>
+        </div>
+        {{/if}}
+        {{#if encounter.tracking.escalation.close}}
+        <div class="escalation-stage close">
+          <span class="stage-icon"><i class="fas fa-exclamation-triangle"></i></span>
+          <span class="stage-text">{{encounter.tracking.escalation.close}}</span>
+        </div>
+        {{/if}}
+        {{#if encounter.tracking.escalation.confrontation}}
+        <div class="escalation-stage confrontation">
+          <span class="stage-icon"><i class="fas fa-skull"></i></span>
+          <span class="stage-text">{{encounter.tracking.escalation.confrontation}}</span>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+    {{/if}}
+
+    {{!-- Surprise Bonus --}}
+    {{#if encounter.tracking.surprise}}
+    <div class="tracking-surprise">
+      <span class="surprise-label"><i class="fas fa-bolt"></i> Bei gutem Tracking:</span>
+      <span class="surprise-text">{{encounter.tracking.surprise}}</span>
+    </div>
+    {{/if}}
+  </section>
+  {{/if}}
+
+  {{!-- Belohnung Section (Monster Hunt) --}}
+  {{#if encounter.belohnung}}
+  <section class="belohnung-section">
+    <h3><i class="fas fa-gem"></i> Belohnung</h3>
+    <p class="belohnung-text">{{encounter.belohnung}}</p>
+  </section>
+  {{/if}}
+
+  {{!-- Skill Check Section (Needing Assistance) --}}
+  {{#if encounter.skillCheck}}
+  <section class="skill-check-section">
+    <h3><i class="fas fa-dice-d20"></i> Skill Check</h3>
+    <p class="skill-check-text">{{encounter.skillCheck}}</p>
+  </section>
+  {{/if}}
+
+  {{!-- Secret Discovery Section (Needing Assistance - GM Only) --}}
+  {{#if encounter.secretDiscovery}}
+  <section class="secret-discovery-section gm-only">
+    <h3><i class="fas fa-key"></i> Bei Erfolg</h3>
+    {{#if encounter.secretDiscovery.onSuccess}}
+    <blockquote class="revelation-quote">{{encounter.secretDiscovery.onSuccess}}</blockquote>
+    {{/if}}
+  </section>
+  {{/if}}
+
+  {{!-- Front Connection Section (Needing Assistance & Monster Hunt - GM Only) --}}
+  {{#if encounter.frontConnection}}
+  <section class="front-connection-section gm-only">
+    <h3><i class="fas fa-link"></i> Front-Verbindung</h3>
+    {{!-- Needing Assistance format --}}
+    {{#if encounter.frontConnection.portentUsed}}
+    <div class="portent-used">
+      <span class="label"><i class="fas fa-bookmark"></i> Grim Portent:</span>
+      <p>{{encounter.frontConnection.portentUsed}}</p>
+    </div>
+    {{/if}}
+    {{!-- Monster Hunt format --}}
+    {{#if encounter.frontConnection.portentOrDanger}}
+    <div class="portent-used">
+      <span class="label"><i class="fas fa-bookmark"></i> Danger/Portent:</span>
+      <p>{{encounter.frontConnection.portentOrDanger}}</p>
+    </div>
+    {{/if}}
+    {{#if encounter.frontConnection.creativeLink}}
+    <div class="creative-link">
+      <span class="label"><i class="fas fa-random"></i> Kreative Verbindung:</span>
+      <p>{{encounter.frontConnection.creativeLink}}</p>
+    </div>
+    {{/if}}
+    {{#if encounter.frontConnection.discoveryMoment}}
+    <div class="discovery-moment">
+      <span class="label"><i class="fas fa-search"></i> Nach der Jagd:</span>
+      <p>{{encounter.frontConnection.discoveryMoment}}</p>
+    </div>
+    {{/if}}
+  </section>
+  {{/if}}
+
+  {{!-- Subtle Hints Section (Danger Afoot - GM Only) --}}
+  {{#if encounter.subtleHints}}
+  <section class="subtle-hints-section gm-only">
+    <h3><i class="fas fa-search"></i> Subtile Hinweise (Perception DC 15+)</h3>
+    <ul class="subtle-hints-list">
+      {{#each encounter.subtleHints}}
+      <li>{{this}}</li>
+      {{/each}}
+    </ul>
+  </section>
+  {{/if}}
+
+  {{!-- True Nature Section (Danger Afoot - GM Only) --}}
+  {{#if encounter.trueNature}}
+  <section class="true-nature-section gm-only">
+    <h3><i class="fas fa-mask"></i> Wahre Identität</h3>
+    <p class="true-nature-text">{{encounter.trueNature}}</p>
+  </section>
+  {{/if}}
+
+  {{!-- Puzzle Section (Hidden Reserves) --}}
+  {{#if encounter.puzzle}}
+  <section class="puzzle-section">
+    <h3><i class="fas fa-puzzle-piece"></i> Rätsel ({{encounter.puzzle.type}})</h3>
+
+    {{#if encounter.puzzle.setup}}
+    <div class="puzzle-setup">
+      <span class="label">Setup:</span>
+      <p>{{encounter.puzzle.setup}}</p>
+    </div>
+    {{/if}}
+
+    {{#if encounter.puzzle.challenge}}
+    <div class="puzzle-challenge">
+      <span class="label"><i class="fas fa-question-circle"></i> Herausforderung:</span>
+      <p class="challenge-text">{{encounter.puzzle.challenge}}</p>
+    </div>
+    {{/if}}
+
+    {{#if encounter.puzzle.clues}}
+    <div class="puzzle-clues">
+      <span class="label"><i class="fas fa-lightbulb"></i> Hinweise:</span>
+      <ol class="clues-list">
+        {{#each encounter.puzzle.clues}}
+        <li>{{this}}</li>
+        {{/each}}
+      </ol>
+    </div>
+    {{/if}}
+
+    <div class="puzzle-solution gm-only">
+      <span class="label"><i class="fas fa-key"></i> Lösung (GM only):</span>
+      <p class="solution-text">{{encounter.puzzle.solution}}</p>
+      {{#if encounter.puzzle.solutionExplanation}}
+      <p class="solution-explanation"><em>{{encounter.puzzle.solutionExplanation}}</em></p>
+      {{/if}}
+    </div>
+  </section>
+  {{/if}}
+
+  {{!-- Reward Section (Hidden Reserves) --}}
+  {{#if encounter.reward}}
+  <section class="reward-section">
+    <h3><i class="fas fa-gift"></i> Belohnung</h3>
+    <p class="reward-text">{{encounter.reward}}</p>
+  </section>
+  {{/if}}
+
+  {{!-- Mechanic Section (for A Bump in the Road with interesting mechanics) --}}
+  {{#if encounter.mechanic}}
+  <section class="obstacle-mechanic-section">
+    <h3><i class="fas fa-cogs"></i> Mechanik</h3>
+    <div class="mechanic-content">
+      {{encounter.mechanic}}
+    </div>
+  </section>
+  {{/if}}
+
+  {{!-- Obstacle Approaches (only for A Bump in the Road) --}}
+  {{#if encounter.approaches}}
+  <section class="obstacle-approaches-section">
+    <h3><i class="fas fa-route"></i> Lösungsansätze</h3>
+    <div class="approaches-list">
+      {{#each encounter.approaches}}
+      <div class="approach-item">
+        <span class="approach-skill"><i class="fas fa-dice-d20"></i> {{this.skill}}</span>
+        <span class="approach-method">{{this.method}}</span>
+        {{#if this.note}}
+        <span class="approach-note">({{this.note}})</span>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+    {{#if encounter.failureConsequence}}
+    <div class="failure-consequence">
+      <span class="label"><i class="fas fa-exclamation-triangle"></i> Bei Scheitern:</span>
+      <span class="value">{{encounter.failureConsequence}}</span>
+    </div>
+    {{/if}}
+  </section>
+  {{/if}}
 
   {{!-- Natural Wonder Mechanics (only for interactive wonders) --}}
   {{#if encounter.wonderMechanic}}
